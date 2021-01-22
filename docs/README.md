@@ -5,18 +5,15 @@
 ### CloudFoundry
 The service broker is deployed to CloudFoundry as a `cf push`ed application.
 * [General configuration](./configuration.md)
-* [AWS](./aws-installation.md)
-* [Azure](./azure-installation.md)
-  * [Azure configuration examples](./azure-example-configs.md)
 * [GCP](./gcp-installation.md)
 
 ## Cloud Service Broker General
 * [Consuming Services](./use.md)
 
 ## Brokerpak Specifications
-* [Brokerpak Intro](./brokerpak-intro.md)
-* [Brokerpak Specification](./brokerpak-specification.md)
+* [Brokerpak Intro](https://github.com/cloudfoundry-incubator/cloud-service-broker/tree/master/docs/brokerpak-intro.md)
+* [Brokerpak Specification](https://github.com/cloudfoundry-incubator/cloud-service-broker/tree/master/docs/brokerpak-specification.md)
 
 ## Brokerpak Development
-* [Brokerpak Dissection](./brokerpak-dissection.md)
+* [Brokerpak Dissection](https://github.com/cloudfoundry-incubator/cloud-service-broker/tree/master/docs/brokerpak-dissection.md)
 
