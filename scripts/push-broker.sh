@@ -4,15 +4,16 @@ set +x # Hide secrets
 set -o errexit
 set -o pipefail
 
+
 if [[ -z ${MANIFEST} ]]; then
   MANIFEST=manifest.yml
 fi
 
-cf push --no-start -f "${MANIFEST}"
-
 if [[ -z ${APP_NAME} ]]; then
   APP_NAME=cloud-service-broker
 fi
+
+cf push --no-start -f "${MANIFEST}" --var app=${APP_NAME}
 
 if [[ -z ${SECURITY_USER_NAME} ]]; then
   echo "Missing SECURITY_USER_NAME variable"
@@ -55,8 +56,36 @@ if [[ ${ARM_CLIENT_SECRET} ]]; then
   cf set-env "${APP_NAME}" ARM_CLIENT_SECRET "${ARM_CLIENT_SECRET}"
 fi
 
+if [[ ${AWS_ACCESS_KEY_ID} ]]; then
+  cf set-env "${APP_NAME}" AWS_ACCESS_KEY_ID "${AWS_ACCESS_KEY_ID}"
+fi
+
+if [[ ${AWS_SECRET_ACCESS_KEY} ]]; then
+  cf set-env "${APP_NAME}" AWS_SECRET_ACCESS_KEY "${AWS_SECRET_ACCESS_KEY}"
+fi
+
 if [[ ${GSB_BROKERPAK_BUILTIN_PATH} ]]; then
   cf set-env "${APP_NAME}" GSB_BROKERPAK_BUILTIN_PATH "${GSB_BROKERPAK_BUILTIN_PATH}"
+fi
+
+if [[ ${CH_CRED_HUB_URL} ]]; then
+  cf set-env "${APP_NAME}" CH_CRED_HUB_URL "${CH_CRED_HUB_URL}"
+fi
+
+if [[ ${CH_UAA_URL} ]]; then
+  cf set-env "${APP_NAME}" CH_UAA_URL "${CH_UAA_URL}"
+fi
+
+if [[ ${CH_UAA_CLIENT_NAME} ]]; then
+  cf set-env "${APP_NAME}" CH_UAA_CLIENT_NAME "${CH_UAA_CLIENT_NAME}"
+fi
+
+if [[ ${CH_UAA_CLIENT_SECRET} ]]; then
+  cf set-env "${APP_NAME}" CH_UAA_CLIENT_SECRET "${CH_UAA_CLIENT_SECRET}"
+fi
+
+if [[ ${CH_SKIP_SSL_VALIDATION} ]]; then
+  cf set-env "${APP_NAME}" CH_SKIP_SSL_VALIDATION "${CH_SKIP_SSL_VALIDATION}"
 fi
 
 if [[ ${DB_TLS} ]]; then
