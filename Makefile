@@ -58,7 +58,7 @@ cloud-service-broker:
 
 APP_NAME := $(or $(APP_NAME), cloud-service-broker-gcp)
 DB_TLS := $(or $(DB_TLS), skip-verify)
-GSB_PROVISION_DEFAULTS := $(or $(GSB_PROVISION_DEFAULTS), {"authorized_network": "$(gcp_pas_network)"})
+GSB_PROVISION_DEFAULTS := $(or $(GSB_PROVISION_DEFAULTS), {"authorized_network": "$(GCP_PAS_NETWORK)"})
 
 .PHONY: push-broker
 push-broker: cloud-service-broker build google_credentials google_project gcp_pas_network
