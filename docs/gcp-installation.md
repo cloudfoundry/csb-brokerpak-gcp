@@ -48,6 +48,10 @@ The broker keeps service instance and binding information in a MySQL database.
 #### Binding a MySQL Database
 If there is an existing broker in the foundation that can provision a MySQL instance use `cf create-service` to create a new MySQL instance. Then use `cf bind-service` to bind that instance to the service broker.
 
+#### Scripted
+Use [scripts/gcp-create-mysql-db.sh](../scripts/gcp-create-mysql-db.sh) to create a GCP mysql instance. It will report the DB_HOST (ip address) username, password and db name upon completion.
+
+It requires the [gcloud](https://cloud.google.com/sdk/gcloud) cli be installed.
 #### Manually Provisioning a MySQL Database
 
 The GCP Service Broker stores the state of provisioned resources in a MySQL database.
@@ -83,6 +87,24 @@ Add these to the `env` section of `manifest.yml`
 
 To allow CF applications to connect to service instances created by CSB, follow [these instructions](https://cloud.google.com/vpc/docs/configure-private-services-access) to enable private service access to the VPC network that your foundation is running in.
 
+To peer the service network (that mysql and postgres instances are connected to) and your VPC, the following commands need to be run once.
+
+```bash
+VPC_NETWORK_NAME=[the name of your VCP network]
+PROJECT=[your GCP project id]
+gcloud compute addresses create google-managed-services-mysql-${VPC_NETWORK_NAME} \
+    --global \
+    --purpose=VPC_PEERING \
+    --prefix-length=24 \
+    --network=${VPC_NETWORK_NAME} \
+    --project=${PROJECT}
+gcloud services vpc-peerings connect \
+    --service=servicenetworking.googleapis.com \
+    --ranges=google-managed-services-mysql-${VPC_NETWORK_NAME} \
+    --network=${VPC_NETWORK_NAME} \
+    --project=${PROJECT}
+```
+> if you use *scripts/gcp-create-mysql-db.sh* to create the mysql metadata database for the broker, these steps are already done.
 ### Fetch A Broker and GCP Brokerpak
 
 Download a release from https://github.com/pivotal/cloud-service-broker/releases. Find the latest release matching the name pattern `sb-0.1.0-rc.XXX-gcp-0.0.1-rc.YY`. This will have a broker and brokerpak that have been tested together. Follow the hyperlink into that release and download `cloud-servic-broker` and `gcp-services-0.1.0-rc.YY.brokerpak` into the same directory on your workstation.
