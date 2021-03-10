@@ -98,7 +98,11 @@ fi
 
 cf bind-service "${APP_NAME}" "${MSYQL_INSTANCE}"
 
-cf start "${APP_NAME}"
+if ! cf start "${APP_NAME}"
+then
+	cf logs "${APP_NAME}" --recent
+	exit 1
+fi
 
 if [[ -z ${BROKER_NAME} ]]; then
   BROKER_NAME=csb-$USER
