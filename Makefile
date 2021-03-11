@@ -1,3 +1,12 @@
+###### Help ###################################################################
+
+.DEFAULT_GOAL = help
+
+.PHONY: help
+help: ## list Makefile targets
+	@grep -E '^[a-zA-Z_-]+:.*?## .*$$' $(MAKEFILE_LIST) | sort | awk 'BEGIN {FS = ":.*?## "}; {printf "\033[36m%-30s\033[0m %s\n", $$1, $$2}'
+
+###### Targets ################################################################
 
 IAAS=gcp
 DOCKER_OPTS=--rm -v $(PWD):/brokerpak -w /brokerpak --network=host
@@ -14,7 +23,7 @@ SECURITY_USER_PASSWORD := $(or $(SECURITY_USER_PASSWORD), aws-broker-pw)
 PARALLEL_JOB_COUNT := $(or $(PARALLEL_JOB_COUNT), 1000)
 
 .PHONY: run
-run: build google_credentials google_project
+run: build google_credentials google_project ## start CSB in a docker container
 	docker run $(DOCKER_OPTS) \
 	-p 8080:8080 \
 	-e SECURITY_USER_NAME \
@@ -27,14 +36,14 @@ run: build google_credentials google_project
 	$(CSB) serve
 
 .PHONY: docs
-docs: build brokerpak-user-docs.md
+docs: build brokerpak-user-docs.md ## build docs
 
 brokerpak-user-docs.md: *.yml
 	docker run $(DOCKER_OPTS) \
 	$(CSB) pak docs /brokerpak/$(shell ls *.brokerpak) > $@
 
 .PHONY: run-examples
-run-examples: 
+run-examples: ## run examples against CSB on localhost (run "make run" to start it)
 	docker run $(DOCKER_OPTS) \
 	-e SECURITY_USER_NAME \
 	-e SECURITY_USER_PASSWORD \
@@ -42,17 +51,17 @@ run-examples:
 	$(CSB) client run-examples -j $(PARALLEL_JOB_COUNT)
 
 .PHONY: info
-info: build
+info: build ## use the CSB to parse the buildpak and print out contents and versions
 	docker run $(DOCKER_OPTS) \
 	$(CSB) pak info /brokerpak/$(shell ls *.brokerpak)
 
 .PHONY: validate
-validate: build
+validate: build ## use the CSB to validate the buildpak
 	docker run $(DOCKER_OPTS) \
 	$(CSB) pak validate /brokerpak/$(shell ls *.brokerpak)
 
 # fetching bits for cf push broker
-cloud-service-broker:
+cloud-service-broker: ## fetch CSB latest release from GitHub
 	wget $(shell curl -sL https://api.github.com/repos/cloudfoundry-incubator/cloud-service-broker/releases/latest | jq -r '.assets[] | select(.name == "cloud-service-broker.linux") | .browser_download_url')
 	mv ./cloud-service-broker.linux ./cloud-service-broker
 	chmod +x ./cloud-service-broker
@@ -63,7 +72,7 @@ DB_TLS := $(or $(DB_TLS), skip-verify)
 GSB_PROVISION_DEFAULTS := $(or $(GSB_PROVISION_DEFAULTS), {"authorized_network": "$(GCP_PAS_NETWORK)"})
 
 .PHONY: push-broker
-push-broker: cloud-service-broker build google_credentials google_project gcp_pas_network
+push-broker: cloud-service-broker build google_credentials google_project gcp_pas_network ## push the broker to targetted Cloud Foundry
 	MANIFEST=cf-manifest.yml APP_NAME=$(APP_NAME) DB_TLS=$(DB_TLS) GSB_PROVISION_DEFAULTS='$(GSB_PROVISION_DEFAULTS)' ./scripts/push-broker.sh
 
 .PHONY: google_credentials
@@ -87,7 +96,7 @@ endif
 .PHONY: 
 
 .PHONY: clean
-clean:
+clean: ## clean up build artifacts
 	- rm $(IAAS)-services-*.brokerpak
 	- rm ./cloud-service-broker
 	- rm ./brokerpak-user-docs.md
