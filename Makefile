@@ -10,7 +10,7 @@ help: ## list Makefile targets
 
 IAAS=gcp
 DOCKER_OPTS=--rm -v $(PWD):/brokerpak -w /brokerpak --network=host
-CSB=cfplatformeng/csb
+CSB := $(or $(CSB), cfplatformeng/csb)
 
 .PHONY: build
 build: $(IAAS)-services-*.brokerpak 
@@ -42,13 +42,21 @@ brokerpak-user-docs.md: *.yml
 	docker run $(DOCKER_OPTS) \
 	$(CSB) pak docs /brokerpak/$(shell ls *.brokerpak) > $@
 
-.PHONY: run-examples
-run-examples: ## run examples against CSB on localhost (run "make run" to start it)
+.PHONY: examples
+examples: ## display available examples
 	docker run $(DOCKER_OPTS) \
 	-e SECURITY_USER_NAME \
 	-e SECURITY_USER_PASSWORD \
 	-e USER \
-	$(CSB) client run-examples -j $(PARALLEL_JOB_COUNT)
+	$(CSB) client examples
+
+.PHONY: run-examples
+run-examples: ## run examples against CSB on localhost (run "make run" to start it), set service_name and example_name to run specific example
+	docker run $(DOCKER_OPTS) \
+	-e SECURITY_USER_NAME \
+	-e SECURITY_USER_PASSWORD \
+	-e USER \
+	$(CSB) client run-examples --service-name="$(service_name)" --example-name="$(example_name)" -j $(PARALLEL_JOB_COUNT)
 
 .PHONY: info
 info: build ## use the CSB to parse the buildpak and print out contents and versions
