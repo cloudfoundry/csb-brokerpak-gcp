@@ -11,7 +11,7 @@ $(IAAS)-services-*.brokerpak: *.yml terraform/*.tf
 
 SECURITY_USER_NAME := $(or $(SECURITY_USER_NAME), aws-broker)
 SECURITY_USER_PASSWORD := $(or $(SECURITY_USER_PASSWORD), aws-broker-pw)
-PARALLEL_JOB_COUNT := $(or $(PARALLEL_JOB_COUNT), 2)
+PARALLEL_JOB_COUNT := $(or $(PARALLEL_JOB_COUNT), 1000)
 
 .PHONY: run
 run: build google_credentials google_project
