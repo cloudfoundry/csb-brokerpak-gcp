@@ -20,7 +20,7 @@ CSB_BUCKET_CONFIG="{ \
 RESULT=1
 if create_service csb-google-storage-bucket private "${SERVICE_NAME}" "${CSB_BUCKET_CONFIG}"; then
 
-    (cd "${SCRIPT_DIR}/java-gcp-apps" && cf push --no-start)
+    (cd "${SCRIPT_DIR}/java-gcp-apps" && ./mvnw package && cf push --no-start)
     if cf bind-service javagcpapp-demo "${SERVICE_NAME}" -c "${CSB_BUCKET_CONFIG}"; then
         if cf start javagcpapp-demo; then
             RESULT=0
@@ -55,7 +55,7 @@ fi
 RESULT=1
 if create_service csb-google-bigquery standard "${BIG_QUERY_SERVICE_NAME}" ; then
 
-    (cd "${SCRIPT_DIR}/java-gcp-apps" && cf push --no-start)
+    (cd "${SCRIPT_DIR}/java-gcp-apps" && ./mvnw package && cf push --no-start)
     if cf bind-service javagcpapp-demo "${BIG_QUERY_SERVICE_NAME}" ; then
         if cf start javagcpapp-demo; then
             RESULT=0
@@ -88,7 +88,7 @@ fi
 RESULT=1
 if create_service csb-google-spanner small "${SPANNER_SERVICE_NAME}" ; then
 
-    (cd "${SCRIPT_DIR}/java-gcp-apps" && cf push --no-start)
+    (cd "${SCRIPT_DIR}/java-gcp-apps" && ./mvnw package && cf push --no-start)
     if cf bind-service javagcpapp-demo "${SPANNER_SERVICE_NAME}" ; then
         if cf start javagcpapp-demo; then
             RESULT=0
