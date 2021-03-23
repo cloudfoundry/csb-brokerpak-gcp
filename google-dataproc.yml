@@ -21,7 +21,7 @@ plans:
     master_count: 3
 provision:
   user_inputs:
-  - default: n1-standard-1
+  - default: n1-standard-2
     field_name: worker_machine_type
     type: string
     details: 'The name of a Google Compute Engine machine type to create for the worker(s).'
@@ -29,7 +29,7 @@ provision:
     field_name: worker_count
     type: integer
     details: 'Specifies the number of worker nodes to create.'
-  - default: n1-standard-1
+  - default: n1-standard-2
     field_name: master_machine_type
     type: string
     details: 'The name of a Google Compute Engine machine type to create for the master(s).'
