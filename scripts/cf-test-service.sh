@@ -2,6 +2,7 @@
 
 set -o errexit
 set -o pipefail
+set -e
 
 if [ -z "$1" ]; then
     echo "No service name argument supplied"

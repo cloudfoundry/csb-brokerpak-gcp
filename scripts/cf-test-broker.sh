@@ -2,6 +2,7 @@
 
 set -o errexit
 set -o pipefail
+set -e
 
 if [ -z "$1" ]; then
     echo "No environment argument supplied, should be one of 'gcp', 'azure' or 'aws'"

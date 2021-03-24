@@ -2,6 +2,7 @@
 
 set -o pipefail
 set -o nounset
+set -e
 
 if [ $# -lt 4 ]; then
     echo "Usage: ${0} <hostname> <username> <password> <db_name>"

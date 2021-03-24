@@ -3,7 +3,7 @@
 set +x # Hide secrets
 set -o errexit
 set -o pipefail
-
+set -e
 
 if [[ -z ${MANIFEST} ]]; then
   MANIFEST=manifest.yml
