@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
 
+set -e
+
 if [[ -z ${env} ]]; then
   echo 'Missing env variable pointing to smith env file'
   exit 1

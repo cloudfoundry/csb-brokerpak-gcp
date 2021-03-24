@@ -4,6 +4,7 @@
 
 set -o pipefail
 set -o nounset
+set -e
 
 if [ $# -lt 4 ]; then
     echo "Usage: ${0} <instance name> <region> <project> <network> [tier - default db-n1-standard-1]"
