@@ -16,7 +16,7 @@
 
 	<properties>
 		<java.version>11</java.version>
-		<google-cloud-storage-version>1.102.0</google-cloud-storage-version>
+		<google-cloud-storage-version>1.113.14</google-cloud-storage-version>
 	</properties>
 
 	<dependencies>
@@ -28,7 +28,7 @@
 			<dependency>
 			<groupId>com.google.cloud</groupId>
 			<artifactId>google-cloud-bigquery</artifactId>
-			<version>1.117.1</version>
+			<version>1.127.10</version>
 			</dependency>
 		<!-- https://mvnrepository.com/artifact/com.google.code.gson/gson -->
 			<dependency>
