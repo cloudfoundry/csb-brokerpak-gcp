@@ -1,0 +1,22 @@
+version: 2
+updates:
+- package-ecosystem: terraform
+  directory: "/terraform"
+  schedule:
+    interval: daily
+- package-ecosystem: maven
+  directory: "/acceptance-tests/gcp/java-gcp-apps"
+  schedule:
+    interval: daily
+- package-ecosystem: npm
+  directory: "/acceptance-tests/spring-music-validator"
+  schedule:
+    interval: daily
+- package-ecosystem: npm
+  directory: "/acceptance-tests/gcp/dataproc-test-app"
+  schedule:
+    interval: daily
+- package-ecosystem: npm
+  directory: "/acceptance-tests/gcp/stack-driver-trace-test-app"
+  schedule:
+    interval: daily
