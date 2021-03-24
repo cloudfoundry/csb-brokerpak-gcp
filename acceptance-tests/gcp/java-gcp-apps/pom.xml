@@ -16,7 +16,7 @@
 
 	<properties>
 		<java.version>11</java.version>
-		<google-cloud-storage-version>1.102.0</google-cloud-storage-version>
+		<google-cloud-storage-version>1.113.14</google-cloud-storage-version>
 	</properties>
 
 	<dependencies>
@@ -39,7 +39,7 @@
 			<dependency>
 				<groupId>io.pivotal.cfenv</groupId>
 				<artifactId>java-cfenv-boot</artifactId>
-				<version>2.2.2.RELEASE</version>
+				<version>2.3.0</version>
 			</dependency>
 		
 			<dependency>
