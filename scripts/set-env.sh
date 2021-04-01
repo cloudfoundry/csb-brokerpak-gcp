@@ -1,7 +1,6 @@
 #!/usr/bin/env bash
 
 set +x # Hide secrets
-set -e
 
 [[ "${BASH_SOURCE[0]}" == "${0}" ]] && echo -e "You must source this script\nsource ${0}" && exit 1
 

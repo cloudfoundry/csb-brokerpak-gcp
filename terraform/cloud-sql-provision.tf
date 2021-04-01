@@ -14,6 +14,7 @@
 
 variable cores { type = number }
 variable authorized_network { type = string }
+variable authorized_network_id { type = string }
 variable instance_name { type = string }
 variable db_name { type = string }
 
@@ -48,6 +49,7 @@ locals {
     0.6   = "db-f1-micro" 
     1.7   = "db-g1-small" 
   }   
+  authorized_network_id = length(var.authorized_network_id) > 0 ? var.authorized_network_id : data.google_compute_network.authorized-network.self_link
 }
 
 resource "google_sql_database_instance" "instance" {
@@ -62,9 +64,11 @@ resource "google_sql_database_instance" "instance" {
     
     ip_configuration {
       ipv4_enabled    = false
-      private_network = data.google_compute_network.authorized-network.self_link
+      private_network = local.authorized_network_id
     }
   }
+
+  deletion_protection = false
 }
 
 resource "google_sql_database" "database" {

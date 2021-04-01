@@ -15,10 +15,10 @@ PASSWORD=${1}; shift
 DB_NAME=${1}; shift
 PORT=3306
 
-cf cups csb-sql -p "{\"hostname\":"${HOSTNAME}", \
-                     \"username\":"${USERNAME}", \
-                     \"password\":"${PASSWORD}", \
-                     \"name\":"${DB_NAME}", \
+cf cups csb-sql -p "{\"hostname\":\"${HOSTNAME}\", \
+                     \"username\":\"${USERNAME}\", \
+                     \"password\":\"${PASSWORD}\", \
+                     \"name\":\"${DB_NAME}\", \
                      \"port\":${PORT}, \
-                     \"uri\":"mysql://${USERNAME}:${PASSWORD}@${HOSTNAME}:${PORT}/${DB_NAME}"}" \
+                     \"uri\":\"mysql://${USERNAME}:${PASSWORD}@${HOSTNAME}:${PORT}/${DB_NAME}\"}" \
                 -t mysql
