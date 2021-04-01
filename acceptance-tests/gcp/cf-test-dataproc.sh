@@ -24,7 +24,7 @@ if create_service "$SERVICE_NAME" standard "${SERVICE_INSTANCE_NAME}"; then
             cf logs ${APP_NAME} --recent
         fi
         cf unbind-service ${APP_NAME} ${SERVICE_INSTANCE_NAME}
-        cf delete -f ${APP_NAME}
+        cf delete -f -r ${APP_NAME}
     fi
     delete_service "${SERVICE_INSTANCE_NAME}"
 fi

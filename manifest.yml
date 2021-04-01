@@ -10,14 +10,14 @@ platforms:
 #   arch: amd64   
 terraform_binaries:
 - name: terraform
-  version: 0.12.20
-  source: https://github.com/hashicorp/terraform/archive/v0.12.20.zip  
+  version: 0.12.30
+  source: https://github.com/hashicorp/terraform/archive/v0.12.30.zip  
 - name: terraform-provider-google
-  version: 3.17.0
-  source: https://github.com/terraform-providers/terraform-provider-google/archive/v3.17.0.zip
+  version: 3.62.0
+  source: https://github.com/terraform-providers/terraform-provider-google/archive/v3.62.0.zip
 - name: terraform-provider-google-beta
-  version: 3.22.0
-  source: https://github.com/terraform-providers/terraform-provider-google-beta/archive/v3.22.0.zip  
+  version: 3.62.0
+  source: https://github.com/terraform-providers/terraform-provider-google-beta/archive/v3.62.0.zip  
 - name: terraform-provider-random
   version: 2.2.1
   source: https://releases.hashicorp.com/terraform-provider-random/2.2.1/terraform-provider-random_2.2.1_linux_amd64.zip
@@ -25,8 +25,8 @@ terraform_binaries:
   version: 1.9.0
   source: https://github.com/terraform-providers/terraform-provider-mysql/archive/v1.9.0.zip
 - name: terraform-provider-postgresql
-  version: 1.5.0
-  source: https://github.com/terraform-providers/terraform-provider-postgresql/archive/v1.5.0.zip
+  version: 1.7.1
+  source: https://github.com/terraform-providers/terraform-provider-postgresql/archive/v1.7.1.zip
 env_config_mapping:
   GOOGLE_CREDENTIALS: gcp.credentials
   GOOGLE_PROJECT: gcp.project

@@ -38,7 +38,7 @@ if create_service csb-google-storage-bucket private "${SERVICE_NAME}" "${CSB_BUC
             echo "javagcpapp-demo failed"
             cf logs javagcpapp-demo --recent
         fi
-        #cf delete -f javagcpapp-demo 
+        #cf delete -f -r javagcpapp-demo 
     fi
     #delete_service ${SERVICE_NAME}
 fi
@@ -73,7 +73,7 @@ if create_service csb-google-bigquery standard "${BIG_QUERY_SERVICE_NAME}" ; the
             echo "javagcpapp-demo failed"
             cf logs javagcpapp-demo --recent
         fi
-        #cf delete -f javagcpapp-demo 
+        #cf delete -f -r javagcpapp-demo 
     fi
     #delete_service ${BIG_QUERY_SERVICE_NAME}
 fi
@@ -108,11 +108,11 @@ if create_service csb-google-spanner small "${SPANNER_SERVICE_NAME}" ; then
             echo "javagcpapp-demo failed"
             cf logs javagcpapp-demo --recent
         fi
-        #cf delete -f javagcpapp-demo 
+        #cf delete -f -r javagcpapp-demo 
     fi
     #delete_service ${SPANNER_SERVICE_NAME}
 fi
-cf delete -f javagcpapp-demo 
+cf delete -f -r javagcpapp-demo 
 delete_service ${SERVICE_NAME}
 delete_service ${SPANNER_SERVICE_NAME}
 delete_service ${BIG_QUERY_SERVICE_NAME}
