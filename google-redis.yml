@@ -87,6 +87,12 @@ provision:
     type: string
     details: The name of the Google Compute Engine network to which the instance is connected. If left unspecified, the network named 'default' will be used.
     default: default
+    prohibit_update: true 
+  - field_name: authorized_network_id
+    type: string
+    details: The id of the Google Compute Engine network to which the instance is connected.    
+    default: ""
+    prohibit_update: true     
   computed_inputs:
   - name: labels
     default: ${json.marshal(request.default_labels)}

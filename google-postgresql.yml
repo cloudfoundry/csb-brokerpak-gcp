@@ -50,15 +50,12 @@ plans:
     storage_gb: 50    
 provision:
   plan_inputs:
+  user_inputs:    
   - field_name: cores
     required: true
-    type: integer
+    type: number
     details: Minimum number of cores for service instance.
-    default: 2
-    constraints:
-      maximum: 64
-      minimum: 1
-      multipleOf: 2
+
   - field_name: postgres_version
     required: true
     type: string
@@ -72,7 +69,10 @@ provision:
     constraints:
       maximum: 4096
       minumum: 10      
-  user_inputs:
+  # - field_name: use_tls
+  #   type: boolean
+  #   details: Use TLS for connection
+  #   default: true           
   - field_name: credentials
     type: string
     details: GCP credentials
@@ -154,20 +154,23 @@ provision:
   - field_name: password
     type: string
     details: The password to authenticate to the database instance.
+  - field_name: use_tls
+    type: boolean
+    details: Using TLS for connection     
 bind:
   plan_inputs: []
   user_inputs: []
   computed_inputs:
-  - name: postgres_db_name
+  - name: db_name
     type: string
     default: ${instance.details["name"]}
     overwrite: true
-  - name: postgres_hostname
+  - name: hostname
     type: string
     default: ${instance.details["hostname"]}
     overwrite: true
-  - name: postgres_port
-    type: integer
+  - name: port
+    type: number
     default: ${instance.details["port"]}
     overwrite: true
   - name: admin_username
@@ -178,6 +181,10 @@ bind:
     type: string
     default: ${instance.details["password"]}
     overwrite: true
+  - name: use_tls
+    type: boolean
+    default: ${instance.details["use_tls"]}
+    overwrite: true      
   template_ref: terraform/bind-postgres.tf
   outputs: 
   - field_name: username

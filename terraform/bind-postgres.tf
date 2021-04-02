@@ -12,43 +12,27 @@
 # See the License for the specific language governing permissions and
 # limitations under the License.
 
-variable postgres_db_name { type = string }
-variable postgres_hostname { type = string }
-variable postgres_port { type = number }
+variable db_name { type = string }
+variable hostname { type = string }
+variable port { type = number }
 variable admin_username { type = string }
 variable admin_password { type = string }
-
-locals {
-  
-   table_privileges = [
-    "DELETE",
-    "INSERT",
-    "REFERENCES",
-    "SELECT",
-    "TRIGGER",
-    "TRUNCATE",
-    "UPDATE"
-  ]
-  sequence_privileges = [
-    "SELECT",
-    "UPDATE",
-    "USAGE"
-  ]
-}
+variable use_tls { type = bool }
 
 provider "postgresql" {
-  host            = var.postgres_hostname
-  port            = var.postgres_port
+  host            = var.hostname
+  port            = var.port
   username        = var.admin_username
   password        = var.admin_password
   superuser       = false
-  database        = var.postgres_db_name
+  database        = var.db_name
+  sslmode         = var.use_tls ? "require" : "disable"
 }
 
 resource "random_string" "username" {
   length = 16
   special = false
-  number = false
+  number = false  
 }
 
 resource "random_password" "password" {
@@ -57,38 +41,32 @@ resource "random_password" "password" {
   min_upper = 2
   min_lower = 2
   min_special = 2
-}
+}    
 
-// Create postgres role and db
-resource "postgresql_role" "app_role" {
-  login               = true
-  name                = random_string.username.result
-  password            = random_password.password.result
+resource "postgresql_role" "new_user" {
+  name     = random_string.username.result
+  login    = true
+  password = random_password.password.result
   skip_reassign_owned = true
   skip_drop_role = true
-  
 }
 
-resource "postgresql_default_privileges" "app_tables" {
-  database    = var.postgres_db_name
-  depends_on  = [postgresql_role.app_role]
+resource "postgresql_grant" "db_access" {
+  depends_on  = [ postgresql_role.new_user ]
+  database    = var.db_name
+  role        = postgresql_role.new_user.name
+  object_type = "database"
+  privileges  = ["ALL"]
+}
+
+resource "postgresql_grant" "table_access" {
+  depends_on  = [ postgresql_role.new_user ]
+  database    = var.db_name
+  role        = postgresql_role.new_user.name
+  schema      = "public"
   object_type = "table"
-  owner       = var.admin_username
-  privileges  = local.table_privileges
-  role        = postgresql_role.app_role.name
-  schema      = "public"
+  privileges  = ["ALL"]
 }
-
-resource "postgresql_default_privileges" "app_sequence" {
-  database    = var.postgres_db_name
-  depends_on  = [postgresql_role.app_role]
-  object_type = "sequence"
-  owner       = var.admin_username
-  privileges  = local.sequence_privileges
-  role        = postgresql_role.app_role.name
-  schema      = "public"
-}
-
 
 output username { value = random_string.username.result }
 output password { value = random_password.password.result }
@@ -96,15 +74,26 @@ output uri {
   value = format("postgresql://%s:%s@%s:%d/%s",
                   random_string.username.result,
                   random_password.password.result,
-                  var.postgres_hostname,
-                  var.postgres_port,
-                  var.postgres_db_name)
+                  var.hostname,
+                  var.port,
+                  var.db_name)
 }
-output jdbcUrl {
+/* output jdbcUrl {
   value = format("jdbc:postgresql://%s:%d/%s?user=%s\u0026password=%s\u0026useSSL=false",
-                  var.postgres_hostname,
-                  var.postgres_port,
-                  var.postgres_db_name,
+                  var.hostname,
+                  var.port,
+                  var.db_name,
                   random_string.username.result,
                   random_password.password.result)
-}
+} */
+
+output jdbcUrl { 
+  value = format("jdbc:%s://%s:%s/%s?user=%s\u0026password=%s\u0026verifyServerCertificate=true\u0026useSSL=%v\u0026requireSSL=false",
+                  "postgresql",
+                  var.hostname, 
+                  var.port,
+                  var.db_name, 
+                  random_string.username.result, 
+                  random_password.password.result,
+                  var.use_tls) 
+                  }
