@@ -17,6 +17,7 @@ variable mysql_hostname { type = string }
 variable mysql_port { type = number }
 variable admin_username { type = string }
 variable admin_password { type = string }
+variable use_tls { type = bool }
 
 provider "mysql" {
   endpoint = format("%s:%d", var.mysql_hostname, var.mysql_port)
@@ -62,10 +63,11 @@ output uri {
                   var.mysql_db_name) 
 }
 output jdbcUrl { 
-  value = format("jdbc:mysql://%s:%d/%s?user=%s\u0026password=%s\u0026useSSL=false", 
+  value = format("jdbc:mysql://%s:%d/%s?user=%s\u0026password=%s\u0026useSSL=%v", 
                   var.mysql_hostname, 
                   var.mysql_port,
                   var.mysql_db_name, 
                   mysql_user.newuser.user, 
-                  random_password.password.result) 
+                  random_password.password.result,
+                  var.use_tls) 
 }

@@ -50,9 +50,10 @@ plans:
     storage_gb: 20
 provision:
   plan_inputs:
+  user_inputs:    
   - field_name: cores
     required: true
-    type: integer
+    type: number
     details: Minimum number of cores for service instance.
     default: 2
     constraints:
@@ -67,7 +68,10 @@ provision:
     constraints:
       maximum: 4096
       minumum: 10      
-  user_inputs:
+  # - field_name: use_tls
+  #   type: boolean
+  #   details: Use TLS for connection
+  #   default: true      
   - field_name: credentials
     type: string
     details: GCP credentials
@@ -155,6 +159,9 @@ provision:
   - field_name: password
     type: string
     details: The password to authenticate to the database instance.
+  - field_name: use_tls
+    type: boolean
+    details: Using TLS for connection      
 bind:
   plan_inputs: []
   user_inputs: []
@@ -179,6 +186,10 @@ bind:
     type: string
     default: ${instance.details["password"]}
     overwrite: true
+  - name: use_tls
+    type: boolean
+    default: ${instance.details["use_tls"]}
+    overwrite: true    
   template_ref: terraform/bind-mysql.tf
   outputs: 
   - field_name: username

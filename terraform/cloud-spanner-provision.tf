@@ -55,6 +55,7 @@ resource "google_spanner_database" "spanner_database" {
         create_before_destroy = true
     }
 
+    deletion_protection = false
 }
 
 output instance { value = google_spanner_instance.spanner_instance.name }
