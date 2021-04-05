@@ -50,25 +50,27 @@ provision:
     details: The region of the mysql instance.
     default: us-west4
     enum:
-      us-west4: us-west4
-      us-west2: us-west2
-      northamerica-northeast1: northamerica-northeast1
-      us-east4: us-east4
-      us-west3: us-west3
-      southamerica-east1: southamerica-east1
-      us-east1: us-east1
-      europe-north1: europe-north1
-      europe-west3: europe-west3
-      europe-west2: europe-west2
-      europe-west6: europe-west6
+      asia-east1: asia-east1
       asia-east2: asia-east2
-      asia-south1: asia-south1
+      asia-northeast1: asia-northeast1
       asia-northeast2: asia-northeast2
       asia-northeast3: asia-northeast3
+      asia-south1: asia-south1
       asia-southeast1: asia-southeast1
       australia-southeast1: australia-southeast1
-      asia-east1: asia-east1
-      asia-northeast1: asia-northeast1       
+      europe-north1: europe-north1
+      europe-west1: europe-west1
+      europe-west2: europe-west2
+      europe-west3: europe-west3
+      europe-west4: europe-west4
+      europe-west6: europe-west6
+      northamerica-northeast1: northamerica-northeast1
+      southamerica-east1: southamerica-east1
+      us-central1: us-central1
+      us-east1: us-east1
+      us-east4: us-east4
+      us-west1: us-west1
+      us-west2: us-west2          
   # - field_name: authorized_network
   #   type: string
   #   details: The name of the Google Compute Engine network to which the instance is connected. If left unspecified, the network named 'default' will be used.
