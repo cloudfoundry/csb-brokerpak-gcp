@@ -9,9 +9,7 @@ SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
 
 RESULT=1
 
-allServices=( "csb-google-mysql" "csb-google-redis" )
-
-# "csb-google-postgres" - does not currently allow second binding
+allServices=( "csb-google-mysql" "csb-google-redis" "csb-google-postgres" )
 
 for s in ${allServices[@]}; do
   if [ ${s} == "csb-google-redis" ]
