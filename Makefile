@@ -20,7 +20,7 @@ $(IAAS)-services-*.brokerpak: *.yml terraform/*.tf
 
 SECURITY_USER_NAME := $(or $(SECURITY_USER_NAME), aws-broker)
 SECURITY_USER_PASSWORD := $(or $(SECURITY_USER_PASSWORD), aws-broker-pw)
-PARALLEL_JOB_COUNT := $(or $(PARALLEL_JOB_COUNT), 1000)
+PARALLEL_JOB_COUNT := $(or $(PARALLEL_JOB_COUNT), 4)
 
 .PHONY: run
 run: build google_credentials google_project ## start CSB in a docker container
