@@ -95,7 +95,7 @@ PROJECT=[your GCP project id]
 gcloud compute addresses create google-managed-services-mysql-${VPC_NETWORK_NAME} \
     --global \
     --purpose=VPC_PEERING \
-    --prefix-length=24 \
+    --prefix-length=23 \
     --network=${VPC_NETWORK_NAME} \
     --project=${PROJECT}
 gcloud services vpc-peerings connect \
@@ -105,6 +105,15 @@ gcloud services vpc-peerings connect \
     --project=${PROJECT}
 ```
 > if you use *scripts/gcp-create-mysql-db.sh* to create the mysql metadata database for the broker, these steps are already done.
+
+### Authorized Network ID
+When using private service connections, the ID for the VPC network must provided in the `authorized_network_id` parameter when creating service instances. To get the ID of the given network, use 
+
+```
+gcloud compute networks list --filter="name=$GCP_PAS_NETWORK" --uri
+```
+where GCP_PAS_NETWORK is the name of the network used when creating the private service network peering above.
+
 ### Fetch A Broker and GCP Brokerpak
 
 Download a release from https://github.com/pivotal/cloud-service-broker/releases. Find the latest release matching the name pattern `sb-0.1.0-rc.XXX-gcp-0.0.1-rc.YY`. This will have a broker and brokerpak that have been tested together. Follow the hyperlink into that release and download `cloud-servic-broker` and `gcp-services-0.1.0-rc.YY.brokerpak` into the same directory on your workstation.
