@@ -24,13 +24,15 @@ Enable the following services in **[APIs and services > Library](https://console
 
 1. Enable the [Google Cloud Resource Manager API](https://console.cloud.google.com/apis/api/cloudresourcemanager.googleapis.com/overview)
 1. Enable the [Google Identity and Access Management (IAM) API](https://console.cloud.google.com/apis/api/iam.googleapis.com/overview)
-1. If you want to enable CloudSQL as a service, enable the [CloudSQL API]
-(https://console.cloud.google.com/apis/library/sql-component.googleapis.com)
+1. If you want to enable CloudSQL as a service (MySQL and PostgreSQL), enable the [CloudSQL API](https://console.cloud.google.com/apis/library/sql-component.googleapis.com), [CloudSQL Admin API](https://console.developers.google.com/apis/api/sqladmin.googleapis.com/overview), and [Service Networking API](https://console.cloud.google.com/apis/library/servicenetworking.googleapis.com)
 1. If you want to enable BigQuery as a service, enable the [BigQuery API](https://console.cloud.google.com/apis/api/bigquery/overview)
 1. If you want to enable Cloud Storage as a service, enable the [Cloud Storage API](https://console.cloud.google.com/apis/api/storage_component/overview)
 1. If you want to enable Pub/Sub as a service, enable the [Cloud Pub/Sub API](https://console.cloud.google.com/apis/api/pubsub/overview)
 1. If you want to enable Bigtable as a service, enable the [Bigtable Admin API](https://console.cloud.google.com/apis/api/bigtableadmin/overview)
 1. If you want to enable Datastore as a service, enable the [Datastore API](https://console.cloud.google.com/apis/api/datastore.googleapis.com/overview)
+1. If you want to enable Redis as a service, enable the [Redis API](https://console.cloud.google.com/apis/library/redis.googleapis.com)
+1. If you want to enable Dataproc as a service, enable the [Dataproc API](https://console.developers.google.com/apis/api/dataproc.googleapis.com/overview)
+1. If you want to enable Cloud Spanner as a service, enable the [Cloud Spanner API](https://console.developers.google.com/apis/api/spanner.googleapis.com/overview)
 
 #### [Create a root service account](#service-account)
 
