@@ -92,6 +92,10 @@ if [[ ${DB_TLS} ]]; then
   cf set-env "${APP_NAME}" DB_TLS "${DB_TLS}"
 fi
 
+if [[ ${GSB_DEBUG} ]]; then
+  cf set-env "${APP_NAME}" GSB_DEBUG "${GSB_DEBUG}"
+fi
+
 if [[ -z ${MSYQL_INSTANCE} ]]; then
   MSYQL_INSTANCE=csb-sql
 fi
