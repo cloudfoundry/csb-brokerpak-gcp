@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
 
+set -e
 set -o errexit
 set -o pipefail
 set -o nounset
@@ -13,7 +14,7 @@ SERVICE_INSTANCE_NAME=$1; shift
 APP=spring-music
 
 RESULT=1
-if cf bind-service "${APP}" "${SERVICE_INSTANCE_NAME}"; then 
+if cf bind-service "${APP}" "${SERVICE_INSTANCE_NAME}"; then
     if cf env "${APP}" | grep "credhub-ref" > /dev/null; then
         echo "Success - found credhub-ref in binding"
         RESULT=0

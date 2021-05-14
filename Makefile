@@ -101,8 +101,6 @@ ifndef GCP_PAS_NETWORK
 	$(error variable GCP_PAS_NETWORK not defined - must be GCP network for PAS foundation)
 endif
 
-.PHONY: 
-
 .PHONY: clean
 clean: ## clean up build artifacts
 	- rm $(IAAS)-services-*.brokerpak
