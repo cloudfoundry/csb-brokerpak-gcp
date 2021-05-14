@@ -1,5 +1,7 @@
 #!/usr/bin/env bash
 
+set -e
+
 SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
 
 . "${SCRIPT_DIR}/functions.sh"
@@ -24,7 +26,7 @@ SERVICE_INSTANCE_NAME="${SERVICE}-${PLAN}-$$-f"
 create_service "${SERVICE}" "${PLAN}" "${SERVICE_INSTANCE_NAME}" "$@"
 
 if [ $? -ne 0 ]; then
-  if cf service ${SERVICE_INSTANCE_NAME}; then 
+  if cf service ${SERVICE_INSTANCE_NAME}; then
     echo "Purging service instance..."
     cf purge-service-instance -f "${SERVICE_INSTANCE_NAME}"
   fi
