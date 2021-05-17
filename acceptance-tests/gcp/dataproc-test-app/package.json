@@ -10,7 +10,7 @@
   "author": "VMware, Inc",
   "license": "Apache-2.0",
   "dependencies": {
-    "@google-cloud/dataproc": "^2.4.0",
+    "@google-cloud/dataproc": "^2.4.1",
     "restify": "^8.5.1",
     "vcap_services": "^0.7.1"
   }
