@@ -54,13 +54,34 @@ The broker supports passing credentials to apps via [credhub references](https:/
 | CH_SKIP_SSL_VALIDATION    |credhub.skip_ssl_validation| boolean | skip SSL validation if true | 
 | CH_CA_CERT_FILE           |credhub.ca_cert_file| path | path to cert file |
 
-### Credhub Config Example (Azure) 
+
+## Brokerpak Configuration
+
+Brokerpak configuration values:
+| Environment Variable | Config File Value | Type | Description |
+|----------------------|------|-------------|------------------|
+| <tt>GSB_BROKERPAK_BUILTIN_PATH</tt> | brokerpak.builtin.path | string | <p>Path to search for .brokerpak files, default: <code>./</code></p>|
+|<tt>GSB_BROKERPAK_CONFIG</tt>|brokerpak.config| string | JSON global config for broker pak services|
+|<tt>GSB_PROVISION_DEFAULTS</tt>|provision.defaults| string | JSON global provision defaults|
+|<tt>GSB_SERVICE_*SERVICE_NAME*_PROVISION_DEFAULTS</tt>|service.*service-name*.provision.defaults| string | JSON provision defaults override for *service-name*|
+|<tt>GSB_SERVICE_*SERVICE_NAME*_PLANS</tt>|service.*service-name*.plans| string | JSON plan collection to augment plans for *service-name*|
+
+## Google Configuration
+
+The Azure brokerpak supports default values for tenant, subscription and service principal credentials.
+
+| Environment Variable | Config File Value | Type | Description |
+|----------------------|-------------------|------|-------------|
+| GOOGLE_CREDENTIALS        | google.credentials     | string | the string version of the credentials file created for the Owner level Service Account |
+| GOOGLE_PROJECT  | google.project | string | gcp project id |
+
+
+### cf-manifest example
 ```
-azure:
-  subscription_id: your subscription id
-  tenant_id: your tenant id
-  client_id: your client id
-  client_secret: your client secret
+google:
+  credentials: |
+    <credentials json as string>
+  project: your-project-id
 db:
   host: your mysql host
   password: your mysql password
@@ -74,29 +95,7 @@ credhub:
   uaa_client_name: ...
   uaa_client_secret: ...
  ```
-
-## Brokerpak Configuration
-
-Brokerpak configuration values:
-| Environment Variable | Config File Value | Type | Description |
-|----------------------|------|-------------|------------------|
-| <tt>GSB_BROKERPAK_BUILTIN_PATH</tt> | brokerpak.builtin.path | string | <p>Path to search for .brokerpak files, default: <code>./</code></p>|
-|<tt>GSB_BROKERPAK_CONFIG</tt>|brokerpak.config| string | JSON global config for broker pak services|
-|<tt>GSB_PROVISION_DEFAULTS</tt>|provision.defaults| string | JSON global provision defaults|
-|<tt>GSB_SERVICE_*SERVICE_NAME*_PROVISION_DEFAULTS</tt>|service.*service-name*.provision.defaults| string | JSON provision defaults override for *service-name*|
-|<tt>GSB_SERVICE_*SERVICE_NAME*_PLANS</tt>|service.*service-name*.plans| string | JSON plan collection to augment plans for *service-name*|
-
-## Azure Configuration
-
-The Azure brokerpak supports default values for tenant, subscription and service principal credentials.
-
-| Environment Variable | Config File Value | Type | Description |
-|----------------------|-------------------|------|-------------|
-| ARM_TENANT_ID        | azure.tenant_id     | string | ID for tenant that resources will be created in |
-| ARM_SUBSCRIPTION_ID  | azure.subscription_id | string | ID for subscription that resources will be created in |
-| ARM_CLIENT_ID        | azure.client_id     | string | service principal client ID |
-| ARM_CLIENT_SECRET    | azure.client_secret | string | service principal secret |
-
+ 
 ### Global Config Example
 
 Services for a given IaaS should have common parameter names for service wide platform resources (like location)
