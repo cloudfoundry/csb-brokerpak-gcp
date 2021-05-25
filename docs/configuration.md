@@ -54,13 +54,34 @@ The broker supports passing credentials to apps via [credhub references](https:/
 | CH_SKIP_SSL_VALIDATION    |credhub.skip_ssl_validation| boolean | skip SSL validation if true | 
 | CH_CA_CERT_FILE           |credhub.ca_cert_file| path | path to cert file |
 
-### Credhub Config Example (Azure) 
+
+## Brokerpak Configuration
+
+Brokerpak configuration values:
+| Environment Variable | Config File Value | Type | Description |
+|----------------------|------|-------------|------------------|
+| <tt>GSB_BROKERPAK_BUILTIN_PATH</tt> | brokerpak.builtin.path | string | <p>Path to search for .brokerpak files, default: <code>./</code></p>|
+|<tt>GSB_BROKERPAK_CONFIG</tt>|brokerpak.config| string | JSON global config for broker pak services|
+|<tt>GSB_PROVISION_DEFAULTS</tt>|provision.defaults| string | JSON global provision defaults|
+|<tt>GSB_SERVICE_*SERVICE_NAME*_PROVISION_DEFAULTS</tt>|service.*service-name*.provision.defaults| string | JSON provision defaults override for *service-name*|
+|<tt>GSB_SERVICE_*SERVICE_NAME*_PLANS</tt>|service.*service-name*.plans| string | JSON plan collection to augment plans for *service-name*|
+
+## Google Configuration
+
+The Azure brokerpak supports default values for tenant, subscription and service principal credentials.
+
+| Environment Variable | Config File Value | Type | Description |
+|----------------------|-------------------|------|-------------|
+| GOOGLE_CREDENTIALS        | gcp.credentials     | string | the string version of the credentials file created for the Owner level Service Account |
+| GOOGLE_PROJECT  | gcp.project | string | gcp project id |
+
+
+### config file example
 ```
-azure:
-  subscription_id: your subscription id
-  tenant_id: your tenant id
-  client_id: your client id
-  client_secret: your client secret
+gcp:
+  credentials: |
+    <credentials json as string>
+  project: your-project-id
 db:
   host: your mysql host
   password: your mysql password
@@ -74,67 +95,21 @@ credhub:
   uaa_client_name: ...
   uaa_client_secret: ...
  ```
-
-## Brokerpak Configuration
-
-Brokerpak configuration values:
-| Environment Variable | Config File Value | Type | Description |
-|----------------------|------|-------------|------------------|
-| <tt>GSB_BROKERPAK_BUILTIN_PATH</tt> | brokerpak.builtin.path | string | <p>Path to search for .brokerpak files, default: <code>./</code></p>|
-|<tt>GSB_BROKERPAK_CONFIG</tt>|brokerpak.config| string | JSON global config for broker pak services|
-|<tt>GSB_PROVISION_DEFAULTS</tt>|provision.defaults| string | JSON global provision defaults|
-|<tt>GSB_SERVICE_*SERVICE_NAME*_PROVISION_DEFAULTS</tt>|service.*service-name*.provision.defaults| string | JSON provision defaults override for *service-name*|
-|<tt>GSB_SERVICE_*SERVICE_NAME*_PLANS</tt>|service.*service-name*.plans| string | JSON plan collection to augment plans for *service-name*|
-
-## Azure Configuration
-
-The Azure brokerpak supports default values for tenant, subscription and service principal credentials.
-
-| Environment Variable | Config File Value | Type | Description |
-|----------------------|-------------------|------|-------------|
-| ARM_TENANT_ID        | azure.tenant_id     | string | ID for tenant that resources will be created in |
-| ARM_SUBSCRIPTION_ID  | azure.subscription_id | string | ID for subscription that resources will be created in |
-| ARM_CLIENT_ID        | azure.client_id     | string | service principal client ID |
-| ARM_CLIENT_SECRET    | azure.client_secret | string | service principal secret |
-
+ 
 ### Global Config Example
 
 Services for a given IaaS should have common parameter names for service wide platform resources (like location)
 
-Azure services support global location and resource group parameters:
+GCP services support global region and authorized_network parameters:
 
 ```yaml
 provision:
   defaults: '{
-    "location": "eastus2", 
-    "resource_group": "sb-acceptance-test-rg"
+    "region": "europe-west1", 
+    "authorized_network": "pcf-env-network"
   }'
 ```
 
-### Provision Default Example
-
-The Azure MS SQL DB service (csb-azure-mssql-db) provisions databases on an existing MS SQL server. Configuring the server credentials looks like this:
-```yaml
-service:
-  csb-azure-mssql-db:
-    provision:
-      defaults: '{
-        "server_credentials": {
-          "sql-server1": { 
-            "server_name":"csb-azsql-svr-b2d43b57-9396-4a8c-8592-6696e7b1d84d", 
-            "admin_username":"TIrtZNKlGQEhmOwR", 
-            "admin_password":"lSFMJ..PoD3H_wZ2cNLNgn9uTBwWskYkMzBkN6mN5A1ZL.V6t0qrebkYeyDYYnW7", 
-            "server_resource_group":"eb-test-rg1" 
-          }, 
-          "sql-server2": { 
-            "server_name":"csb-azsql-svr-dc6f6028-2c01-4d70-b6e6-81ddaaf6b56a", 
-            "admin_username":"UomUxvtkVQxtkGKy", 
-            "admin_password":"At76iTk0o6HkNfR1ZrNCrOZ6wZIWz~QECrp7H-U63.uH8JA-cWpFZaG_C.2MXaEm", 
-            "server_resource_group":"eb-test-rg1" 
-          }
-        }
-      }' 
-```
 
 ### Plans Example
 
@@ -163,26 +138,4 @@ service:
         "server":"sql-server1"
       }
     ]'
-```
-## AWS Configuration
-
-The AWS brokerpak supports default values for access key id and secret access key credentials.
-
-| Environment Variable | Config File Value | Type | Description |
-|----------------------|-------------------|------|-------------|
-| AWS_ACCESS_KEY_ID        | aws.access_key_id     | string | access key id |
-| AWS_SECRET_ACCESS_KEY  | aws.secret_access_key | string | secret access key |
-
-### Global Config Example
-
-Services for a given IaaS should have common parameter names for service wide platform resources (like regions)
-
-AWS services support global region and VPC ID:
-
-```yaml
-provision:
-  defaults: '{
-    "region": "us-west-1", 
-    "aws_vpc_id": "vpc-093f61a410460f34c"
-  }'
 ```
