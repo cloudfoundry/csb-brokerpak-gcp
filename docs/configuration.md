@@ -76,7 +76,7 @@ The Azure brokerpak supports default values for tenant, subscription and service
 | GOOGLE_PROJECT  | gcp.project | string | gcp project id |
 
 
-### cf-manifest example
+### config file example
 ```
 gcp:
   credentials: |
