@@ -16,7 +16,7 @@
 
 	<properties>
 		<java.version>11</java.version>
-		<google-cloud-storage-version>1.115.0</google-cloud-storage-version>
+		<google-cloud-storage-version>1.116.0</google-cloud-storage-version>
 	</properties>
 
 	<dependencies>
