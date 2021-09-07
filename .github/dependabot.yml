@@ -4,29 +4,29 @@ updates:
   directory: "/terraform"
   schedule:
     interval: "weekly"
-    day: "monday"
+    day: "saturday"
     time: "06:00"
 - package-ecosystem: maven
   directory: "/acceptance-tests/gcp/java-gcp-apps"
   schedule:
     interval: "weekly"
-    day: "monday"
+    day: "saturday"
     time: "06:00"
 - package-ecosystem: npm
   directory: "/acceptance-tests/spring-music-validator"
   schedule:
     interval: "weekly"
-    day: "monday"
+    day: "saturday"
     time: "06:00"
 - package-ecosystem: npm
   directory: "/acceptance-tests/gcp/dataproc-test-app"
   schedule:
     interval: "weekly"
-    day: "monday"
+    day: "saturday"
     time: "06:00"
 - package-ecosystem: npm
   directory: "/acceptance-tests/gcp/stack-driver-trace-test-app"
   schedule:
     interval: "weekly"
-    day: "monday"
+    day: "saturday"
     time: "06:00"
