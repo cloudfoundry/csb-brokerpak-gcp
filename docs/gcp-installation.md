@@ -89,7 +89,7 @@ Add these to the `env` section of `manifest.yml`
 
 To allow CF applications to connect to service instances created by CSB, follow [these instructions](https://cloud.google.com/vpc/docs/configure-private-services-access) to enable private service access to the VPC network that your foundation is running in.
 
-To peer the service network (that mysql and postgres instances are connected to) and your VPC, the following commands need to be run once.
+To peer the service network (that mysql and postgres instances are connected to) and your VPC, the following commands need to be run once. Note that the `prefix-length` value depends on how many databases are created. If you run out of available IP addresses then consider using a lower number.
 
 ```bash
 VPC_NETWORK_NAME=[the name of your VCP network]
@@ -100,6 +100,7 @@ gcloud compute addresses create google-managed-services-mysql-${VPC_NETWORK_NAME
     --prefix-length=23 \
     --network=${VPC_NETWORK_NAME} \
     --project=${PROJECT}
+
 gcloud services vpc-peerings connect \
     --service=servicenetworking.googleapis.com \
     --ranges=google-managed-services-mysql-${VPC_NETWORK_NAME} \
