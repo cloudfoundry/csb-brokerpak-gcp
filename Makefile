@@ -11,12 +11,19 @@ help: ## list Makefile targets
 IAAS=gcp
 DOCKER_OPTS=--rm -v $(PWD):/brokerpak -w /brokerpak --network=host
 CSB := $(or $(CSB), cfplatformeng/csb)
+USE_GO_CONTAINERS := $(or $(USE_GO_CONTAINERS), 1)
+
+ifeq ($(USE_GO_CONTAINERS), 0)
+BUILDER=./cloud-service-broker
+else
+BUILDER=docker run $(DOCKER_OPTS) $(CSB)
+endif
 
 .PHONY: build
 build: $(IAAS)-services-*.brokerpak 
 
 $(IAAS)-services-*.brokerpak: *.yml terraform/*.tf
-	docker run $(DOCKER_OPTS) $(CSB) pak build
+	$(BUILDER) pak build
 
 SECURITY_USER_NAME := $(or $(SECURITY_USER_NAME), aws-broker)
 SECURITY_USER_PASSWORD := $(or $(SECURITY_USER_PASSWORD), aws-broker-pw)
