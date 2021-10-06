@@ -32,7 +32,6 @@ resource "google_redis_instance" "instance" {
   region             = var.region
   authorized_network = local.authorized_network_id
   labels             = var.labels
-  reserved_ip_range  = var.reserved_ip_range == "" ? null : var.reserved_ip_range
 
   timeouts {
     create = "15m"

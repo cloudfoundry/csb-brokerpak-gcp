@@ -90,12 +90,7 @@ provision:
     prohibit_update: true 
   - field_name: authorized_network_id
     type: string
-    details: The id of the Google Compute Engine network to which the instance is connected.
-    default: ""
-    prohibit_update: true
-  - field_name: reserved_ip_range
-    type: string
-    details: The range of ip addresses reserved for this instance.
+    details: The id of the Google Compute Engine network to which the instance is connected.    
     default: ""
     prohibit_update: true     
   computed_inputs:
