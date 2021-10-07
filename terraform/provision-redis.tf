@@ -7,12 +7,13 @@ variable region { type = string }
 variable memory_size_gb { type = number }
 variable labels { type = map }
 variable credentials { type = string }
-variable project { type = string }  
+variable project { type = string }
+variable reserved_ip_range { type = string }
 
 provider "google" {
   version = ">=3.17.0"
   credentials = var.credentials
-  project     = var.project      
+  project     = var.project
 }
 
 data "google_compute_network" "authorized-network" {
