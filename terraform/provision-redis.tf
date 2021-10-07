@@ -7,12 +7,13 @@ variable region { type = string }
 variable memory_size_gb { type = number }
 variable labels { type = map }
 variable credentials { type = string }
-variable project { type = string }  
+variable project { type = string }
+variable reserved_ip_range { type = string }
 
 provider "google" {
   version = ">=3.17.0"
   credentials = var.credentials
-  project     = var.project      
+  project     = var.project
 }
 
 data "google_compute_network" "authorized-network" {
@@ -32,6 +33,7 @@ resource "google_redis_instance" "instance" {
   region             = var.region
   authorized_network = local.authorized_network_id
   labels             = var.labels
+  reserved_ip_range  = var.reserved_ip_range == "" ? null : var.reserved_ip_range
 
   timeouts {
     create = "15m"
