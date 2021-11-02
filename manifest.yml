@@ -13,11 +13,11 @@ terraform_binaries:
   version: 0.12.30
   source: https://github.com/hashicorp/terraform/archive/v0.12.30.zip  
 - name: terraform-provider-google
-  version: 3.90.0
-  source: https://github.com/terraform-providers/terraform-provider-google/archive/v3.90.0.zip
+  version: 4.0.0
+  source: https://github.com/terraform-providers/terraform-provider-google/archive/v4.0.0.zip
 - name: terraform-provider-google-beta
-  version: 3.90.0
-  source: https://github.com/terraform-providers/terraform-provider-google-beta/archive/v3.90.0.zip
+  version: 4.0.0
+  source: https://github.com/terraform-providers/terraform-provider-google-beta/archive/v4.0.0.zip
 - name: terraform-provider-random
   version: 3.1.0
   source: https://github.com/terraform-providers/terraform-provider-random/archive/v3.1.0.zip
