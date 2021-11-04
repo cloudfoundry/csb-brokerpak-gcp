@@ -82,7 +82,7 @@ provision:
   - field_name: project
     type: string
     details: GCP project
-    default: ${config("gcp.project")}          
+    default: ${config("gcp.project")}
   computed_inputs:
   - name: labels
     default: ${json.marshal(request.default_labels)}
@@ -101,7 +101,11 @@ provision:
     details: The GCP region of the Dataproc cluster.
 bind:
   plan_inputs: []
-  user_inputs: []
+  user_inputs:
+  - field_name: project
+    type: string
+    details: GCP project
+    default: ${config("gcp.project")}
   computed_inputs:
   - name: service_account_name
     default: ${str.truncate(20, "pcf-binding-${request.binding_id}")}
@@ -133,4 +137,4 @@ examples:
   description: Create a HA Dataproc cluster with a service account that can kick off jobs (roles/dataproc.editor) and has objectAdmin access to the bucket that's created.
   plan_id: 71cc321b-3ba3-4f0f-b058-90cfc978e743
   provision_params: {}
-  bind_params: {}  
+  bind_params: {}
