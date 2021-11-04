@@ -123,6 +123,8 @@ provision:
       "": most recent version
       REDIS_3_2: Redis 3.2
       REDIS_4_0: Redis 4.0
+      REDIS_5_0: Redis 5.0
+      REDIS_6_X: Redis 6.x
   - field_name: host
     type: string
     details: Hostname or IP address of the exposed Redis endpoint used by clients to connect to the service.
@@ -144,5 +146,5 @@ examples:
 - name: HA Configuration
   description: Create a small, highly available Redis instance for production.
   plan_id: 8c85c90c-f8e3-4337-9069-c03036243894
-  provision_params: {"memory_size_gb": 1}
+  provision_params: {"memory_size_gb": 1, "redis_version": "REDIS_6_X"}
   bind_params: {}
