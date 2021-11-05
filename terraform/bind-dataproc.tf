@@ -1,5 +1,6 @@
     variable service_account_name {type = string}
     variable bucket {type = string}
+    variable project { type = string }
 
     resource "google_service_account" "account" {
       account_id = var.service_account_name
@@ -17,6 +18,7 @@
     }
 
     resource "google_project_iam_member" "member" {
+      project = var.project
       role   = "roles/dataproc.editor"
       member = "serviceAccount:${google_service_account.account.email}"
     }
