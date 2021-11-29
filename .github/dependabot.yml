@@ -18,6 +18,9 @@ updates:
     interval: "weekly"
     day: "saturday"
     time: "06:00"
+  ignore:
+    - dependency-name: "redis"
+      update-types: ["version-update:semver-major"]
 - package-ecosystem: npm
   directory: "/acceptance-tests/gcp/dataproc-test-app"
   schedule:
