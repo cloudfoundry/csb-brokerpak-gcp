@@ -18,13 +18,13 @@ dependencies:
       source: https://github.com/hashicorp/terraform/archive/v0.12.30.zip
       source_sha256: d93afe75708f706f416a7968f65af8302ac9c492a21aa958ffb2202bd9390e4d
     - name: terraform-provider-google
-      version: 4.1.0
-      source: https://github.com/terraform-providers/terraform-provider-google/archive/v4.1.0.zip
-      source_sha256: 7be1d40bc09c4b07d1e99c76cf60c310f7d7f751a8d5235eb41bd17bfbf4daaf
+      version: 4.2.0
+      source: https://github.com/terraform-providers/terraform-provider-google/archive/v4.2.0.zip
+      source_sha256: 49411be5e52f2d486ec50d75dcb7a2ab45753333a5c8cf06cbb1385fabdddc49
     - name: terraform-provider-google-beta
-      version: 4.1.0
-      source: https://github.com/terraform-providers/terraform-provider-google-beta/archive/v4.1.0.zip
-      source_sha256: 3b9d280b4f47767fa08ccf00cb47fdb0152c33be74fe375dc518673da0df3f27
+      version: 4.2.0
+      source: https://github.com/terraform-providers/terraform-provider-google-beta/archive/v4.2.0.zip
+      source_sha256: b05d9a7e787b3e3e53337191621e54847f092649f49393c8ac9696171b5fcf94
     - name: terraform-provider-mysql
       version: 1.9.0
       source: https://github.com/terraform-providers/terraform-provider-mysql/archive/v1.9.0.zip
