@@ -21,8 +21,8 @@ var _ = Describe("Storage", func() {
 		defer apps.Delete(appOne, appTwo)
 
 		By("binding the apps to the storage service instance")
-		binding := serviceInstance.Bind(appOne, `{"role":"storage.objectAdmin"}`)
-		serviceInstance.Bind(appTwo, `{"role":"storage.objectAdmin"}`)
+		binding := serviceInstance.BindWithParams(appOne, `{"role":"storage.objectAdmin"}`)
+		serviceInstance.BindWithParams(appTwo, `{"role":"storage.objectAdmin"}`)
 
 		By("starting the apps")
 		apps.Start(appOne, appTwo)
