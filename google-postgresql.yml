@@ -46,7 +46,7 @@ plans:
   display_name: "large"
   properties:
     cores: 8
-    mysql_version: "POSTGRES_11"
+    postgres_version: "POSTGRES_11"
     storage_gb: 50    
 provision:
   plan_inputs:
