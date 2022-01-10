@@ -1,4 +1,4 @@
-package postgresql_test
+package redis_test
 
 import (
 	"testing"
@@ -7,7 +7,7 @@ import (
 	. "github.com/onsi/gomega"
 )
 
-func TestPostgresql(t *testing.T) {
+func TestRedis(t *testing.T) {
 	RegisterFailHandler(Fail)
-	RunSpecs(t, "PostgreSQL Suite")
+	RunSpecs(t, "Redis Suite")
 }
