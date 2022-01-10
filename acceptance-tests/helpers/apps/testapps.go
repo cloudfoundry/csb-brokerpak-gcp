@@ -8,6 +8,7 @@ const (
 	Storage    AppCode = "storageapp"
 	MySQL      AppCode = "mysqlapp"
 	PostgreSQL AppCode = "postgresqlapp"
+	Redis	   AppCode = "redisapp"
 )
 
 func (a AppCode) Dir() string {
