@@ -10,10 +10,11 @@ import (
 )
 
 type StorageCredentials struct {
-	Credentials     string `mapstructure:"credentials"`
-	BucketName	string `mapstructure:"bucket_name"`
+	Credentials string `mapstructure:"credentials"`
+	BucketName  string `mapstructure:"bucket_name"`
 }
-func Read()  (StorageCredentials, error) {
+
+func Read() (StorageCredentials, error) {
 	app, err := cfenv.Current()
 	if err != nil {
 		return StorageCredentials{}, fmt.Errorf("error reading app env: %w", err)
@@ -24,7 +25,6 @@ func Read()  (StorageCredentials, error) {
 	}
 
 	var r StorageCredentials
-
 	if err := mapstructure.Decode(svs[0].Credentials, &r); err != nil {
 		return StorageCredentials{}, fmt.Errorf("failed to decode credentials: %w", err)
 	}
