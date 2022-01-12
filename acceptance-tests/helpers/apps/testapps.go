@@ -5,10 +5,11 @@ import "fmt"
 type AppCode string
 
 const (
+	Spanner    AppCode = "spannerapp"
 	Storage    AppCode = "storageapp"
 	MySQL      AppCode = "mysqlapp"
 	PostgreSQL AppCode = "postgresqlapp"
-	Redis	   AppCode = "redisapp"
+	Redis      AppCode = "redisapp"
 )
 
 func (a AppCode) Dir() string {

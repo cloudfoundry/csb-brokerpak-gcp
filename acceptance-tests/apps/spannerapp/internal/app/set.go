@@ -26,10 +26,10 @@ func handleSet(client spanner.Client) func(w http.ResponseWriter, r *http.Reques
 			return
 		}
 
-		columns := []string{"keyname", "valuedata"}
+		columns := []string{keyColumn, valueColumn}
 
 		m := []*spanner.Mutation{
-			spanner.InsertOrUpdate("test", columns, []interface{}{key, string(rawValue)}),
+			spanner.InsertOrUpdate(tableName, columns, []interface{}{key, string(rawValue)}),
 		}
 		_, err = client.Apply(context.Background(), m)
 		if err != nil {

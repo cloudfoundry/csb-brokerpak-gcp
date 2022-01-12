@@ -16,6 +16,12 @@ import (
 	adminpb "google.golang.org/genproto/googleapis/spanner/admin/database/v1"
 )
 
+const (
+	tableName   = "test"
+	keyColumn   = "keyname"
+	valueColumn = "data"
+)
+
 func App(creds credentials.SpannerCredentials) *mux.Router {
 	client, err := connect(creds)
 	if err != nil {
@@ -34,10 +40,15 @@ func App(creds credentials.SpannerCredentials) *mux.Router {
 func connect(creds credentials.SpannerCredentials) (*spanner.Client, error) {
 	ctx := context.Background()
 
-	client, err := spanner.NewClient(context.Background(), creds.FullDBName, option.WithCredentialsJSON([]byte(creds.Credentials)))
-	stmt := spanner.Statement{SQL: `SELECT count(*) As tableCount
+	client, err := spanner.NewClient(ctx, creds.FullDBName, option.WithCredentialsJSON([]byte(creds.Credentials)))
+	stmt := spanner.Statement{
+		SQL: `SELECT count(*) As tableCount
 	                                FROM INFORMATION_SCHEMA.TABLES
-                                    WHERE TABLE_NAME = 'test'`}
+                                    WHERE TABLE_NAME = @tableName`,
+		Params: map[string]interface{}{
+			"tableName": tableName,
+		}}
+
 	iter := client.Single().Query(ctx, stmt)
 	defer iter.Stop()
 
@@ -66,45 +77,23 @@ func connect(creds credentials.SpannerCredentials) (*spanner.Client, error) {
 	op, err := adminClient.UpdateDatabaseDdl(ctx, &adminpb.UpdateDatabaseDdlRequest{
 		Database: creds.FullDBName,
 		Statements: []string{
-			`CREATE TABLE test (
-				keyname  STRING(1024),
-				valuedata   STRING(1024),
-			) PRIMARY KEY (keyname)`,
+			fmt.Sprintf(`CREATE TABLE %s (
+				%s  STRING(1024),
+				%s   STRING(1024),
+			) PRIMARY KEY (%s)`, tableName, keyColumn, valueColumn, keyColumn),
 		},
 	})
 	if err != nil {
-		log.Printf(" Error creating table 1: %s", err)
+		log.Printf("Error creating table: %s", err)
 		return nil, err
 	}
 	if err := op.Wait(ctx); err != nil {
-		log.Printf(" Error creating table 2: %s", err)
+		log.Printf("Error waiting for table creation: %s", err)
 		return nil, err
 	}
 
 	return client, err
 }
-
-//adminClient, err := database.NewDatabaseAdminClient(ctx, option.WithCredentialsJSON([]byte(creds.Credentials)))
-//if err != nil {
-//log.Printf("Error creating adminClient: %s", err)
-//}
-//defer adminClient.Close()
-//
-//op, err := adminClient.UpdateDatabaseDdl(ctx, &adminpb.UpdateDatabaseDdlRequest{
-//Database: creds.DBName,
-//Statements: []string{
-//`CREATE TABLE IF NOT EXISTS test (
-//				keyname  STRING(1024),
-//				valuedata   STRING(1024),
-//			)`,
-//},
-//})
-//if err != nil {
-//log.Printf("Error creating adminClient: %s", err)
-//}
-//if err := op.Wait(ctx); err != nil {
-//log.Printf("Error creating adminClient: %s", err)
-//}
 
 func aliveness(w http.ResponseWriter, r *http.Request) {
 	log.Printf("Handled aliveness test.")
