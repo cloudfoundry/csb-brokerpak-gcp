@@ -10,7 +10,7 @@ SCRIPT_DIR="$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )"
 
 RESULT=0
 
-${SCRIPT_DIR}/cf-test-stack-driver.sh && ${SCRIPT_DIR}/cf-test-dataproc.sh && ${SCRIPT_DIR}/cf-test-bucket-bigquery-spanner.sh
+${SCRIPT_DIR}/cf-test-stack-driver.sh && ${SCRIPT_DIR}/cf-test-dataproc.sh
 RESULT=$?
 
 wait

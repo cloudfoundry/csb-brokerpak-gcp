@@ -5,8 +5,6 @@ import (
 	"log"
 	"net/http"
 
-	"google.golang.org/api/iterator"
-
 	"cloud.google.com/go/spanner"
 	"github.com/gorilla/mux"
 )
@@ -21,22 +19,17 @@ func handleGet(client spanner.Client) func(w http.ResponseWriter, r *http.Reques
 			return
 		}
 
-		stmt := spanner.Statement{SQL: `SELECT valuedata FROM test WHERE keyname = '` + key + "'"}
-		iter := client.Single().Query(context.Background(), stmt)
-		defer iter.Stop()
-		row, err := iter.Next()
-		if err == iterator.Done {
-			fail(w, http.StatusNotFound, "key not found: %s", key)
-			return
-		}
+		row, err := client.Single().ReadRow(context.Background(), tableName, spanner.Key{key}, []string{valueColumn})
 		if err != nil {
-			fail(w, http.StatusFailedDependency, "error querying database: %s", err)
+			log.Printf("Error reading row: %s", err)
 			return
-
 		}
+
 		var valuedata string
+
 		if err := row.Columns(&valuedata); err != nil {
-			fail(w, http.StatusNotFound, "key not found: %s", key)
+			fail(w, http.StatusFailedDependency, "could not read value for key '%s': %s", key, err)
+			return
 		}
 
 		w.WriteHeader(http.StatusOK)
@@ -47,6 +40,6 @@ func handleGet(client spanner.Client) func(w http.ResponseWriter, r *http.Reques
 			log.Printf("Error writing value: %s", err)
 			return
 		}
-		log.Printf("Value %q retrived from key %q.", valuedata, key)
+		log.Printf("Value %q retrieved from key %q.", valuedata, key)
 	}
 }
