@@ -28,7 +28,7 @@ var _ = Describe("Error Messages", func() {
 	When("the service creation fail asynchronously", func() {
 		It("puts a useful error message in the service description", func() {
 			name := random.Name(random.WithPrefix("error"))
-			defer cf.Run("purge-service-instance", "-f", name)
+			defer cf.Run("delete-service", "-f", name)
 
 			session := cf.Start("create-service", "csb-google-storage-bucket", "private", name, "-b", brokers.DefaultBrokerName(), "-c", `{"project":"not-real-project"}`)
 			Eventually(session, time.Minute).Should(Exit(0))
