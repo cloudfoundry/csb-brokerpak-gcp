@@ -57,7 +57,7 @@ provision:
     required: true
     type: number
     details: Size of storage volume for service instance.
-    defualt: 10
+    default: 10
     constraints:
       maximum: 4096
       minumum: 10      
