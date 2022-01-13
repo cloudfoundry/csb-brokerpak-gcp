@@ -25,6 +25,7 @@ func App(creds credentials.DataprocCredentials) *mux.Router {
 	r.HandleFunc("/", aliveness).Methods("HEAD", "GET")
 	r.HandleFunc("/{job}", handleRunJob(*client, creds)).Methods("PUT")
 	r.HandleFunc("/{job}", handleGetJob(*client, creds)).Methods("GET")
+	r.HandleFunc("/{job}", handleDeleteJob(*client, creds)).Methods("DELETE")
 	return r
 }
 
