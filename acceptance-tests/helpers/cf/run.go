@@ -9,6 +9,6 @@ import (
 
 func Run(args ...string) (string, string) {
 	session := Start(args...)
-	Eventually(session, 2*time.Minute).Should(gexec.Exit(0))
+	Eventually(session, 3*time.Minute).Should(gexec.Exit(0))
 	return string(session.Out.Contents()), string(session.Err.Contents())
 }
