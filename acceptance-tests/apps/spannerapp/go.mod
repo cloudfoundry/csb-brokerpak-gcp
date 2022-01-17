@@ -6,10 +6,11 @@ require (
 	cloud.google.com/go/spanner v1.29.0
 	github.com/cloudfoundry-community/go-cfenv v1.18.0
 	github.com/gorilla/mux v1.8.0
-	google.golang.org/api v0.64.0
+	google.golang.org/api v0.65.0
 )
 
 require (
+	cloud.google.com/go/compute v0.1.0 // indirect
 	github.com/census-instrumentation/opencensus-proto v0.3.0 // indirect
 	github.com/cespare/xxhash v1.1.0 // indirect
 	github.com/cncf/udpa/go v0.0.0-20201120205902-5459f2c99403 // indirect
@@ -19,7 +20,7 @@ require (
 )
 
 require (
-	cloud.google.com/go v0.99.0 // indirect
+	cloud.google.com/go v0.100.2 // indirect
 	github.com/golang/groupcache v0.0.0-20200121045136-8c9f03a8e57e // indirect
 	github.com/golang/protobuf v1.5.2 // indirect
 	github.com/google/go-cmp v0.5.6 // indirect
@@ -32,7 +33,7 @@ require (
 	golang.org/x/text v0.3.6 // indirect
 	golang.org/x/xerrors v0.0.0-20200804184101-5ec99f83aff1 // indirect
 	google.golang.org/appengine v1.6.7 // indirect
-	google.golang.org/genproto v0.0.0-20211223182754-3ac035c7e7cb // indirect
+	google.golang.org/genproto v0.0.0-20220107163113-42d7afdf6368
 	google.golang.org/grpc v1.40.1 // indirect
 	google.golang.org/protobuf v1.27.1 // indirect
 )
