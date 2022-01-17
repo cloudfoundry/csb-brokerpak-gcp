@@ -6,27 +6,42 @@ updates:
     interval: "weekly"
     day: "saturday"
     time: "06:00"
-- package-ecosystem: maven
-  directory: "/acceptance-tests/gcp/java-gcp-apps"
+- package-ecosystem: gomod
+  directory: "/acceptance-tests/apps/dataprocapp"
   schedule:
     interval: "weekly"
     day: "saturday"
     time: "06:00"
-- package-ecosystem: npm
-  directory: "/acceptance-tests/spring-music-validator"
+- package-ecosystem: gomod
+  directory: "/acceptance-tests/apps/mysqlapp"
   schedule:
     interval: "weekly"
     day: "saturday"
     time: "06:00"
-  ignore:
-    - dependency-name: "redis"
-      update-types: ["version-update:semver-major"]
-- package-ecosystem: npm
-  directory: "/acceptance-tests/gcp/dataproc-test-app"
+- package-ecosystem: gomod
+  directory: "/acceptance-tests/apps/postgresqlapp"
   schedule:
     interval: "weekly"
     day: "saturday"
     time: "06:00"
+- package-ecosystem: gomod
+  directory: "/acceptance-tests/apps/redisapp"
+  schedule:
+    interval: "weekly"
+    day: "saturday"
+    time: "06:00"
+- package-ecosystem: gomod
+  directory: "/acceptance-tests/apps/spannerapp"
+  schedule:
+    interval: "weekly"
+    day: "saturday"
+    time: "06:00"
+- package-ecosystem: gomod
+  directory: "/acceptance-tests/apps/storageapp"
+  schedule:
+    interval: "weekly"
+    day: "saturday"
+    time: "06:00"    
 - package-ecosystem: npm
   directory: "/acceptance-tests/gcp/stack-driver-trace-test-app"
   schedule:
