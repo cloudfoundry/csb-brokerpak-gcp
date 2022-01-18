@@ -5,9 +5,12 @@ import (
 	"acceptancetests/helpers/matchers"
 	"acceptancetests/helpers/random"
 	"acceptancetests/helpers/services"
-	trace "cloud.google.com/go/trace/apiv1"
 	"context"
 	"encoding/json"
+	"fmt"
+	"time"
+
+	trace "cloud.google.com/go/trace/apiv1"
 	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
 	"google.golang.org/api/option"
@@ -15,16 +18,16 @@ import (
 )
 
 var _ = Describe("Stackdrivertrace", func() {
-	It("can be emit app trace", func() {
+	It("can emit app trace", func() {
 		By("creating a service instance")
 		serviceInstance := services.CreateInstance("csb-google-stackdriver-trace", "default")
 		defer serviceInstance.Delete()
 
-		By("pushing the unstarted app twice")
+		By("pushing the unstarted app")
 		appOne := apps.Push(apps.WithApp(apps.StackdriverTraceNode))
 		defer apps.Delete(appOne)
 
-		By("binding the apps to the storage service instance")
+		By("binding the app to the service instance")
 		binding := serviceInstance.Bind(appOne)
 
 		By("starting the apps")
@@ -33,7 +36,7 @@ var _ = Describe("Stackdrivertrace", func() {
 		By("checking that the app environment has a credhub reference for credentials")
 		Expect(binding.Credential()).To(matchers.HaveCredHubRef)
 
-		By("trigger trace flush")
+		By("triggering trace flush")
 		customSpan := random.Hexadecimal()
 		got := appOne.GET(customSpan)
 		var traceResp struct {
@@ -43,6 +46,7 @@ var _ = Describe("Stackdrivertrace", func() {
 		err := json.Unmarshal([]byte(got), &traceResp)
 		Expect(err).NotTo(HaveOccurred())
 
+		By("checking it got persisted in gcp")
 		ctx := context.Background()
 		traceClient, err := trace.NewClient(ctx, option.WithCredentialsJSON([]byte(GCPMetadata.Credentials)))
 		Expect(err).NotTo(HaveOccurred())
@@ -52,9 +56,15 @@ var _ = Describe("Stackdrivertrace", func() {
 			ProjectId: traceResp.ProjectId,
 			TraceId:   traceResp.TraceId,
 		}
-		resp, err := traceClient.GetTrace(ctx, &req)
-		Expect(err).NotTo(HaveOccurred())
 
-		Expect(resp.Spans[0].Name).To(Equal("/" + customSpan))
+		returnedSpanName := func() string {
+			resp, err := traceClient.GetTrace(ctx, &req)
+			if err != nil {
+				return ""
+			}
+			return resp.Spans[0].Name
+		}
+
+		Eventually(returnedSpanName, 6*time.Second).Should(Equal(fmt.Sprintf("/%s", customSpan)))
 	})
 })
