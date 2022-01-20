@@ -1,7 +1,3 @@
-locals {
-  members = format("serviceAccount:%s", google_service_account.account.email)
-}
-
 resource "google_service_account" "account" {
   account_id   = var.service_account_name
   display_name = var.service_account_display_name

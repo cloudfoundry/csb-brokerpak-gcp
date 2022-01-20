@@ -136,6 +136,7 @@ provision:
   template_refs:
     provider: terraform/spanner/provision/provider.tf
     main: terraform/spanner/provision/main.tf
+    data: terraform/spanner/provision/data.tf
     variables: terraform/spanner/provision/variables.tf
     outputs: terraform/spanner/provision/outputs.tf
   outputs:
