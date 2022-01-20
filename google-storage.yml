@@ -33,7 +33,7 @@ plans:
   description: 'Public-read Storage bucket'
   display_name: 'Public Read'
   properties:
-    acl: publicRead   
+    acl: publicRead
 provision:
   plan_inputs:
     - field_name: acl
@@ -56,8 +56,8 @@ provision:
       type: string
       details: The Storage Class of the new bucket.
       default: STANDARD
-      enum: 
-        STANDARD : STANDARD 
+      enum:
+        STANDARD : STANDARD
         MULTI_REGIONAL: MULTI_REGIONAL
         REGIONAL : REGIONAL
         NEARLINE : NEARLINE
@@ -66,7 +66,7 @@ provision:
       type: string
       details: The region of the mysql instance.
       default: us-central1
-      enum: 
+      enum:
         asia-east1: asia-east1
         asia-east2: asia-east2
         asia-northeast1: asia-northeast1
@@ -87,7 +87,7 @@ provision:
         us-east1: us-east1
         us-east4: us-east4
         us-west1: us-west1
-        us-west2: us-west2   
+        us-west2: us-west2
     - field_name: credentials
       type: string
       details: GCP credentials
@@ -95,13 +95,17 @@ provision:
     - field_name: project
       type: string
       details: GCP project
-      default: ${config("gcp.project")}     
+      default: ${config("gcp.project")}
   computed_inputs:
   - name: labels
     default: ${json.marshal(request.default_labels)}
     overwrite: true
     type: object
-  template_ref: ./terraform/google-storage-bucket-provision.tf
+  template_refs:
+    provider: terraform/storage/provision/provider.tf
+    main: terraform/storage/provision/main.tf
+    variables: terraform/storage/provision/variables.tf
+    outputs: terraform/storage/provision/outputs.tf
   outputs:
   - required: true
     field_name: bucket_name
@@ -114,7 +118,7 @@ provision:
 
 bind:
   plan_inputs: []
-  user_inputs: 
+  user_inputs:
   - required: true
     field_name: role
     type: string
@@ -125,7 +129,7 @@ bind:
     enum:
       storage.objectAdmin: roles/storage.objectAdmin
       storage.objectCreator: roles/storage.objectCreator
-      storage.objectViewer: roles/storage.objectViewer  
+      storage.objectViewer: roles/storage.objectViewer
   - field_name: credentials
     type: string
     details: GCP credentials
@@ -133,7 +137,7 @@ bind:
   - field_name: project
     type: string
     details: GCP project
-    default: ${config("gcp.project")}    
+    default: ${config("gcp.project")}
   computed_inputs:
   - name: service_account_name
     default: ${str.truncate(20, "pcf-binding-${request.binding_id}")}
@@ -144,7 +148,10 @@ bind:
   - name: bucket
     default: ${instance.details["bucket_name"]}
     overwrite: true
-  template_ref: ./terraform/google-storage-bucket-bind.tf
+  template_refs:
+    main: terraform/storage/bind/main.tf
+    variables: terraform/storage/bind/variables.tf
+    outputs: terraform/storage/bind/outputs.tf
   outputs:
   - required: true
     field_name: Email
@@ -184,11 +191,11 @@ bind:
     details: Unique and stable ID of the service account.
     constraints:
       examples:
-      - "112447814736626230844" 
+      - "112447814736626230844"
   - required: true
     field_name: Credentials
     type: string
-    details: Credentials of the service account.        
+    details: Credentials of the service account.
 examples:
 - name: gcp-bucket-public-read
   description: Public Read S3 Bucket

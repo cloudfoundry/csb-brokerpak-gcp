@@ -60,16 +60,16 @@ provision:
     default: 10
     constraints:
       maximum: 4096
-      minumum: 10      
+      minumum: 10
   user_inputs:
   - field_name: config
     type: string
     details: The name of the instance's configuration
-    default: us-central1   
+    default: us-central1
   - field_name: ddl
     type: array
     details: An optional list of DDL statements to run inside the newly created database.
-    default: [] 
+    default: []
   - field_name: credentials
     type: string
     details: GCP credentials
@@ -77,7 +77,7 @@ provision:
   - field_name: project
     type: string
     details: GCP project
-    default: ${config("gcp.project")}     
+    default: ${config("gcp.project")}
   - field_name: instance_name
     type: string
     details: Name for your spanner instance
@@ -117,30 +117,35 @@ provision:
       us-east1: us-east1
       us-east4: us-east4
       us-west1: us-west1
-      us-west2: us-west2         
+      us-west2: us-west2
   # - field_name: authorized_network
   #   type: string
   #   details: The name of the Google Compute Engine network to which the instance is connected. If left unspecified, the network named 'default' will be used.
   #   default: default
-  #   prohibit_update: true 
+  #   prohibit_update: true
   # - field_name: authorized_network_id
   #   type: string
-  #   details: The id of the Google Compute Engine network to which the instance is connected.    
+  #   details: The id of the Google Compute Engine network to which the instance is connected.
   #   default: ""
-  #   prohibit_update: true     
+  #   prohibit_update: true
   computed_inputs:
   - name: labels
     default: ${json.marshal(request.default_labels)}
     overwrite: true
-    type: object   
-  template_ref: terraform/cloud-spanner-provision.tf
+    type: object
+  template_refs:
+    provider: terraform/spanner/provision/provider.tf
+    main: terraform/spanner/provision/main.tf
+    data: terraform/spanner/provision/data.tf
+    variables: terraform/spanner/provision/variables.tf
+    outputs: terraform/spanner/provision/outputs.tf
   outputs:
   - field_name: instance
     type: string
     details: The name of the instance.
   - field_name: db_name
     type: string
-    details: The name of the database.    
+    details: The name of the database.
 bind:
   plan_inputs: []
   user_inputs:
@@ -166,9 +171,13 @@ bind:
       overwrite: true
     - name: service_account_display_name
       default: ""
-      overwrite: true    
-  template_ref: terraform/bind-spanner.tf
-  outputs: 
+      overwrite: true
+  template_refs:
+    main: terraform/spanner/bind/main.tf
+    data: terraform/spanner/bind/data.tf
+    variables: terraform/spanner/bind/variables.tf
+    outputs: terraform/spanner/bind/outputs.tf
+  outputs:
   - required: true
     field_name: Email
     type: string
@@ -200,7 +209,7 @@ bind:
     details: Unique and stable ID of the service account.
     constraints:
       examples:
-      - "112447814736626230844"  
+      - "112447814736626230844"
   - required: true
     field_name: policy_etag
     type: string
@@ -222,7 +231,7 @@ bind:
   - required: true
     field_name: Credentials
     type: string
-    details: Credentials of the service account.        
+    details: Credentials of the service account.
 examples:
 - name: small configuration
   description: Create a small spanner instance
@@ -230,4 +239,3 @@ examples:
   provision_params: {}
   bind_params: {}
   bind_can_fail: true
-
