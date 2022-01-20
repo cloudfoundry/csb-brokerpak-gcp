@@ -12,10 +12,9 @@ func (b Broker) env() []apps.EnvVar {
 	var result []apps.EnvVar
 
 	for name, required := range map[string]bool{
-		"ARM_SUBSCRIPTION_ID":        true,
-		"ARM_TENANT_ID":              true,
-		"ARM_CLIENT_ID":              true,
-		"ARM_CLIENT_SECRET":          true,
+		"GOOGLE_CREDENTIALS":         true,
+		"GOOGLE_PROJECT":             true,
+		"GCP_PAS_NETWORK":            true,
 		"GSB_BROKERPAK_BUILTIN_PATH": false,
 		"GSB_PROVISION_DEFAULTS":     false,
 		"CH_CRED_HUB_URL":            false,
