@@ -22,7 +22,7 @@ endif
 .PHONY: build
 build: $(IAAS)-services-*.brokerpak 
 
-$(IAAS)-services-*.brokerpak: *.yml terraform/*.tf
+$(IAAS)-services-*.brokerpak: *.yml terraform/*/*/*.tf terraform/*/*/*/*.tf
 	$(BUILDER) pak build
 
 SECURITY_USER_NAME := $(or $(SECURITY_USER_NAME), aws-broker)

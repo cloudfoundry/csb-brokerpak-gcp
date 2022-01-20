@@ -74,7 +74,7 @@ provision:
       us-east1: us-east1
       us-east4: us-east4
       us-west1: us-west1
-      us-west2: us-west2     
+      us-west2: us-west2
   - field_name: credentials
     type: string
     details: GCP credentials
@@ -88,7 +88,11 @@ provision:
     default: ${json.marshal(request.default_labels)}
     overwrite: true
     type: object
-  template_ref: terraform/provision-dataproc.tf
+  template_refs:
+    provider: terraform/dataproc/provision/provider.tf
+    main: terraform/dataproc/provision/main.tf
+    variables: terraform/dataproc/provision/variables.tf
+    outputs: terraform/dataproc/provision/outputs.tf
   outputs:
   - field_name: bucket_name
     type: string
@@ -113,7 +117,10 @@ bind:
   - name: bucket
     default: ${instance.details["bucket_name"]}
     overwrite: true
-  template_ref: terraform/bind-dataproc.tf
+  template_refs:
+    main: terraform/dataproc/bind/main.tf
+    variables: terraform/dataproc/bind/variables.tf
+    outputs: terraform/dataproc/bind/outputs.tf
   outputs:
   - field_name: email
     type: string

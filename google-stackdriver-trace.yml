@@ -46,12 +46,16 @@ bind:
   - name: project
     type: string
     details: GCP project
-    default: ${config("gcp.project")}   
+    default: ${config("gcp.project")}
   - name: role
     type: string
     details: Service account role
     default: 'cloudtrace.agent'
-  template_ref: ./terraform/google-service-account-bind.tf
+  template_refs:
+    provider: terraform/stackdriver/bind/provider.tf
+    main: terraform/stackdriver/bind/main.tf
+    variables: terraform/stackdriver/bind/variables.tf
+    outputs: terraform/stackdriver/bind/outputs.tf
   outputs:
   - field_name: Email
     type: string
@@ -75,7 +79,7 @@ bind:
   - field_name: Credentials
     required: true
     type: string
-    details: Credentials of the service account.         
+    details: Credentials of the service account.
   - field_name: ProjectId
     type: string
     details: ID of the project that owns the service account.
@@ -90,7 +94,7 @@ bind:
     details: Unique and stable ID of the service account.
     constraints:
       examples:
-      - "112447814736626230844" 
+      - "112447814736626230844"
 examples:
 - name: stack-driver-trace
   description: Default stack driver trace
