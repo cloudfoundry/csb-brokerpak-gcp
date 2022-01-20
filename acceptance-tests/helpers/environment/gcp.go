@@ -8,9 +8,6 @@ type GCPMetadata struct {
 }
 
 func ReadGCPMetadata() GCPMetadata {
-	//project := os.Getenv("GOOGLE_PROJECT")
-	//credentials := os.Getenv("GOOGLE_CREDENTIALS")
-
 	return GCPMetadata{
 		Project:     os.Getenv("GOOGLE_PROJECT"),
 		Credentials: os.Getenv("GOOGLE_CREDENTIALS"),
