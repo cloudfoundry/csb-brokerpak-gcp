@@ -15,7 +15,7 @@ var _ = Describe("Without CredHub", func() {
 	It("can be accessed by an app", func() {
 		env := apps.EnvVar{Name: "CH_CRED_HUB_URL", Value: ""}
 		broker := brokers.Create(
-			brokers.WithPrefix("csb-storage"),
+			brokers.WithPrefix("csb-no-credhub"),
 			brokers.WithEnv(env),
 		)
 		defer broker.Delete()

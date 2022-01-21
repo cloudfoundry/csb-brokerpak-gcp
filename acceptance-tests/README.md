@@ -24,3 +24,8 @@ The main pattern is:
 ### Environment
 - A Cloud Foundry instance logged in and targeted
 - The Cloud Service Broker and this brokerpak deployed by running `make push-broker` or equivalent
+
+### Run tests
+
+- Move in the test folder e.g `acceptance-tests/redis`
+- Run tests from IDE or run command `go run github.com/onsi/ginkgo/v2/ginkgo -v`

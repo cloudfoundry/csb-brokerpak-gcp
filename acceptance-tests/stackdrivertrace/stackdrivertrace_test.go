@@ -24,7 +24,7 @@ var _ = Describe("Stackdrivertrace", func() {
 		defer serviceInstance.Delete()
 
 		By("pushing the unstarted app")
-		appOne := apps.Push(apps.WithApp(apps.StackdriverTraceNode))
+		appOne := apps.Push(apps.WithApp(apps.StackdriverTrace))
 		defer apps.Delete(appOne)
 
 		By("binding the app to the service instance")

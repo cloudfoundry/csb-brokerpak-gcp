@@ -1,5 +1,5 @@
 {
-  "name": "stack-driver-trace-test-app",
+  "name": "stackdrivertraceapp",
   "version": "0.1.0",
   "description": "GCP stack driver trace service test app",
   "main": "index.js",
