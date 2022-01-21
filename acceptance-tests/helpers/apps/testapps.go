@@ -5,14 +5,13 @@ import "fmt"
 type AppCode string
 
 const (
-	Dataproc             AppCode = "dataprocapp"
-	Spanner              AppCode = "spannerapp"
-	Storage              AppCode = "storageapp"
-	MySQL                AppCode = "mysqlapp"
-	PostgreSQL           AppCode = "postgresqlapp"
-	Redis                AppCode = "redisapp"
-	StackdriverTrace     AppCode = "stackdrivertraceapp"
-	StackdriverTraceNode AppCode = "stack-driver-trace-test-app"
+	Dataproc         AppCode = "dataprocapp"
+	Spanner          AppCode = "spannerapp"
+	Storage          AppCode = "storageapp"
+	MySQL            AppCode = "mysqlapp"
+	PostgreSQL       AppCode = "postgresqlapp"
+	Redis            AppCode = "redisapp"
+	StackdriverTrace AppCode = "stackdrivertraceapp"
 )
 
 func (a AppCode) Dir() string {
@@ -21,7 +20,7 @@ func (a AppCode) Dir() string {
 
 func WithApp(app AppCode) Option {
 	switch app {
-	case StackdriverTraceNode:
+	case StackdriverTrace:
 		return WithDir(app.Dir())
 	default:
 		return WithPreBuild(app.Dir())
