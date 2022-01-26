@@ -81,6 +81,9 @@ cloud-service-broker: ## fetch CSB latest release from GitHub
 	mv ./cloud-service-broker.linux ./cloud-service-broker
 	chmod +x ./cloud-service-broker
 
+local-cloud-service-broker: ## Copy linux CSB from local repo
+	cp ../cloud-service-broker/build/cloud-service-broker.linux ./cloud-service-broker
+	chmod +x cloud-service-broker
 
 APP_NAME := $(or $(APP_NAME), cloud-service-broker-gcp)
 DB_TLS := $(or $(DB_TLS), skip-verify)
@@ -88,6 +91,10 @@ GSB_PROVISION_DEFAULTS := $(or $(GSB_PROVISION_DEFAULTS), {"authorized_network":
 
 .PHONY: push-broker
 push-broker: cloud-service-broker build google_credentials google_project gcp_pas_network ## push the broker to targetted Cloud Foundry
+	MANIFEST=cf-manifest.yml APP_NAME=$(APP_NAME) DB_TLS=$(DB_TLS) GSB_PROVISION_DEFAULTS='$(GSB_PROVISION_DEFAULTS)' ./scripts/push-broker.sh
+
+.PHONY: push-local-broker
+push-local-broker: local-cloud-service-broker build google_credentials google_project gcp_pas_network ## push the broker to targetted Cloud Foundry
 	MANIFEST=cf-manifest.yml APP_NAME=$(APP_NAME) DB_TLS=$(DB_TLS) GSB_PROVISION_DEFAULTS='$(GSB_PROVISION_DEFAULTS)' ./scripts/push-broker.sh
 
 .PHONY: google_credentials

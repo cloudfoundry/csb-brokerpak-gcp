@@ -12,7 +12,7 @@ import (
 var _ = Describe("Storage", func() {
 	It("can be accessed by an app", func() {
 		By("creating a service instance")
-		serviceInstance := services.CreateInstance("csb-google-storage-bucket", "private", services.WithParameters(map[string]interface{}{"role": "storage.objectViewer"}))
+		serviceInstance := services.CreateInstance("csb-google-storage-bucket", "private")
 		defer serviceInstance.Delete()
 
 		By("pushing the unstarted app twice")

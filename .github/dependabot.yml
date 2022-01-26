@@ -7,6 +7,12 @@ updates:
     day: "saturday"
     time: "06:00"
 - package-ecosystem: gomod
+  directory: "/acceptance-tests"
+  schedule:
+    interval: "weekly"
+    day: "saturday"
+    time: "06:00"
+- package-ecosystem: gomod
   directory: "/acceptance-tests/apps/dataprocapp"
   schedule:
     interval: "weekly"
@@ -43,7 +49,7 @@ updates:
     day: "saturday"
     time: "06:00"    
 - package-ecosystem: npm
-  directory: "/acceptance-tests/gcp/stack-driver-trace-test-app"
+  directory: "/acceptance-tests/apps/stackdrivertraceapp"
   schedule:
     interval: "weekly"
     day: "saturday"
