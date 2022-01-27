@@ -15,7 +15,7 @@
   "dependencies": {
     "@google-cloud/trace-agent": "^5.1.6",
     "express": "^4.17.2",
-    "helmet": "^5.0.1",
+    "helmet": "^5.0.2",
     "vcap_services": "^0.7.1"
   }
 }
