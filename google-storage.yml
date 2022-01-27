@@ -103,6 +103,7 @@ provision:
     type: object
   template_refs:
     provider: terraform/storage/provision/provider.tf
+    versions: terraform/storage/provision/versions.tf
     main: terraform/storage/provision/main.tf
     variables: terraform/storage/provision/variables.tf
     outputs: terraform/storage/provision/outputs.tf
