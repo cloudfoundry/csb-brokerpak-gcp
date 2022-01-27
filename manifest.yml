@@ -10,8 +10,8 @@ platforms:
 #   arch: amd64
 terraform_binaries:
 - name: terraform
-  version: 0.13.5
-  source: https://github.com/hashicorp/terraform/archive/v0.13.5.zip
+  version: 1.1.4
+  source: https://github.com/hashicorp/terraform/archive/v1.1.4.zip
 - name: terraform-provider-google
   version: 4.8.0
   source: https://github.com/terraform-providers/terraform-provider-google/archive/v4.8.0.zip
