@@ -15,22 +15,22 @@
 version: 1
 name: csb-google-storage-bucket
 id: b247fcde-8a63-11ea-b945-cb26f061f70f
-description: Google Cloud Storage that uses the Terraform back-end and grants service accounts IAM permissions directly on the bucket.
+description: Beta - Google Cloud Storage that uses the Terraform back-end and grants service accounts IAM permissions directly on the bucket.
 display_name: Google Cloud Storage
 image_url: https://cloud.google.com/_static/images/cloud/products/logos/svg/storage.svg
 documentation_url: https://cloud.google.com/storage/docs/overview
 support_url: https://cloud.google.com/storage/docs/getting-support
-tags: [gcp, storage]
+tags: [gcp, storage, beta]
 plans:
 - name: private
   id: bbc4853e-8a63-11ea-a54e-670ca63cee0b
-  description: 'Private Storage bucket'
+  description: 'Beta - Private Storage bucket'
   display_name: 'Private'
   properties:
     acl: private
 - name: public-read
   id: c07f21a6-8a63-11ea-bc1b-d38b123189cb
-  description: 'Public-read Storage bucket'
+  description: 'Beta - Public-read Storage bucket'
   display_name: 'Public Read'
   properties:
     acl: publicRead

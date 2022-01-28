@@ -15,30 +15,30 @@
 version: 1
 name: csb-google-spanner
 id: 528667ba-8e4e-11ea-954d-47e3237b9109
-description: Fully managed, scalable, relational database service for regional and global application data.
+description: Beta - Fully managed, scalable, relational database service for regional and global application data.
 display_name: Google Cloud Spanner
 image_url: https://cloud.google.com/_static/images/cloud/products/logos/svg/spanner.svg
 documentation_url: https://cloud.google.com/spanner/docs
 support_url: https://cloud.google.com/support/
-tags: [gcp, spanner]
+tags: [gcp, spanner, beta]
 plans:
 - name: small
   id: 706659ba-8e4f-11ea-a91e-4328fa08a19b
-  description: 'Single Node Spanner with 10 GB storage'
+  description: 'Beta - Single Node Spanner with 10 GB storage'
   display_name: "small"
   properties:
     num_nodes: 1
     storage_gb: 10
 - name: medium
   id: 7564d13a-8e4f-11ea-ac11-5b314921fb4c
-  description: '2 Nodes Spanner with 20 GB storage'
+  description: 'Beta - 2 Nodes Spanner with 20 GB storage'
   display_name: "medium"
   properties:
     num_nodes: 2
     storage_gb: 10
 - name: large
   id: 7c172a64-8e4f-11ea-a471-731172c1c00f
-  description: '3 Nodes and Multi Region Spanner with 100 GB storage'
+  description: 'Beta - 3 Nodes and Multi Region Spanner with 100 GB storage'
   display_name: "large"
   properties:
     num_nodes: 3
