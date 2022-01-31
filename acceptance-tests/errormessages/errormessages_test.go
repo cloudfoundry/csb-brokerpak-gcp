@@ -39,7 +39,7 @@ var _ = Describe("Error Messages", func() {
 			}, 10*time.Minute, 10*time.Second).Should(MatchRegexp(`status:\s+create failed`))
 
 			stdout, _ := cf.Run("service", name)
-			Expect(stdout).To(MatchRegexp(`message:\s+Error: googleapi: Error 400: Unknown project id: not-real-project, invalid  on main.tf line 1, in resource "google_storage_bucket" "bucket":   1: resource "google_storage_bucket" "bucket"`))
+			Expect(stdout).To(MatchRegexp(`message:\s+Error: googleapi: Error 400: Unknown project id: not-real-project, invalid  with google_storage_bucket.bucket,  on main.tf line 1, in resource "google_storage_bucket" "bucket":   1: resource "google_storage_bucket" "bucket"`))
 		})
 	})
 })
