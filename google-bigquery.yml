@@ -15,16 +15,16 @@
 version: 1
 name: csb-google-bigquery
 id: 3d4b5b0c-931d-11ea-a02b-cb6a223f4ab2
-description: A fast, economical and fully managed data warehouse for large-scale data analytics.
+description: Beta - A fast, economical and fully managed data warehouse for large-scale data analytics.
 display_name: Google Big Query
 image_url: https://cloud.google.com/_static/images/cloud/products/logos/svg/bigquery.svg
 documentation_url: https://cloud.google.com/bigquery/docs/
 support_url: https://cloud.google.com/support/
-tags: [gcp, bigquery]
+tags: [gcp, bigquery, beta]
 plans:
 - name: standard
   id: 481212b0-931d-11ea-b054-535fa8f91417
-  description: 'Pay as you go'
+  description: 'Beta - Pay as you go'
   display_name: "standard"
 provision:
   plan_inputs:
