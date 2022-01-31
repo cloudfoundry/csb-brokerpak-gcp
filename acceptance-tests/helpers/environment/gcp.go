@@ -1,6 +1,10 @@
 package environment
 
-import "os"
+import (
+	"os"
+
+	"github.com/onsi/gomega"
+)
 
 type GCPMetadata struct {
 	Project     string
@@ -8,8 +12,13 @@ type GCPMetadata struct {
 }
 
 func ReadGCPMetadata() GCPMetadata {
-	return GCPMetadata{
+	result := GCPMetadata{
 		Project:     os.Getenv("GOOGLE_PROJECT"),
 		Credentials: os.Getenv("GOOGLE_CREDENTIALS"),
 	}
+
+	gomega.Expect(result.Project).NotTo(gomega.BeEmpty(), "must set GOOGLE_PROJECT")
+	gomega.Expect(result.Credentials).NotTo(gomega.BeEmpty(), "must set GOOGLE_CREDENTIALS")
+
+	return result
 }

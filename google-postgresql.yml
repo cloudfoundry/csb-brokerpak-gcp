@@ -55,7 +55,6 @@ provision:
     required: true
     type: number
     details: Minimum number of cores for service instance.
-
   - field_name: postgres_version
     required: true
     type: string
@@ -139,10 +138,11 @@ provision:
     type: string
   template_refs:
     provider: terraform/cloudsql/provision/provider.tf
-    main:  terraform/cloudsql/provision/main.tf
-    data:  terraform/cloudsql/provision/data.tf
-    variables:  terraform/cloudsql/provision/variables.tf
-    outputs:  terraform/cloudsql/provision/outputs.tf
+    versions: terraform/cloudsql/provision/versions.tf
+    main: terraform/cloudsql/provision/main.tf
+    data: terraform/cloudsql/provision/data.tf
+    variables: terraform/cloudsql/provision/variables.tf
+    outputs: terraform/cloudsql/provision/outputs.tf
   outputs:
   - field_name: name
     type: string
@@ -192,9 +192,10 @@ bind:
     overwrite: true
   template_refs:
     provider: terraform/cloudsql/bindpostgresql/provider.tf
-    main:  terraform/cloudsql/bindpostgresql/main.tf
-    variables:  terraform/cloudsql/bindpostgresql/variables.tf
-    outputs:  terraform/cloudsql/bindpostgresql/outputs.tf
+    versions: terraform/cloudsql/bindpostgresql/versions.tf
+    main: terraform/cloudsql/bindpostgresql/main.tf
+    variables: terraform/cloudsql/bindpostgresql/variables.tf
+    outputs: terraform/cloudsql/bindpostgresql/outputs.tf
   outputs:
   - field_name: username
     type: string

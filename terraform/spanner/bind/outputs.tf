@@ -4,8 +4,14 @@ output "member_etag" { value = join(",", google_spanner_database_iam_member.span
 output "Name" { value = google_service_account.account.name }
 output "Email" { value = google_service_account.account.email }
 output "UniqueId" { value = google_service_account.account.unique_id }
-output "PrivateKeyData" { value = google_service_account_key.key.private_key }
+output "PrivateKeyData" {
+  sensitive = true
+  value     = google_service_account_key.key.private_key
+}
 output "ProjectId" { value = google_service_account.account.project }
 output "instance" { value = var.instance }
 output "db_name" { value = var.db_name }
-output "Credentials" { value = base64decode(google_service_account_key.key.private_key) }
+output "Credentials" {
+  sensitive = true
+  value     = base64decode(google_service_account_key.key.private_key)
+}

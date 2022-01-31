@@ -105,6 +105,7 @@ provision:
     type: object
   template_refs:
     provider: terraform/redis/provision/provider.tf
+    versions: terraform/redis/provision/versions.tf
     main: terraform/redis/provision/main.tf
     data: terraform/redis/provision/data.tf
     variables: terraform/redis/provision/variables.tf
