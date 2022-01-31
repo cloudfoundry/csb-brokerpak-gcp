@@ -15,23 +15,23 @@
 version: 1
 name: csb-google-redis
 id: 0e86ad78-99b3-48b6-a986-b594e7995fd6
-description: Cloud Memorystore for Redis is a fully managed Redis service for the
+description: Beta - Cloud Memorystore for Redis is a fully managed Redis service for the
   Google Cloud Platform.
 display_name: Google Cloud Memorystore for Redis
 image_url: https://cloud.google.com/_static/images/cloud/products/logos/svg/cache.svg
 documentation_url: https://cloud.google.com/memorystore/docs/redis/
 support_url: https://cloud.google.com/support/
-tags: [gcp, redis]
+tags: [gcp, redis, beta]
 plans:
 - name: basic
   id: 6ed44104-8777-4b57-8c03-826b3af7d0be
-  description: A basic plan with no failover. Data will be lost on maintenance or cluster changes.
+  description: Beta - A basic plan with no failover. Data will be lost on maintenance or cluster changes.
   display_name: "basic"
   properties:
     service_tier: BASIC
 - name: ha
   id: 8c85c90c-f8e3-4337-9069-c03036243894
-  description: A highly available plan with automatic failover.
+  description: Beta - A highly available plan with automatic failover.
   display_name: "High Availability"
   properties:
     service_tier: STANDARD_HA
