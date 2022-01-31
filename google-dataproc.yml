@@ -90,6 +90,7 @@ provision:
     type: object
   template_refs:
     provider: terraform/dataproc/provision/provider.tf
+    versions: terraform/dataproc/provision/versions.tf
     main: terraform/dataproc/provision/main.tf
     variables: terraform/dataproc/provision/variables.tf
     outputs: terraform/dataproc/provision/outputs.tf

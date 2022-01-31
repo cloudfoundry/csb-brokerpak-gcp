@@ -53,6 +53,7 @@ bind:
     default: 'cloudtrace.agent'
   template_refs:
     provider: terraform/stackdriver/bind/provider.tf
+    versions: terraform/stackdriver/bind/versions.tf
     main: terraform/stackdriver/bind/main.tf
     variables: terraform/stackdriver/bind/variables.tf
     outputs: terraform/stackdriver/bind/outputs.tf

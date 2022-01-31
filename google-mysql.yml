@@ -144,10 +144,11 @@ provision:
     type: string
   template_refs:
     provider: terraform/cloudsql/provision/provider.tf
-    main:  terraform/cloudsql/provision/main.tf
-    data:  terraform/cloudsql/provision/data.tf
-    variables:  terraform/cloudsql/provision/variables.tf
-    outputs:  terraform/cloudsql/provision/outputs.tf
+    versions: terraform/cloudsql/provision/versions.tf
+    main: terraform/cloudsql/provision/main.tf
+    data: terraform/cloudsql/provision/data.tf
+    variables: terraform/cloudsql/provision/variables.tf
+    outputs: terraform/cloudsql/provision/outputs.tf
   outputs:
   - field_name: name
     type: string
@@ -197,9 +198,10 @@ bind:
     overwrite: true
   template_refs:
     provider: terraform/cloudsql/bindmysql/provider.tf
-    main:  terraform/cloudsql/bindmysql/main.tf
-    variables:  terraform/cloudsql/bindmysql/variables.tf
-    outputs:  terraform/cloudsql/bindmysql/outputs.tf
+    versions: terraform/cloudsql/bindmysql/versions.tf
+    main: terraform/cloudsql/bindmysql/main.tf
+    variables: terraform/cloudsql/bindmysql/variables.tf
+    outputs: terraform/cloudsql/bindmysql/outputs.tf
   outputs:
   - field_name: username
     type: string

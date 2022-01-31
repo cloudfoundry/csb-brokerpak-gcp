@@ -88,6 +88,7 @@ provision:
     type: object
   template_refs:
     provider: terraform/bigquery/provision/provider.tf
+    versions: terraform/bigquery/provision/versions.tf
     main: terraform/bigquery/provision/main.tf
     variables: terraform/bigquery/provision/variables.tf
     outputs: terraform/bigquery/provision/outputs.tf
