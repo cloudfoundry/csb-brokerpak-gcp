@@ -15,18 +15,18 @@
 version: 1
 name: csb-google-postgres
 id: e4ac5b1c-8693-11ea-8977-1f3cd95a07dd
-description: Beta - PostgreSQL is a fully managed service for the
+description: PostgreSQL is a fully managed service for the
   Google Cloud Platform.
 display_name: Google Cloud PostgreSQL
 image_url: https://cloud.google.com/_static/images/cloud/products/logos/svg/sql.svg
 documentation_url: https://cloud.google.com/sql/docs/postgres
 support_url: https://cloud.google.com/support/
-tags: [gcp, postgresql, postgres, beta]
+tags: [gcp, postgresql, postgres]
 plan_updateable: true
 plans:
 - name: small
   id: 85b27a04-8695-11ea-818a-274131861b81
-  description: 'Beta - PostgreSQL v11, shared CPU, minumum 0.6GB ram, 10GB storage'
+  description: 'PostgreSQL v11, shared CPU, minumum 0.6GB ram, 10GB storage'
   display_name: "small"
   properties:
     cores: 0.6
@@ -34,7 +34,7 @@ plans:
     storage_gb: 10
 - name: medium
   id: b41ee300-8695-11ea-87df-cfcb8aecf3bc
-  description: 'Beta - PostgreSQL v11, shared CPU, minumum 1.7GB ram, 20GB storage'
+  description: 'PostgreSQL v11, shared CPU, minumum 1.7GB ram, 20GB storage'
   display_name: "medium"
   properties:
     cores: 1.7
@@ -42,7 +42,7 @@ plans:
     storage_gb: 20
 - name: large
   id: 2a57527e-b025-11ea-b643-bf3bcf6d055a
-  description: 'Beta - PostgreSQL v11, minumum 8 cores, minumum 8GB ram, 50GB storage'
+  description: 'PostgreSQL v11, minumum 8 cores, minumum 8GB ram, 50GB storage'
   display_name: "large"
   properties:
     cores: 8
