@@ -201,5 +201,5 @@ examples:
 - name: gcp-bucket-public-read
   description: Public Read S3 Bucket
   plan_id: c07f21a6-8a63-11ea-bc1b-d38b123189cb
-  provision_params: { "role": "storage.objectAdmin" }
+  provision_params: { "storage_class": "STANDARD" }
   bind_params: { "role": "storage.objectAdmin" }
