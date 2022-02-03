@@ -152,5 +152,5 @@ examples:
 - name: HA Configuration
   description: Create a small, highly available Redis instance for production.
   plan_id: 8c85c90c-f8e3-4337-9069-c03036243894
-  provision_params: {"memory_size_gb": 1, "redis_version": "REDIS_6_X"}
+  provision_params: {"memory_size_gb": 1}
   bind_params: {}
