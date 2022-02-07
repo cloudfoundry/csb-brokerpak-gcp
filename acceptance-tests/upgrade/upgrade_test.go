@@ -14,6 +14,14 @@ var _ = Describe("UpgradeRedisTest", Label("redis"), func() {
 	When("upgrading broker version", func() {
 		It("should continue to work", func() {
 			By("pushing latest released broker version")
+
+			// TODO: delete this once it is in the main pipeline
+			serviceBrokerDefault := brokers.Create(
+				brokers.WithName("broker-cf-test"),
+				brokers.WithSourceDir(releasedBuildDir),
+			)
+			defer serviceBrokerDefault.Delete()
+
 			serviceBroker := brokers.Create(
 				brokers.WithPrefix("csb-redis"),
 				brokers.WithSourceDir(releasedBuildDir),
