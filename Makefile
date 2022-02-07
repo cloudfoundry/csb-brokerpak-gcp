@@ -31,6 +31,7 @@ PARALLEL_JOB_COUNT := $(or $(PARALLEL_JOB_COUNT), 4)
 
 .PHONY: run
 run: build google_credentials google_project ## start CSB in a docker container
+	docker pull $(CSB)
 	docker run $(DOCKER_OPTS) \
 	-p 8080:8080 \
 	-e SECURITY_USER_NAME \
