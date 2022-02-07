@@ -4,12 +4,12 @@ go 1.17
 
 require (
 	cloud.google.com/go/dataproc v1.2.0
-	cloud.google.com/go/storage v1.19.0
+	cloud.google.com/go/storage v1.20.0
 	github.com/cloudfoundry-community/go-cfenv v1.18.0
 	github.com/gorilla/mux v1.8.0
 	github.com/mitchellh/mapstructure v1.4.3
 	google.golang.org/api v0.66.0
-	google.golang.org/genproto v0.0.0-20220118154757-00ab72f36ad5
+	google.golang.org/genproto v0.0.0-20220201184016-50beb8ab5c44
 )
 
 require (
