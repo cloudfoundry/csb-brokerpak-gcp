@@ -90,7 +90,7 @@ var _ = Describe("UpgradePostgreSQLTest", Label("postgresql"), func() {
 
 			By("dropping the schemas using the first app")
 			appOne.DELETE(schema)
-			appOne.DELETE(schemaTwo)
+			//appOne.DELETE(schemaTwo)
 		})
 	})
 })
