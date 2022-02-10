@@ -17,6 +17,10 @@ var _ = Describe("UpgradeRedisTest", Label("redis"), func() {
 			serviceBroker := brokers.Create(
 				brokers.WithPrefix("csb-redis"),
 				brokers.WithSourceDir(releasedBuildDir),
+				brokers.WithEnv(apps.EnvVar{
+					Name:  "GSB_SERVICE_CSB_GOOGLE_POSTGRES_PLANS",
+					Value: "",
+				}),
 			)
 			defer serviceBroker.Delete()
 
@@ -66,14 +70,6 @@ var _ = Describe("UpgradeRedisTest", Label("redis"), func() {
 			By("getting the value using the second app")
 			Expect(appTwo.GET(key1)).To(Equal(value1))
 
-			By("updating the instance params")
-			serviceInstance.Update("-c", `{"memory_size_gb": 6}`)
-
-			By("checking it still works")
-			key3 := random.Hexadecimal()
-			value3 := random.Hexadecimal()
-			appOne.PUT(value3, key3)
-			Expect(appTwo.GET(key3)).To(Equal(value3))
 		})
 	})
 })
