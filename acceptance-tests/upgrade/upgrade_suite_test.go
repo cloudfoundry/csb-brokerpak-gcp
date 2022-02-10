@@ -16,7 +16,7 @@ var (
 )
 
 func init() {
-	flag.StringVar(&releasedBuildDir, "releasedBuildDir", "../../../azure-released", "location of released version of built broker and brokerpak")
+	flag.StringVar(&releasedBuildDir, "releasedBuildDir", "../../../gcp-released", "location of released version of built broker and brokerpak")
 	flag.StringVar(&developmentBuildDir, "developmentBuildDir", "../../dev-release", "location of development version of built broker and brokerpak")
 }
 
