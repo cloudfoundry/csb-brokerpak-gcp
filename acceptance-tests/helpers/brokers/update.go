@@ -5,7 +5,10 @@ import (
 	"acceptancetests/helpers/cf"
 )
 
-func (b *Broker) UpdateSourceDir(dir string) {
+func (b *Broker) UpdateBroker(dir string, env ...apps.EnvVar) {
+	WithEnv(env...)(b)
+	b.app.SetEnv(b.env()...)
+
 	b.app.Push(
 		apps.WithName(b.Name),
 		apps.WithDir(dir),
