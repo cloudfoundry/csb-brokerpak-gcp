@@ -17,6 +17,7 @@ var _ = Describe("UpgradePostgreSQLTest", Label("postgresql"), func() {
 			serviceBroker := brokers.Create(
 				brokers.WithPrefix("csb-postgresql"),
 				brokers.WithSourceDir(releasedBuildDir),
+				brokers.WithReleaseEnv(),
 			)
 			defer serviceBroker.Delete()
 
@@ -54,7 +55,7 @@ var _ = Describe("UpgradePostgreSQLTest", Label("postgresql"), func() {
 			Expect(got).To(Equal(valueOne))
 
 			By("pushing the development version of the broker")
-			serviceBroker.UpdateSourceDir(developmentBuildDir)
+			serviceBroker.UpdateBroker(developmentBuildDir)
 
 			By("updating the instance plan")
 			serviceInstance.Update("-p", "medium")
@@ -89,7 +90,7 @@ var _ = Describe("UpgradePostgreSQLTest", Label("postgresql"), func() {
 			Expect(got).To(Equal(valueTwo))
 
 			By("dropping the schemas using the first app")
-			appOne.DELETE(schema)
+			//appOne.DELETE(schema)
 			appOne.DELETE(schemaTwo)
 		})
 	})

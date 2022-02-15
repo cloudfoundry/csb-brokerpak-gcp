@@ -17,10 +17,7 @@ var _ = Describe("UpgradeRedisTest", Label("redis"), func() {
 			serviceBroker := brokers.Create(
 				brokers.WithPrefix("csb-redis"),
 				brokers.WithSourceDir(releasedBuildDir),
-				brokers.WithEnv(apps.EnvVar{
-					Name:  "GSB_SERVICE_CSB_GOOGLE_POSTGRES_PLANS",
-					Value: "",
-				}),
+				brokers.WithReleaseEnv(),
 			)
 			defer serviceBroker.Delete()
 
@@ -52,7 +49,7 @@ var _ = Describe("UpgradeRedisTest", Label("redis"), func() {
 			Expect(got).To(Equal(value1))
 
 			By("pushing the development version of the broker")
-			serviceBroker.UpdateSourceDir(developmentBuildDir)
+			serviceBroker.UpdateBroker(developmentBuildDir)
 
 			By("deleting bindings created before the upgrade")
 			bindingOne.Unbind()
