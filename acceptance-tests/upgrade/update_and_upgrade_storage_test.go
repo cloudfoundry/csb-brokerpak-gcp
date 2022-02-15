@@ -17,6 +17,7 @@ var _ = Describe("UpgradeStorageTest", Label("storage"), func() {
 			serviceBroker := brokers.Create(
 				brokers.WithPrefix("csb-storage"),
 				brokers.WithSourceDir(releasedBuildDir),
+				brokers.WithReleaseEnv(),
 			)
 			defer serviceBroker.Delete()
 
@@ -48,7 +49,7 @@ var _ = Describe("UpgradeStorageTest", Label("storage"), func() {
 			Expect(got).To(Equal(blobDataOne))
 
 			By("pushing the development version of the broker")
-			serviceBroker.UpdateSourceDir(developmentBuildDir)
+			serviceBroker.UpdateBroker(developmentBuildDir)
 
 			By("re-applying the terraform for service instance")
 			serviceInstance.Update("-c", `{"storage_class": "REGIONAL"}`)
