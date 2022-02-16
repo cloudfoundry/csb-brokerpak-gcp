@@ -10,7 +10,7 @@ help: ## list Makefile targets
 
 IAAS=gcp
 DOCKER_OPTS=--rm -v $(PWD):/brokerpak -w /brokerpak --network=host
-CSB := cfplatformeng/csb
+CSB := $(or $(CSB), cfplatformeng/csb)
 USE_GO_CONTAINERS := $(or $(USE_GO_CONTAINERS), 1)
 
 ifeq ($(USE_GO_CONTAINERS), 0)

@@ -20,7 +20,16 @@ To provision services, the brokerpak currently requires GCP credentials. The bro
 
 A Makefile supports the full local development lifecycle for the brokerpak.
 
-- `make` will build the brokerpak
+Make targets will run with the *cfplatformeng/csb* docker image. Make sure your local image is up to date or run
+
+`docker pull cfplatformeng/csb` to update it
+
+Alternatively, a custom image can be specified by setting the `CSB` environment variable
+
+Available targets include (but are not limited to):
+
+- `make` list make targets
+- `make build` build the brokerpak
 - `make run` runs the brokerpak locally
 - `make docs` will generate markdown documentation from brokerpak
 - `make run-examples` will run example provision, bind, unbind, deprovision against broker started with `make run`
