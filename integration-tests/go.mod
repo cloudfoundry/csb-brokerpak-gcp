@@ -2,10 +2,7 @@ module github.com/cloudfoundry-incubator/csb-brokerpak-gcp/integration-tests
 
 go 1.17
 
-replace github.com/cloudfoundry-incubator/cloud-service-broker => /Users/jatinnaik/workspace/csb/cloud-service-broker
-
 require (
-	github.com/cloudfoundry-incubator/cloud-service-broker v0.8.3-beta.0.20220201093948-ab9ddc6dedfe
 	github.com/onsi/ginkgo/v2 v2.1.2
 	github.com/onsi/gomega v1.18.1
 )
@@ -21,6 +18,7 @@ require (
 	github.com/beorn7/perks v1.0.1 // indirect
 	github.com/bgentry/go-netrc v0.0.0-20140422174119-9fd32a8b3d3d // indirect
 	github.com/cespare/xxhash/v2 v2.1.2 // indirect
+	github.com/cloudfoundry/cloud-service-broker v0.0.0-20220218140500-182b32f1be2d // indirect
 	github.com/cloudfoundry/go-socks5 v0.0.0-20180221174514-54f73bdb8a8e // indirect
 	github.com/cloudfoundry/socks5-proxy v0.2.14 // indirect
 	github.com/fsnotify/fsnotify v1.5.1 // indirect

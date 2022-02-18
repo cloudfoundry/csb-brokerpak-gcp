@@ -2,7 +2,7 @@ package integration_tests
 
 import (
 	"encoding/json"
-	testframework "github.com/cloudfoundry-incubator/cloud-service-broker/brokerpaktestframework"
+	testframework "github.com/cloudfoundry/cloud-service-broker/brokerpaktestframework"
 	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
 )
