@@ -46,17 +46,17 @@ var _ = Describe("Mysql", func() {
 	})
 
 	It("user should not be allowed to change mysql cores", func() {
-		err := broker.Provision("csb-google-mysql", "small", map[string]interface{}{"cores": 5})
+		_, err := broker.Provision("csb-google-mysql", "small", map[string]interface{}{"cores": 5})
 		Expect(err).To(MatchError(ContainSubstring("plan defined properties cannot be changed: cores")))
 	})
 
 	It("should validate region", func() {
-		err := broker.Provision("csb-google-mysql", "small", map[string]interface{}{"region": "invalid-region"})
+		_, err := broker.Provision("csb-google-mysql", "small", map[string]interface{}{"region": "invalid-region"})
 		Expect(err).To(MatchError(ContainSubstring("region must be one of the following:")))
 	})
 
 	It("should validate instance name length", func() {
-		err := broker.Provision("csb-google-mysql", "small", map[string]interface{}{"instance_name": "2smol"})
+		_, err := broker.Provision("csb-google-mysql", "small", map[string]interface{}{"instance_name": "2smol"})
 		Expect(err).To(MatchError(ContainSubstring("instance_name: String length must be greater than or equal to 6")))
 	})
 })
