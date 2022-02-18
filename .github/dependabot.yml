@@ -1,13 +1,7 @@
 version: 2
 updates:
-- package-ecosystem: terraform
-  directory: "/terraform"
-  schedule:
-    interval: "weekly"
-    day: "saturday"
-    time: "06:00"
 - package-ecosystem: gomod
-  directory: "/acceptance-tests"
+  directory: "/"
   schedule:
     interval: "weekly"
     day: "saturday"
