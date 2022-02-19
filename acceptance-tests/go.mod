@@ -6,7 +6,7 @@ require (
 	cloud.google.com/go/trace v1.0.0
 	code.cloudfoundry.org/jsonry v1.1.3
 	github.com/Pallinder/go-randomdata v1.2.0
-	github.com/onsi/ginkgo/v2 v2.1.2
+	github.com/onsi/ginkgo/v2 v2.1.3
 	github.com/onsi/gomega v1.18.1
 	google.golang.org/api v0.68.0
 	google.golang.org/genproto v0.0.0-20220204002441-d6cc3cc0770e
