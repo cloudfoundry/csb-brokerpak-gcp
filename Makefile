@@ -14,7 +14,8 @@ DOCKER_OK := $(shell which docker 1>/dev/null 2>/dev/null; echo $$?)
 ifeq ($(GO_OK), 0)
 GO=go
 BUILDER=go run github.com/cloudfoundry/cloud-service-broker
-GET_CSB="env CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build github.com/cloudfoundry/cloud-service-broker"
+LDFLAGS="-X github.com/cloudfoundry/cloud-service-broker/utils.Version=$(CSB_VERSION)"
+GET_CSB="env CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -ldflags $(LDFLAGS) github.com/cloudfoundry/cloud-service-broker"
 else ifeq ($(DOCKER_OK), 0)
 DOCKER_OPTS=--rm -v $(PWD):/brokerpak -w /brokerpak --network=host
 GO=docker run $(DOCKER_OPTS) golang:$(GOVERSION) go
@@ -87,6 +88,7 @@ validate: build ## use the CSB to validate the buildpak
 	$(CSB) pak validate /brokerpak/$(shell ls *.brokerpak)
 
 # fetching bits for cf push broker
+.PHONY: cloud-service-broker
 cloud-service-broker: ## build or fetch CSB binary
 	$(shell "$(GET_CSB)")
 
