@@ -1,8 +1,8 @@
 package bindings
 
 import (
-	"acceptancetests/helpers/cf"
-	"acceptancetests/helpers/random"
+	"csbbrokerpakgcp/acceptance-tests/helpers/cf"
+	"csbbrokerpakgcp/acceptance-tests/helpers/random"
 )
 
 type Binding struct {

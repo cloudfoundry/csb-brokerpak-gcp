@@ -1,9 +1,9 @@
 package brokers
 
 import (
-	"acceptancetests/helpers/apps"
-	"acceptancetests/helpers/cf"
-	"acceptancetests/helpers/random"
+	"csbbrokerpakgcp/acceptance-tests/helpers/apps"
+	"csbbrokerpakgcp/acceptance-tests/helpers/cf"
+	"csbbrokerpakgcp/acceptance-tests/helpers/random"
 	"fmt"
 	"strings"
 )
