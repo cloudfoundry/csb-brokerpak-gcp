@@ -8,7 +8,7 @@ import (
 )
 
 var mockTerraform testframework.TerraformMock
-var broker testframework.TestInstance
+var broker *testframework.TestInstance
 
 var BrokerGCPProject = "broker-gcp-project"
 var BrokerGCPCreds = "broker-gcp-creds"
@@ -29,4 +29,10 @@ var _ = BeforeSuite(func() {
 		"GOOGLE_PROJECT="+ BrokerGCPProject,
 		`GSB_SERVICE_CSB_GOOGLE_POSTGRES_PLANS=` + string(postgresPlansJson),
 	})).NotTo(HaveOccurred())
+})
+
+var _ = AfterSuite(func() {
+	if broker != nil{
+		Expect(broker.Cleanup()).NotTo(HaveOccurred())
+	}
 })
