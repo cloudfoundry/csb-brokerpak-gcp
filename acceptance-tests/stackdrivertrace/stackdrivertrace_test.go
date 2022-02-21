@@ -1,11 +1,11 @@
 package stackdrivertrace_test
 
 import (
-	"acceptancetests/helpers/apps"
-	"acceptancetests/helpers/matchers"
-	"acceptancetests/helpers/random"
-	"acceptancetests/helpers/services"
 	"context"
+	"csbbrokerpakgcp/acceptance-tests/helpers/apps"
+	"csbbrokerpakgcp/acceptance-tests/helpers/matchers"
+	"csbbrokerpakgcp/acceptance-tests/helpers/random"
+	"csbbrokerpakgcp/acceptance-tests/helpers/services"
 	"encoding/json"
 	"fmt"
 	"time"

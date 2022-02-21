@@ -1,9 +1,9 @@
 package errormessages_test
 
 import (
-	"acceptancetests/helpers/brokers"
-	"acceptancetests/helpers/cf"
-	"acceptancetests/helpers/random"
+	"csbbrokerpakgcp/acceptance-tests/helpers/brokers"
+	"csbbrokerpakgcp/acceptance-tests/helpers/cf"
+	"csbbrokerpakgcp/acceptance-tests/helpers/random"
 	"time"
 
 	. "github.com/onsi/ginkgo/v2"

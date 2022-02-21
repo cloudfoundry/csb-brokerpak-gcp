@@ -74,7 +74,7 @@ run-examples: ## run examples against CSB on localhost (run "make run" to start 
 	-e SECURITY_USER_NAME \
 	-e SECURITY_USER_PASSWORD \
 	-e USER \
-	$(CSB)) client run-examples --service-name="$(service_name)" --example-name="$(example_name)" -j $(PARALLEL_JOB_COUNT)
+	$(CSB) client run-examples --service-name="$(service_name)" --example-name="$(example_name)" -j $(PARALLEL_JOB_COUNT)
 
 .PHONY: info
 info: build ## use the CSB to parse the buildpak and print out contents and versions

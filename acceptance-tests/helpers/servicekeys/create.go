@@ -1,8 +1,8 @@
 package servicekeys
 
 import (
-	"acceptancetests/helpers/cf"
-	"acceptancetests/helpers/random"
+	"csbbrokerpakgcp/acceptance-tests/helpers/cf"
+	"csbbrokerpakgcp/acceptance-tests/helpers/random"
 )
 
 type ServiceKey struct {
