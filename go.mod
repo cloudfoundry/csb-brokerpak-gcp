@@ -6,7 +6,7 @@ require (
 	cloud.google.com/go/trace v1.1.0
 	code.cloudfoundry.org/jsonry v1.1.3
 	github.com/Pallinder/go-randomdata v1.2.0
-	github.com/cloudfoundry/cloud-service-broker v0.9.1-0.20220221172012-52e08e0bd78d
+	github.com/cloudfoundry/cloud-service-broker v0.9.0
 	github.com/onsi/ginkgo/v2 v2.1.3
 	github.com/onsi/gomega v1.18.1
 	google.golang.org/api v0.69.0

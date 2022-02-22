@@ -19,7 +19,7 @@ var _ = Describe("Mysql", func() {
 		Expect(err).NotTo(HaveOccurred())
 		service := testframework.FindService(catalog, "csb-google-mysql")
 		Expect(service.Plans).To(HaveLen(3))
-		Expect(service.Tags).To(ContainElement("preview"))
+		Expect(service.Tags).To(ContainElement("beta"))
 		Expect(service.Metadata.ImageUrl).NotTo(BeNil())
 	})
 
@@ -33,11 +33,6 @@ var _ = Describe("Mysql", func() {
 		contents, err := invocations[0].TFVarsContents()
 		Expect(err).NotTo(HaveOccurred())
 		Expect(replaceGUIDs(contents)).To(MatchJSON(getResultContents("mysql-result")))
-	})
-
-	It("user should be able to update database name", func() {
-		broker.Provision("csb-google-mysql", "small", map[string]interface{}{"db_name": "foobar"})
-		Expect(mockTerraform.FirstTerraformInvocationVars()).To(HaveKeyWithValue("db_name", "foobar"))
 	})
 
 	It("user should be able to update database name", func() {
