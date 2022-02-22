@@ -15,17 +15,17 @@
 version: 1
 name: csb-google-stackdriver-trace
 id: bfb9c232-2b16-4d4c-8958-221ce1107406
-description: Distributed tracing service
-display_name: Stack driver trace
+description: Beta - Distributed tracing service
+display_name: Stack driver trace (Beta)
 image_url: https://symbols.getvecta.com/stencil_4/52_stackdriver.23cab581ce.svg
 documentation_url: https://cloud.google.com/trace
 support_url: https://cloud.google.com/trace/docs/overview
-tags: [gcp, tracing, stackdriver]
+tags: [gcp, tracing, stackdriver, beta]
 plans:
 - name: default
   id: bd2d009d-4cf3-4386-9800-3c8a063ce1bf
-  description: 'Default plan'
-  display_name: 'Default'
+  description: 'Beta - Default plan'
+  display_name: 'Default (Beta)'
 provision:
   user_inputs: []
   computed_inputs: []
