@@ -1,0 +1,17 @@
+{
+  "authorized_network": "default",
+  "authorized_network_id": "",
+  "cores": 2,
+  "credentials": "broker-gcp-creds",
+  "database_version": "MYSQL_5_7",
+  "db_name": "csb-db",
+  "instance_name": "csb-mysql-GUID",
+  "labels": {
+    "pcf-instance-id": "GUID",
+    "pcf-organization-guid": "",
+    "pcf-space-guid": ""
+  },
+  "project": "broker-gcp-project",
+  "region": "us-central1",
+  "storage_gb": 10
+}

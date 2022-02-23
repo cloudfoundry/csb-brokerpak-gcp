@@ -8,3 +8,4 @@
 
 ### Fix:
 - All service offerings and plans are highlighted to be at a Beta lifecycle state.
+- Fixed typo `defualt` => `default` in the postgres service, now the size of storage volume should default to 10 GB
