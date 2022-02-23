@@ -30,3 +30,7 @@ There is a make target to push the broker and brokerpak into a CloudFoundry foun
 - `make run-integration-tests` will test the brokerpak with the latest version of CSB
 
 The broker gets pushed into CloudFoundry as *cloud-service-broker-gcp*  It will be necessary to bind a MySQL database to the broker to provide broker state storage. See [GCP Installation](./docs/gcp-installation.md) docs for more info.
+
+## Broker
+The version of Cloud Service Broker to use with this brokerpak is encoded in the `go.mod` file.
+The make targets will use this version by default.

@@ -25,11 +25,10 @@ else
 $(error either Go or Docker must be installed)
 endif
 
-
 ###### Targets ################################################################
 
 .PHONY: build
-build: $(IAAS)-services-*.brokerpak 
+build: $(IAAS)-services-*.brokerpak ## build brokerpak
 
 $(IAAS)-services-*.brokerpak: *.yml terraform/*/*/*.tf
 	$(BUILDER) pak build
@@ -92,8 +91,7 @@ validate: build ## use the CSB to validate the buildpak
 	$(CSB) pak validate /brokerpak/$(shell ls *.brokerpak)
 
 # fetching bits for cf push broker
-.PHONY: cloud-service-broker
-cloud-service-broker: ## build or fetch CSB binary
+cloud-service-broker: go.mod ## build or fetch CSB binary
 	$(shell "$(GET_CSB)")
 
 APP_NAME := $(or $(APP_NAME), cloud-service-broker-gcp)
