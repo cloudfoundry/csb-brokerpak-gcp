@@ -76,6 +76,10 @@ run-examples: ## run examples against CSB on localhost (run "make run" to start 
 	-e USER \
 	$(CSB) client run-examples --service-name="$(service_name)" --example-name="$(example_name)" -j $(PARALLEL_JOB_COUNT)
 
+.PHONY: run-integration-tests
+run-integration-tests: latest-csb
+	cd ./integration-tests && go run github.com/onsi/ginkgo/v2/ginkgo -r .
+
 .PHONY: info
 info: build ## use the CSB to parse the buildpak and print out contents and versions
 	docker run $(DOCKER_OPTS) \
