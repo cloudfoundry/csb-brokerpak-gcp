@@ -24,7 +24,7 @@ terraform_binaries:
 - name: terraform-provider-postgresql
   version: 1.15.0
   source: https://github.com/cyrilgdn/terraform-provider-postgresql/archive/v1.15.0.zip
-  url_template: https://github.com/cyrilgdn/${name}/releases/download/v${version}//${name}_${version}_${os}_${arch}.zip
+  url_template: https://github.com/cyrilgdn/${name}/releases/download/v${version}/${name}_${version}_${os}_${arch}.zip
 env_config_mapping:
   GOOGLE_CREDENTIALS: gcp.credentials
   GOOGLE_PROJECT: gcp.project
