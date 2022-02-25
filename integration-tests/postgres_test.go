@@ -52,6 +52,40 @@ var _ = Describe("postgres", func() {
 		Expect(planMetadata.Description).NotTo(BeEmpty())
 
 	})
+	Context("prevent updating properties of the service instance", func() {
+		var instanceGUID string
+		var err error
+		BeforeEach(func() {
+			instanceGUID, err = broker.Provision("csb-google-postgres", postgresNoOverridesPlan["name"].(string), map[string]interface{}{"cores": 1})
+
+			invocations, err := mockTerraform.ApplyInvocations()
+			Expect(err).NotTo(HaveOccurred())
+			Expect(invocations).To(HaveLen(1))
+			Expect(invocations[0].TFVars()).To(HaveKeyWithValue("cores", float64(1)))
+			mockTerraform.Reset()
+		})
+
+		paramsToVerify := map[string]interface{}{
+			"cores":                 5,
+			"postgres_version":      "POSTGRES_12",
+			"storage_gb":            11,
+			"credentials":           "creds",
+			"project":               "project_creds",
+			"instance_name":         "name",
+			"db_name":               "new_db_name",
+			"region":                "asia-northeast1",
+			"authorized_network":    "new_network",
+			"authorized_network_id": "new_network_id",
+		}
+		for key, val := range paramsToVerify {
+			It("should prevent users from updating "+key, func() {
+				err = broker.Update(instanceGUID, "csb-google-postgres", postgresNoOverridesPlan["name"].(string), map[string]interface{}{key: val})
+				Expect(err).To(HaveOccurred())
+				Expect(err.Error()).To(ContainSubstring("attempt to update parameter that may result in service instance re-creation and data loss"))
+				Expect(mockTerraform.ApplyInvocations()).To(HaveLen(0))
+			})
+		}
+	})
 	Context("no properties overridden from the plan", func() {
 		It("provision instance with defaults", func() {
 			broker.Provision("csb-google-postgres", postgresNoOverridesPlan["name"].(string), map[string]interface{}{"cores": 1})
@@ -154,4 +188,3 @@ var _ = Describe("postgres", func() {
 		})
 	})
 })
-
