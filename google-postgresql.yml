@@ -30,16 +30,19 @@ provision:
     required: true
     type: number
     details: Minimum number of cores for service instance.
+    prohibit_update: true
   - field_name: postgres_version
     required: true
     type: string
     details: The version for the postgres instance.
     default: "POSTGRES_11"
+    prohibit_update: true
   - field_name: storage_gb
     required: true
     type: number
     details: Size of storage volume for service instance.
     default: 10
+    prohibit_update: true
     constraints:
       maximum: 4096
       minumum: 10
@@ -51,10 +54,12 @@ provision:
     type: string
     details: GCP credentials
     default: ${config("gcp.credentials")}
+    prohibit_update: true
   - field_name: project
     type: string
     details: GCP project
     default: ${config("gcp.project")}
+    prohibit_update: true
   - field_name: instance_name
     type: string
     details: Name for your PostgreSQL instance
