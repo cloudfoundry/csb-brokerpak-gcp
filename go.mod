@@ -9,13 +9,13 @@ require (
 	github.com/cloudfoundry/cloud-service-broker v0.9.0
 	github.com/onsi/ginkgo/v2 v2.1.3
 	github.com/onsi/gomega v1.18.1
-	google.golang.org/api v0.69.0
-	google.golang.org/genproto v0.0.0-20220211171837-173942840c17
+	google.golang.org/api v0.70.0
+	google.golang.org/genproto v0.0.0-20220218161850-94dd64e39d7c
 )
 
 require (
 	cloud.google.com/go v0.100.2 // indirect
-	cloud.google.com/go/compute v1.2.0 // indirect
+	cloud.google.com/go/compute v1.3.0 // indirect
 	cloud.google.com/go/iam v0.2.0 // indirect
 	cloud.google.com/go/storage v1.15.0 // indirect
 	code.cloudfoundry.org/credhub-cli v0.0.0-20210802130126-03ba1c405d5e // indirect
@@ -42,7 +42,6 @@ require (
 	github.com/hashicorp/go-cleanhttp v0.5.2 // indirect
 	github.com/hashicorp/go-getter v1.5.11 // indirect
 	github.com/hashicorp/go-multierror v1.1.1 // indirect
-	github.com/hashicorp/go-retryablehttp v0.5.3 // indirect
 	github.com/hashicorp/go-safetemp v1.0.0 // indirect
 	github.com/hashicorp/go-version v1.4.0 // indirect
 	github.com/hashicorp/hcl v1.0.0 // indirect
@@ -62,7 +61,6 @@ require (
 	github.com/mitchellh/go-wordwrap v1.0.0 // indirect
 	github.com/mitchellh/mapstructure v1.4.3 // indirect
 	github.com/mitchellh/reflectwalk v1.0.0 // indirect
-	github.com/otiai10/copy v1.7.0 // indirect
 	github.com/pborman/uuid v1.2.1 // indirect
 	github.com/pelletier/go-toml v1.9.4 // indirect
 	github.com/pivotal-cf/brokerapi/v8 v8.2.1 // indirect
