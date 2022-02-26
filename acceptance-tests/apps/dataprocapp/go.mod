@@ -3,13 +3,13 @@ module dataprocapp
 go 1.17
 
 require (
-	cloud.google.com/go/dataproc v1.3.0
+	cloud.google.com/go/dataproc v1.5.0
 	cloud.google.com/go/storage v1.21.0
 	github.com/cloudfoundry-community/go-cfenv v1.18.0
 	github.com/gorilla/mux v1.8.0
 	github.com/mitchellh/mapstructure v1.4.3
 	google.golang.org/api v0.70.0
-	google.golang.org/genproto v0.0.0-20220218161850-94dd64e39d7c
+	google.golang.org/genproto v0.0.0-20220222213610-43724f9ea8cf
 )
 
 require (
