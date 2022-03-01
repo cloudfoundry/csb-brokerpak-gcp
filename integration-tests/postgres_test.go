@@ -65,27 +65,29 @@ var _ = Describe("postgres", func() {
 			mockTerraform.Reset()
 		})
 
-		paramsToVerify := map[string]interface{}{
-			"cores":                 5,
-			"postgres_version":      "POSTGRES_12",
-			"storage_gb":            11,
-			"credentials":           "creds",
-			"project":               "project_creds",
-			"instance_name":         "name",
-			"db_name":               "new_db_name",
-			"region":                "asia-northeast1",
-			"authorized_network":    "new_network",
-			"authorized_network_id": "new_network_id",
-		}
-		for key, val := range paramsToVerify {
-			It("should prevent users from updating "+key, func() {
-				err = broker.Update(instanceGUID, "csb-google-postgres", postgresNoOverridesPlan["name"].(string), map[string]interface{}{key: val})
+		DescribeTable(
+			"should prevent users from updating",
+			func(key string, value interface{}) {
+				err = broker.Update(instanceGUID, "csb-google-postgres", postgresNoOverridesPlan["name"].(string), map[string]interface{}{key: value})
+
 				Expect(err).To(HaveOccurred())
-				Expect(err.Error()).To(ContainSubstring("attempt to update parameter that may result in service instance re-creation and data loss"))
+				Expect(err).To(MatchError(ContainSubstring("attempt to update parameter that may result in service instance re-creation and data loss")))
+
 				Expect(mockTerraform.ApplyInvocations()).To(HaveLen(0))
-			})
-		}
+			},
+			Entry("cores", "cores", 5),
+			Entry("postgres_version", "postgres_version", "POSTGRES_12"),
+			Entry("storage_gb", "storage_gb", 11),
+			Entry("credentials", "credentials", "creds"),
+			Entry("instance_name", "instance_name", "name"),
+			Entry("project", "project", "project_name"),
+			Entry("db_name", "db_name", "new_db_name"),
+			Entry("region", "region", "asia-northeast1"),
+			Entry("authorized_network", "authorized_network", "new_network"),
+			Entry("authorized_network", "authorized_network", "new_network_id"),
+		)
 	})
+
 	Context("no properties overridden from the plan", func() {
 		It("provision instance with defaults", func() {
 			broker.Provision("csb-google-postgres", postgresNoOverridesPlan["name"].(string), map[string]interface{}{"cores": 1})
