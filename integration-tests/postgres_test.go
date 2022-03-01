@@ -52,9 +52,11 @@ var _ = Describe("postgres", func() {
 		Expect(planMetadata.Description).NotTo(BeEmpty())
 
 	})
+
 	Context("prevent updating properties of the service instance", func() {
 		var instanceGUID string
 		var err error
+
 		BeforeEach(func() {
 			instanceGUID, err = broker.Provision("csb-google-postgres", postgresNoOverridesPlan["name"].(string), map[string]interface{}{"cores": 1})
 
