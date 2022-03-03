@@ -14,12 +14,6 @@ func handleSet(db *sql.DB) func(w http.ResponseWriter, r *http.Request) {
 	return func(w http.ResponseWriter, r *http.Request) {
 		log.Println("Handling set.")
 
-		schema, err := schemaName(r)
-		if err != nil {
-			fail(w, http.StatusInternalServerError, "Schema name error: %s", err)
-			return
-		}
-
 		key, ok := mux.Vars(r)["key"]
 		if !ok {
 			fail(w, http.StatusBadRequest, "Key missing.")
@@ -32,7 +26,7 @@ func handleSet(db *sql.DB) func(w http.ResponseWriter, r *http.Request) {
 			return
 		}
 
-		stmt, err := db.Prepare(fmt.Sprintf(`INSERT INTO %s.%s (%s, %s) VALUES ($1, $2)`, schema, tableName, keyColumn, valueColumn))
+		stmt, err := db.Prepare(fmt.Sprintf(`INSERT INTO public.%s (%s, %s) VALUES ($1, $2)`, tableName, keyColumn, valueColumn))
 		if err != nil {
 			fail(w, http.StatusInternalServerError, "Error preparing statement: %s", err)
 			return
