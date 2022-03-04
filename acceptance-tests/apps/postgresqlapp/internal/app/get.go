@@ -13,19 +13,13 @@ func handleGet(db *sql.DB) func(w http.ResponseWriter, r *http.Request) {
 	return func(w http.ResponseWriter, r *http.Request) {
 		log.Println("Handling get.")
 
-		schema, err := schemaName(r)
-		if err != nil {
-			fail(w, http.StatusInternalServerError, "Schema name error: %s", err)
-			return
-		}
-
 		key, ok := mux.Vars(r)["key"]
 		if !ok {
 			fail(w, http.StatusBadRequest, "Key missing.")
 			return
 		}
 
-		stmt, err := db.Prepare(fmt.Sprintf(`SELECT %s from %s.%s WHERE %s = $1`, valueColumn, schema, tableName, keyColumn))
+		stmt, err := db.Prepare(fmt.Sprintf(`SELECT %s from public.%s WHERE %s = $1`, valueColumn, tableName, keyColumn))
 		if err != nil {
 			fail(w, http.StatusBadRequest, "Error preparing statement: %s", err)
 			return
