@@ -159,34 +159,34 @@ var _ = Describe("postgres", func() {
 	Context("bind a service ", func() {
 		It("return the bind values from terraform output", func() {
 			mockTerraform.ReturnTFState([]testframework.TFStateValue{
-				{"hostname", "string", "hostname.gcp.test"},
+				{"hostname", "string", "create.hostname.gcp.test"},
 				{"use_tls", "bool", false},
-				{"username", "string", "test.username"},
-				{"password", "string", "test.password"},
+				{"username", "string", "create.test.username"},
+				{"password", "string", "create.test.password"},
 				{"port", "int", 9999},
-				{"name", "string", "test.instancename"},
+				{"name", "string", "create.test.instancename"},
 			})
 
 			instanceID, err := broker.Provision("csb-google-postgres", postgresAllOverridesPlan["name"].(string), nil)
 			Expect(err).NotTo(HaveOccurred())
 
 			mockTerraform.ReturnTFState([]testframework.TFStateValue{
-				{"username", "string", "test.username"},
-				{"password", "string", "test.password"},
-				{"uri", "string", "test.uri"},
-				{"jdbcUrl", "string", "test.jdbcUrl"},
+				{"username", "string", "bind.test.username"},
+				{"password", "string", "bind.test.password"},
+				{"uri", "string", "bind.test.uri"},
+				{"jdbcUrl", "string", "bind.test.jdbcUrl"},
 			})
 			bindResult, err := broker.Bind("csb-google-postgres", postgresAllOverridesPlan["name"].(string), instanceID, nil)
 			Expect(err).NotTo(HaveOccurred())
 
 			Expect(bindResult).To(Equal(map[string]interface{}{
-				"username": "test.username",
-				"hostname": "hostname.gcp.test",
-				"jdbcUrl":  "test.jdbcUrl",
-				"name":     "test.instancename",
-				"password": "test.password",
+				"username": "bind.test.username",
+				"hostname": "create.hostname.gcp.test",
+				"jdbcUrl":  "bind.test.jdbcUrl",
+				"name":     "create.test.instancename",
+				"password": "bind.test.password",
 				"port":     float64(9999),
-				"uri":      "test.uri",
+				"uri":      "bind.test.uri",
 				"use_tls":  false,
 			}))
 		})
