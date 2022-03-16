@@ -60,11 +60,13 @@ The broker supports passing credentials to apps via [credhub references](https:/
 Brokerpak configuration values:
 | Environment Variable | Config File Value | Type | Description |
 |----------------------|------|-------------|------------------|
-| <tt>GSB_BROKERPAK_BUILTIN_PATH</tt> | brokerpak.builtin.path | string | <p>Path to search for .brokerpak files, default: <code>./</code></p>|
+|<tt>GSB_BROKERPAK_BUILTIN_PATH</tt> | brokerpak.builtin.path | string | <p>Path to search for .brokerpak files, default: <code>./</code></p>|
 |<tt>GSB_BROKERPAK_CONFIG</tt>|brokerpak.config| string | JSON global config for broker pak services|
 |<tt>GSB_PROVISION_DEFAULTS</tt>|provision.defaults| string | JSON global provision defaults|
 |<tt>GSB_SERVICE_*SERVICE_NAME*_PROVISION_DEFAULTS</tt>|service.*service-name*.provision.defaults| string | JSON provision defaults override for *service-name*|
 |<tt>GSB_SERVICE_*SERVICE_NAME*_PLANS</tt>|service.*service-name*.plans| string | JSON plan collection to augment plans for *service-name*|
+|<tt>GSB_COMPATIBILITY_ENABLE_BETA_SERVICES</tt>| compatibility.enable-beta-services | bool | Enable services tagged with `beta`. Default: `false` |
+
 
 ## Google Configuration
 
