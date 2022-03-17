@@ -29,6 +29,8 @@ terraform_binaries:
 env_config_mapping:
   GOOGLE_CREDENTIALS: gcp.credentials
   GOOGLE_PROJECT: gcp.project
+terraform_state_provider_replacements:
+  registry.terraform.io/hashicorp/postgresql: "registry.terraform.io/cyrilgdn/postgresql"
 service_definitions:
 - google-storage.yml
 - google-redis.yml
