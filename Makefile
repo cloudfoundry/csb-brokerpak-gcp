@@ -24,6 +24,8 @@ GET_CSB="wget -O cloud-service-broker https://github.com/cloudfoundry/cloud-serv
 else
 $(error either Go or Docker must be installed)
 endif
+GSB_COMPATIBILITY_ENABLE_BETA_SERVICES=true
+
 
 ###### Targets ################################################################
 
@@ -51,6 +53,7 @@ run: build google_credentials google_project ## start CSB in a docker container
 	-e "DB_PATH=/tmp/csb-db" \
 	-e GSB_PROVISION_DEFAULTS \
 	-e GSB_SERVICE_CSB_GOOGLE_POSTGRES_PLANS \
+	-e GSB_COMPATIBILITY_ENABLE_BETA_SERVICES \
 	$(CSB) serve
 
 .PHONY: docs
@@ -66,6 +69,7 @@ examples: ## display available examples
 	-e SECURITY_USER_NAME \
 	-e SECURITY_USER_PASSWORD \
 	-e USER \
+	-e GSB_COMPATIBILITY_ENABLE_BETA_SERVICES \
 	$(CSB) client examples
 
 .PHONY: run-examples
@@ -74,6 +78,7 @@ run-examples: ## run examples against CSB on localhost (run "make run" to start 
 	-e SECURITY_USER_NAME \
 	-e SECURITY_USER_PASSWORD \
 	-e USER \
+	-e GSB_COMPATIBILITY_ENABLE_BETA_SERVICES \
 	$(CSB) client run-examples --service-name="$(service_name)" --example-name="$(example_name)" -j $(PARALLEL_JOB_COUNT)
 
 .PHONY: run-integration-tests
