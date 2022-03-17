@@ -89,6 +89,46 @@ var _ = Describe("postgres", func() {
 			Entry("authorized_network", "authorized_network", "new_network_id"),
 		)
 	})
+	Context("versions of postgres", func() {
+
+		It("defaults to postgres postgresql_13", func() {
+			broker.Provision("csb-google-postgres", postgresNoOverridesPlan["name"].(string), map[string]interface{}{"cores": 1})
+
+			invocations, err := mockTerraform.ApplyInvocations()
+			Expect(err).NotTo(HaveOccurred())
+			Expect(invocations).To(HaveLen(1))
+			Expect(invocations[0].TFVars()).To(HaveKeyWithValue("database_version", "POSTGRES_13"))
+		})
+		DescribeTable(
+			"supports custom postgres versions",
+			func(version interface{}) {
+				broker.Provision("csb-google-postgres", postgresNoOverridesPlan["name"].(string), map[string]interface{}{"cores": 1, "postgres_version": version})
+
+				invocations, err := mockTerraform.ApplyInvocations()
+				Expect(err).NotTo(HaveOccurred())
+				Expect(invocations).To(HaveLen(1))
+				Expect(invocations[0].TFVars()).To(HaveKeyWithValue("database_version", version))
+			},
+			Entry("11", "POSTGRES_11"),
+			Entry("12", "POSTGRES_12"),
+			Entry("13", "POSTGRES_14"),
+			Entry("14", "POSTGRES_14"),
+		)
+
+		DescribeTable(
+			"does not allow versions other than 11-14",
+			func(version interface{}) {
+				_, err := broker.Provision("csb-google-postgres", postgresNoOverridesPlan["name"].(string), map[string]interface{}{"cores": 1,"postgres_version": version})
+				Expect(err).To(HaveOccurred())
+				Expect(err).To(MatchError(ContainSubstring("postgres_version: postgres_version must be one of the following")))
+
+				Expect(mockTerraform.ApplyInvocations()).To(HaveLen(0))
+			},
+			Entry("10", "POSTGRES_10"),
+			Entry("15", "POSTGRES_15"),
+			Entry("16", "POSTGRES_16"),
+		)
+	})
 
 	Context("no properties overridden from the plan", func() {
 		It("provision instance with defaults", func() {
@@ -99,7 +139,7 @@ var _ = Describe("postgres", func() {
 			Expect(invocations).To(HaveLen(1))
 
 			Expect(invocations[0].TFVars()).To(HaveKeyWithValue("db_name", "csb-db"))
-			Expect(invocations[0].TFVars()).To(HaveKeyWithValue("database_version", "POSTGRES_11"))
+			Expect(invocations[0].TFVars()).To(HaveKeyWithValue("database_version", "POSTGRES_13"))
 			Expect(invocations[0].TFVars()).To(HaveKeyWithValue("cores", float64(1)))
 			Expect(invocations[0].TFVars()).To(HaveKeyWithValue("storage_gb", float64(10)))
 			Expect(invocations[0].TFVars()).To(HaveKeyWithValue("credentials", BrokerGCPCreds))
