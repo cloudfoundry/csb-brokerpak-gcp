@@ -2,8 +2,9 @@ package integration_tests
 
 import (
 	"encoding/json"
-	testframework "github.com/cloudfoundry/cloud-service-broker/brokerpaktestframework"
 	"testing"
+
+	testframework "github.com/cloudfoundry/cloud-service-broker/brokerpaktestframework"
 
 	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
@@ -32,6 +33,7 @@ var _ = BeforeSuite(func() {
 	Expect(err).NotTo(HaveOccurred())
 
 	Expect(broker.Start(GinkgoWriter, []string{
+		"GSB_COMPATIBILITY_ENABLE_BETA_SERVICES=true",
 		"GOOGLE_CREDENTIALS=" + BrokerGCPCreds,
 		"GOOGLE_PROJECT=" + BrokerGCPProject,
 		`GSB_SERVICE_CSB_GOOGLE_POSTGRES_PLANS=` + string(postgresPlansJson),
