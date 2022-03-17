@@ -35,8 +35,13 @@ provision:
     required: true
     type: string
     details: The version for the postgres instance.
-    default: "POSTGRES_11"
+    default: "POSTGRES_13"
     prohibit_update: true
+    enum:
+      POSTGRES_11: POSTGRES_11
+      POSTGRES_12: POSTGRES_12
+      POSTGRES_13: POSTGRES_13
+      POSTGRES_14: POSTGRES_14
   - field_name: storage_gb
     required: true
     type: number
