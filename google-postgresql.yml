@@ -121,6 +121,10 @@ provision:
     default: ${postgres_version}
     overwrite: true
     type: string
+  - name: db_port
+    default: 5432
+    overwrite: true
+    type: number
   template_refs:
     provider: terraform/cloudsql/provision/provider.tf
     versions: terraform/cloudsql/provision/versions.tf

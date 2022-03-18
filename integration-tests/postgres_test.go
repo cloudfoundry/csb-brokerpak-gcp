@@ -196,6 +196,17 @@ var _ = Describe("postgres", func() {
 		})
 	})
 
+	Context("port is configured", func() {
+		It("configures the port for postgres", func() {
+			broker.Provision("csb-google-postgres", postgresNoOverridesPlan["name"].(string), map[string]interface{}{"cores": 1})
+
+			invocations, err := mockTerraform.ApplyInvocations()
+			Expect(err).NotTo(HaveOccurred())
+			Expect(invocations).To(HaveLen(1))
+			Expect(invocations[0].TFVars()).To(HaveKeyWithValue("db_port", float64(5432)))
+		})
+	})
+
 	Context("bind a service ", func() {
 		It("return the bind values from terraform output", func() {
 			mockTerraform.ReturnTFState([]testframework.TFStateValue{

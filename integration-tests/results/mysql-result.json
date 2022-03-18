@@ -13,5 +13,6 @@
   },
   "project": "broker-gcp-project",
   "region": "us-central1",
-  "storage_gb": 10
+  "storage_gb": 10,
+  "db_port": 3306
 }
