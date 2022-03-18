@@ -142,6 +142,10 @@ provision:
     default: ${mysql_version}
     overwrite: true
     type: string
+  - name: db_port
+    default: 3306
+    overwrite: true
+    type: number
   template_refs:
     provider: terraform/cloudsql/provision/provider.tf
     versions: terraform/cloudsql/provision/versions.tf
