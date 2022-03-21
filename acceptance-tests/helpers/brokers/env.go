@@ -12,16 +12,17 @@ func (b Broker) env() []apps.EnvVar {
 	var result []apps.EnvVar
 
 	for name, required := range map[string]bool{
-		"GOOGLE_CREDENTIALS":         true,
-		"GOOGLE_PROJECT":             true,
-		"GCP_PAS_NETWORK":            true,
-		"GSB_BROKERPAK_BUILTIN_PATH": false,
-		"GSB_PROVISION_DEFAULTS":     false,
-		"CH_CRED_HUB_URL":            false,
-		"CH_UAA_URL":                 false,
-		"CH_UAA_CLIENT_NAME":         false,
-		"CH_UAA_CLIENT_SECRET":       false,
-		"CH_SKIP_SSL_VALIDATION":     false,
+		"GOOGLE_CREDENTIALS":                     true,
+		"GOOGLE_PROJECT":                         true,
+		"GCP_PAS_NETWORK":                        true,
+		"GSB_BROKERPAK_BUILTIN_PATH":             false,
+		"GSB_PROVISION_DEFAULTS":                 false,
+		"CH_CRED_HUB_URL":                        false,
+		"CH_UAA_URL":                             false,
+		"CH_UAA_CLIENT_NAME":                     false,
+		"CH_UAA_CLIENT_SECRET":                   false,
+		"CH_SKIP_SSL_VALIDATION":                 false,
+		"GSB_COMPATIBILITY_ENABLE_BETA_SERVICES": false,
 	} {
 		val, ok := os.LookupEnv(name)
 		switch {
