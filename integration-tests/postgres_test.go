@@ -111,7 +111,7 @@ var _ = Describe("postgres", func() {
 			},
 			Entry("11", "POSTGRES_11"),
 			Entry("12", "POSTGRES_12"),
-			Entry("13", "POSTGRES_14"),
+			Entry("13", "POSTGRES_13"),
 			Entry("14", "POSTGRES_14"),
 		)
 
