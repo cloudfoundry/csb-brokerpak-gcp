@@ -126,12 +126,12 @@ provision:
     overwrite: true
     type: number
   template_refs:
-    provider: terraform/cloudsql/provisionpostgresql/provider.tf
-    versions: terraform/cloudsql/provisionpostgresql/versions.tf
-    main: terraform/cloudsql/provisionpostgresql/main.tf
-    data: terraform/cloudsql/provisionpostgresql/data.tf
-    variables: terraform/cloudsql/provisionpostgresql/variables.tf
-    outputs: terraform/cloudsql/provisionpostgresql/outputs.tf
+    provider: terraform/cloudsql/postgresql/provision/provider.tf
+    versions: terraform/cloudsql/postgresql/provision/versions.tf
+    main: terraform/cloudsql/postgresql/provision/main.tf
+    data: terraform/cloudsql/postgresql/provision/data.tf
+    variables: terraform/cloudsql/postgresql/provision/variables.tf
+    outputs: terraform/cloudsql/postgresql/provision/outputs.tf
   outputs:
   - field_name: name
     type: string
@@ -180,11 +180,11 @@ bind:
     default: ${instance.details["use_tls"]}
     overwrite: true
   template_refs:
-    provider: terraform/cloudsql/bindpostgresql/provider.tf
-    versions: terraform/cloudsql/bindpostgresql/versions.tf
-    main: terraform/cloudsql/bindpostgresql/main.tf
-    variables: terraform/cloudsql/bindpostgresql/variables.tf
-    outputs: terraform/cloudsql/bindpostgresql/outputs.tf
+    provider: terraform/cloudsql/postgresql/bind/provider.tf
+    versions: terraform/cloudsql/postgresql/bind/versions.tf
+    main: terraform/cloudsql/postgresql/bind/main.tf
+    variables: terraform/cloudsql/postgresql/bind/variables.tf
+    outputs: terraform/cloudsql/postgresql/bind/outputs.tf
   outputs:
   - field_name: username
     type: string
