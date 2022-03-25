@@ -121,10 +121,6 @@ provision:
     default: ${postgres_version}
     overwrite: true
     type: string
-  - name: db_port
-    default: 5432
-    overwrite: true
-    type: number
   template_refs:
     provider: terraform/cloudsql/provisionpostgresql/provider.tf
     versions: terraform/cloudsql/provisionpostgresql/versions.tf
@@ -139,9 +135,6 @@ provision:
   - field_name: hostname
     type: string
     details: Hostname or IP address of the exposed postgres endpoint used by clients to connect to the service.
-  - field_name: port
-    type: integer
-    details: The port number of the exposed postgres instance.
   - field_name: username
     type: string
     details: The username to authenticate to the database instance.
