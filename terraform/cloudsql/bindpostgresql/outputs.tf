@@ -12,14 +12,6 @@ output "uri" {
     var.port,
   var.db_name)
 }
-/* output jdbcUrl {
-  value = format("jdbc:postgresql://%s:%d/%s?user=%s\u0026password=%s\u0026useSSL=false",
-                  var.hostname,
-                  var.port,
-                  var.db_name,
-                  random_string.username.result,
-                  random_password.password.result)
-} */
 
 output "jdbcUrl" {
   sensitive = true

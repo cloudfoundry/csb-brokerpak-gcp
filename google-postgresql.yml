@@ -126,12 +126,12 @@ provision:
     overwrite: true
     type: number
   template_refs:
-    provider: terraform/cloudsql/provision/provider.tf
-    versions: terraform/cloudsql/provision/versions.tf
-    main: terraform/cloudsql/provision/main.tf
-    data: terraform/cloudsql/provision/data.tf
-    variables: terraform/cloudsql/provision/variables.tf
-    outputs: terraform/cloudsql/provision/outputs.tf
+    provider: terraform/cloudsql/provisionpostgresql/provider.tf
+    versions: terraform/cloudsql/provisionpostgresql/versions.tf
+    main: terraform/cloudsql/provisionpostgresql/main.tf
+    data: terraform/cloudsql/provisionpostgresql/data.tf
+    variables: terraform/cloudsql/provisionpostgresql/variables.tf
+    outputs: terraform/cloudsql/provisionpostgresql/outputs.tf
   outputs:
   - field_name: name
     type: string
