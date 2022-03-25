@@ -12,3 +12,4 @@
 ### Fix:
 - All service offerings and plans are highlighted to be at a Beta lifecycle state.
 - Fixed typo `defualt` => `default` in the postgres service, now the size of storage volume should default to 10 GB
+- Bind users are now deleted on unbind operation and the ownership of the objects they created is passed on to a "provision_user"
