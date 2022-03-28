@@ -112,6 +112,16 @@ provision:
     details: The id of the Google Compute Engine network to which the instance is connected.
     default: ""
     prohibit_update: true
+  - field_name: authorized_networks_cidrs
+    type: array
+    details: CIDR notation IPv4 or IPv6 addresses that are allowed to access this instance.
+    default: []
+    prohibit_update: true
+  - field_name: public_ip
+    type: boolean
+    details: Assign a public ip to the database
+    default: false
+    prohibit_update: true
   computed_inputs:
   - name: labels
     default: ${json.marshal(request.default_labels)}
@@ -202,12 +212,6 @@ examples:
 - name: small configuration
   description: Create a small postgres instance
   plan_id: 85b27a04-8695-11ea-818a-274131861b81
-  provision_params: {}
-  bind_params: {}
-  bind_can_fail: true
-- name: medium configuration
-  description: Create a medium postgres instance
-  plan_id: b41ee300-8695-11ea-87df-cfcb8aecf3bc
-  provision_params: {}
+  provision_params: { "authorized_networks_cidrs": ["0.0.0.0/0"], "public_ip": true}
   bind_params: {}
   bind_can_fail: true

@@ -146,6 +146,8 @@ var _ = Describe("postgres", func() {
 			Expect(invocations[0].TFVars()).To(HaveKeyWithValue("project", BrokerGCPProject))
 			Expect(invocations[0].TFVars()).To(HaveKeyWithValue("authorized_network", "default"))
 			Expect(invocations[0].TFVars()).To(HaveKeyWithValue("authorized_network_id", ""))
+			Expect(invocations[0].TFVars()).To(HaveKeyWithValue("public_ip", false))
+			Expect(invocations[0].TFVars()).To(HaveKeyWithValue("authorized_networks_cidrs",  make([]interface{}, 0)))
 		})
 
 		It("provision instance with user parameters", func() {
@@ -159,6 +161,8 @@ var _ = Describe("postgres", func() {
 				"region":                "europe-west3",
 				"authorized_network":    "params_authorized_network",
 				"authorized_network_id": "params_authorized_network_id",
+				"public_ip": true,
+				"authorized_networks_cidrs": []string{"params_authorized_network_cidr1", "params_authorized_network_cidr2"},
 			}
 			broker.Provision("csb-google-postgres", postgresNoOverridesPlan["name"].(string), parameters)
 
@@ -174,6 +178,10 @@ var _ = Describe("postgres", func() {
 			Expect(invocations[0].TFVars()).To(HaveKeyWithValue("project", parameters["project"]))
 			Expect(invocations[0].TFVars()).To(HaveKeyWithValue("authorized_network", parameters["authorized_network"]))
 			Expect(invocations[0].TFVars()).To(HaveKeyWithValue("authorized_network_id", parameters["authorized_network_id"]))
+			Expect(invocations[0].TFVars()).To(HaveKeyWithValue("public_ip", true))
+			tfVars, _ := invocations[0].TFVars()
+			Expect(tfVars["authorized_networks_cidrs"]).To(ConsistOf("params_authorized_network_cidr1", "params_authorized_network_cidr2"))
+
 		})
 	})
 
