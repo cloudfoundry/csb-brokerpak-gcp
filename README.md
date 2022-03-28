@@ -34,3 +34,24 @@ The broker gets pushed into CloudFoundry as *cloud-service-broker-gcp*  It will 
 ## Broker
 The version of Cloud Service Broker to use with this brokerpak is encoded in the `go.mod` file.
 The make targets will use this version by default.
+
+## Tests
+
+### Example tests
+
+Services definitions declare examples for each plan they provide. Those examples are then run through the whole cycle of `provision`, `bind`, `unbind`, and `delete` when running
+
+```
+terminal 1
+>> make run
+
+terminal 2
+>> make run-examples
+```
+
+The make targets will use docker to run the service broker with the brokerpak included to exercise the service lifecycle.
+
+## Acceptance tests
+
+See [acceptance tests](acceptance-tests/README.md)
+    

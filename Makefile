@@ -9,7 +9,7 @@ help: ## list Makefile targets
 IAAS=gcp
 CSB_VERSION := $(or $(CSB_VERSION), $(shell grep 'github.com/cloudfoundry/cloud-service-broker' go.mod | grep -v replace | awk '{print $$NF}' | sed -e 's/v//'))
 CSB := $(or $(CSB), cfplatformeng/csb:$(CSB_VERSION))
-GO_OK := $(shell which go 1>/dev/null 2>/dev/null; echo $$?)
+GO_OK :=  $(or $(GO_OK), $(shell which go 1>/dev/null 2>/dev/null; echo $$?))
 DOCKER_OK := $(shell which docker 1>/dev/null 2>/dev/null; echo $$?)
 ifeq ($(GO_OK), 0)
 GO=go
