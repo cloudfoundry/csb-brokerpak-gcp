@@ -9,7 +9,7 @@ output "uri" {
     random_string.username.result,
     random_password.password.result,
     var.hostname,
-    var.port,
+    locals.port,
   locals.db_name)
 }
 output "port" { value = locals.port } 
