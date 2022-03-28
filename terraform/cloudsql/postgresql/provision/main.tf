@@ -9,9 +9,18 @@ resource "google_sql_database_instance" "instance" {
     user_labels = var.labels
 
     ip_configuration {
-      ipv4_enabled    = false
+      ipv4_enabled    = var.public_ip
       private_network = local.authorized_network_id
       #require_ssl = var.use_tls
+
+      dynamic "authorized_networks" {
+        for_each = var.authorized_networks_cidrs
+        iterator = networks
+
+        content {
+          value = networks.value
+        }
+      }
     }
   }
 
