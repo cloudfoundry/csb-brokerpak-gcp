@@ -147,12 +147,12 @@ provision:
     overwrite: true
     type: number
   template_refs:
-    provider: terraform/cloudsql/provision/provider.tf
-    versions: terraform/cloudsql/provision/versions.tf
-    main: terraform/cloudsql/provision/main.tf
-    data: terraform/cloudsql/provision/data.tf
-    variables: terraform/cloudsql/provision/variables.tf
-    outputs: terraform/cloudsql/provision/outputs.tf
+    provider: terraform/cloudsql/mysql/provision/provider.tf
+    versions: terraform/cloudsql/mysql/provision/versions.tf
+    main: terraform/cloudsql/mysql/provision/main.tf
+    data: terraform/cloudsql/mysql/provision/data.tf
+    variables: terraform/cloudsql/mysql/provision/variables.tf
+    outputs: terraform/cloudsql/mysql/provision/outputs.tf
   outputs:
   - field_name: name
     type: string
@@ -201,11 +201,11 @@ bind:
     default: ${instance.details["use_tls"]}
     overwrite: true
   template_refs:
-    provider: terraform/cloudsql/bindmysql/provider.tf
-    versions: terraform/cloudsql/bindmysql/versions.tf
-    main: terraform/cloudsql/bindmysql/main.tf
-    variables: terraform/cloudsql/bindmysql/variables.tf
-    outputs: terraform/cloudsql/bindmysql/outputs.tf
+    provider: terraform/cloudsql/mysql/bind/provider.tf
+    versions: terraform/cloudsql/mysql/bind/versions.tf
+    main: terraform/cloudsql/mysql/bind/main.tf
+    variables: terraform/cloudsql/mysql/bind/variables.tf
+    outputs: terraform/cloudsql/mysql/bind/outputs.tf
   outputs:
   - field_name: username
     type: string
