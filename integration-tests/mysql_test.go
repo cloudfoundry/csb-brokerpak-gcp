@@ -50,15 +50,6 @@ var _ = Describe("Mysql", func() {
 
 			Expect(err).To(MatchError(ContainSubstring("plan defined properties cannot be changed: cores")))
 		})
-		It("configures the port for postgres", func() {
-			broker.Provision("csb-google-mysql", "small", nil)
-
-			invocations, err := mockTerraform.ApplyInvocations()
-			Expect(err).NotTo(HaveOccurred())
-			Expect(invocations).To(HaveLen(1))
-			Expect(invocations[0].TFVars()).To(HaveKeyWithValue("db_port", float64(3306)))
-		})
-
 	})
 
 	Describe("property validations", func() {
