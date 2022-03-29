@@ -8,6 +8,7 @@ variable "region" { type = string }
 variable "labels" { type = map(any) }
 variable "storage_gb" { type = number }
 variable "database_version" { type = string }
+variable "db_port" { type = number }
 
 variable "credentials" { type = string }
 variable "project" { type = string }
