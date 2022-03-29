@@ -1,6 +1,6 @@
 provider "postgresql" {
   host      = var.hostname
-  port      = locals.port
+  port      = var.port
   username  = var.admin_username
   password  = var.admin_password
   superuser = false
