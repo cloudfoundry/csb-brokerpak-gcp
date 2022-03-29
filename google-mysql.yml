@@ -142,10 +142,6 @@ provision:
     default: ${mysql_version}
     overwrite: true
     type: string
-  - name: db_port
-    default: 3306
-    overwrite: true
-    type: number
   template_refs:
     provider: terraform/cloudsql/mysql/provision/provider.tf
     versions: terraform/cloudsql/mysql/provision/versions.tf
@@ -160,9 +156,6 @@ provision:
   - field_name: hostname
     type: string
     details: Hostname or IP address of the exposed mysql endpoint used by clients to connect to the service.
-  - field_name: port
-    type: integer
-    details: The port number of the exposed mysql instance.
   - field_name: username
     type: string
     details: The username to authenticate to the database instance.
@@ -183,10 +176,6 @@ bind:
   - name: mysql_hostname
     type: string
     default: ${instance.details["hostname"]}
-    overwrite: true
-  - name: mysql_port
-    type: integer
-    default: ${instance.details["port"]}
     overwrite: true
   - name: admin_username
     type: string
@@ -216,6 +205,9 @@ bind:
   - field_name: uri
     type: string
     details: The uri to connect to the database instance and database.
+  - field_name: port
+    type: integer
+    details: The port number of the exposed mysql instance.
   - field_name: jdbcUrl
     type: string
     details: The jdbc url to connect to the database instance and database.
