@@ -70,12 +70,12 @@ Brokerpak configuration values:
 
 ## Google Configuration
 
-The Azure brokerpak supports default values for tenant, subscription and service principal credentials.
+The GCP brokerpak supports default values for tenant, subscription and service principal credentials.
 
 | Environment Variable | Config File Value | Type | Description |
 |----------------------|-------------------|------|-------------|
-| GOOGLE_CREDENTIALS        | gcp.credentials     | string | the string version of the credentials file created for the Owner level Service Account |
-| GOOGLE_PROJECT  | gcp.project | string | gcp project id |
+| GOOGLE_CREDENTIALS   | gcp.credentials   | string | the string version of the credentials file created for the Owner level Service Account |
+| GOOGLE_PROJECT       | gcp.project       | string | gcp project id |
 
 
 ### config file example
@@ -115,29 +115,19 @@ provision:
 
 ### Plans Example
 
-The Azure MS SQL DB service (csb-azure-mssql-db) can also have its plans augmented to support more than one existing DB server:
+Plans should be added to the brokerpak configuration:
+
 ```yaml
 service:
-  csb-azure-mssql-db:
+  csb-csb-google-postgres:
     plans: '[
       {
-        "id":"881de5d9-e078-44e7-bed5-26faadabda3c",
-        "name":"standard-S0",
-        "description":"DTU: S0 - 10DTUS, 250GB storage",      
-        "sku_name":"S0"
-      },
-      {
-        "id":"1a1de5d9-e078-44e7-bed5-266aadabdaa6",
-        "name":"premium-P1",
-        "description":"DTU: P1 - 125DTUS, 500GB storage",      
-        "sku_name":"P1"
-      },
-      {
-        "id":"1a1de5d9-e079-44e7-bed5-266aadabdaa6",
-        "name":"standard-S3-server1",
-        "description":"Server1 DB - DTU: S3 - 100, 250GB storage",      
-        "sku_name":"S3",
-        "server":"sql-server1"
+        "name":"small",
+        "id":"85b27a04-8695-11ea-818a-274131861b81",
+        "description":"PostgreSQL with default version, shared CPU, minumum 0.6GB ram, 10GB storage",
+        "display_name":"small",
+        "cores":0.6,
+        "storage_gb":10
       }
     ]'
 ```

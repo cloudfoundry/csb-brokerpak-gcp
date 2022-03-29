@@ -7,7 +7,8 @@ Documentation for broker configuration can be found [here](./configuration.md).
 ## Requirements
 
 ### CloudFoundry running on GCP.
-The GCP brokerpak services are provisioned with firewall rules that only allow internal connectivity. This allows `cf push`ed applications access, while denying any public access.
+The GCP brokerpak services are provisioned with firewall rules that only allow internal connectivity. 
+This allows `cf push`ed applications access, while denying any public access.
 
 ### GCP Service Credentials
 
@@ -42,7 +43,6 @@ Enable the following services in **[APIs and services > Library](https://console
 1. Select the checkbox to **Furnish a new Private Key**, make sure the **JSON** key type is specified.
 1. Click **Save** to create the account, key and grant it the owner permission.
 1. Save the automatically downloaded key file to a secure location.
-
 
 ### MySQL Database for Broker State
 The broker keeps service instance and binding information in a MySQL database. 
@@ -143,38 +143,9 @@ gcp:
 Push the broker as a binary application:
 
 ```bash
-SECURITY_USER_NAME=someusername
-SECURITY_USER_PASSWORD=somepassword
-APP_NAME=cloud-service-broker
-
-chmod +x cloud-service-broker
-cf push "${APP_NAME}" -c './cloud-service-broker serve --config config.yml' -b binary_buildpack --random-route --no-start
+make push-broker
 ```
 
-Bind the MySQL database and start the service broker:
-```bash
-cf bind-service cloud-service-broker csb-sql
-cf start "${APP_NAME}"
-```
-Register the service broker:
-```bash
-BROKER_NAME=csb-$USER
-
-cf create-service-broker "${BROKER_NAME}" "${SECURITY_USER_NAME}" "${SECURITY_USER_PASSWORD}" https://$(cf app "${APP_NAME}" | grep 'routes:' | cut -d ':' -f 2 | xargs) --space-scoped || cf update-service-broker "${BROKER_NAME}" "${SECURITY_USER_NAME}" "${SECURITY_USER_PASSWORD}" https://$(cf app "${APP_NAME}" | grep 'routes:' | cut -d ':' -f 2 | xargs)
-```
-
-
-Bind the MySQL database and start the service broker:
-```bash
-cf bind-service cloud-service-broker csb-sql
-cf start "${APP_NAME}"
-```
-Register the service broker:
-```bash
-BROKER_NAME=csb-$USER
-
-cf create-service-broker "${BROKER_NAME}" "${SECURITY_USER_NAME}" "${SECURITY_USER_PASSWORD}" https://$(cf app "${APP_NAME}" | grep 'routes:' | cut -d ':' -f 2 | xargs) --space-scoped || cf update-service-broker "${BROKER_NAME}" "${SECURITY_USER_NAME}" "${SECURITY_USER_PASSWORD}" https://$(cf app "${APP_NAME}" | grep 'routes:' | cut -d ':' -f 2 | xargs)
-```
 Once this completes, the output from `cf marketplace` should include:
 
 ```
@@ -225,22 +196,10 @@ api:
 
 ### Push and Register the Broker
 
-Push the broker as a binary application:
+Push the broker as a binary application and register it as a broker:
 
 ```bash
-SECURITY_USER_NAME=someusername
-SECURITY_USER_PASSWORD=somepassword
-APP_NAME=cloud-service-broker
-
-chmod +x cloud-service-broker
-cf push "${APP_NAME}" -c './cloud-service-broker serve --config config.yml' -b binary_buildpack --random-route
-```
-
-Register the service broker:
-```bash
-BROKER_NAME=csb-$USER
-
-cf create-service-broker "${BROKER_NAME}" "${SECURITY_USER_NAME}" "${SECURITY_USER_PASSWORD}" https://$(cf app "${APP_NAME}" | grep 'routes:' | cut -d ':' -f 2 | xargs) --space-scoped || cf update-service-broker "${BROKER_NAME}" "${SECURITY_USER_NAME}" "${SECURITY_USER_PASSWORD}" https://$(cf app "${APP_NAME}" | grep 'routes:' | cut -d ':' -f 2 | xargs)
+make push-broker
 ```
 
 Once these steps are complete, the output from `cf marketplace` should resemble the same as above.
@@ -251,11 +210,11 @@ Grab the source code, build and deploy.
 ### Requirements
 
 The following tools are needed on your workstation:
-- [go 1.14](https://golang.org/dl/)
+- [go 1.17](https://golang.org/dl/)
 - make
 - [cf cli](https://docs.cloudfoundry.org/cf-cli/install-go-cli.html)
 
-The Pivotal GCP Service Broker must be installed in your foundation.
+The Cloud Service Broker for GCP must be installed in your foundation.
 
 ### Assumptions
 
@@ -265,8 +224,8 @@ The `cf` CLI has been used to authenticate with a foundation (`cf api` and `cf l
 
 The following commands will clone the service broker repository and cd into the resulting directory.
 ```bash
-git clone https://github.com/pivotal/"${APP_NAME}".git
-cd "${APP_NAME}"
+git clone https://github.com/cloudfoundry/cloud-service-broker.git
+cd cloud-service-broker
 ```
 ### Set Required Environment Variables
 
@@ -280,6 +239,7 @@ Generate username and password for the broker - Cloud Foundry will use these cre
 export SECURITY_USER_NAME=someusername
 export SECURITY_USER_PASSWORD=somepassword
 ```
+
 ### Create a MySQL instance
 
 The following command will create a basic MySQL database instance named `csb-sql`
@@ -288,9 +248,11 @@ cf create-service google-cloudsql-mysql basic csb-sql
 ```
 ### Use the Makefile to Deploy the Broker
 There is a make target that will build the broker and brokerpak and deploy to and register with Cloud Foundry as a space scoped broker. This will be local and private to the org and space your `cf` CLI is targeting.
+
 ```bash
-make push-broker-gcp
+make push-broker
 ```
+
 Once these steps are complete, the output from `cf marketplace` should resemble the same as above.
 
 ## Step By Step Slightly Harder Way
@@ -310,32 +272,6 @@ Use the makefile to build the broker executable and brokerpak.
 ```bash
 make build-gcp-brokerpak
 ```
-### Pushing the Broker
-All the steps to push and register the broker:
-```bash
-APP_NAME=cloud-service-broker
-
-cf push --no-start
-
-cf set-env "${APP_NAME}" SECURITY_USER_PASSWORD "${SECURITY_USER_PASSWORD}"
-cf set-env "${APP_NAME}" SECURITY_USER_NAME "${SECURITY_USER_NAME}"
-
-cf set-env "${APP_NAME}" GOOGLE_CREDENTIALS "${GOOGLE_CREDENTIALS}"
-
-cf set-env "${APP_NAME}" DB_HOST "${DB_HOST}"
-cf set-env "${APP_NAME}" DB_USERNAME "${DB_USERNAME}"
-cf set-env "${APP_NAME}" DB_PASSWORD "${DB_PASSWORD}"
-
-cf set-env "${APP_NAME}" GSB_BROKERPAK_BUILTIN_PATH ./gcp-brokerpak
-
-cf start "${APP_NAME}"
-
-BROKER_NAME=csb-$USER
-
-cf create-service-broker "${BROKER_NAME}" "${SECURITY_USER_NAME}" "${SECURITY_USER_PASSWORD}" https://$(cf app "${APP_NAME}" | grep 'routes:' | cut -d ':' -f 2 | xargs) --space-scoped || cf update-service-broker "${BROKER_NAME}" "${SECURITY_USER_NAME}" "${SECURITY_USER_PASSWORD}" https://$(cf app "${APP_NAME}" | grep 'routes:' | cut -d ':' -f 2 | xargs)
-```
-Once these steps are complete, the output from `cf marketplace` should resemble the same as above.
-
 ## Uninstalling the Broker
 First, make sure there are all service instances created with `cf create-service` have been destroyed with `cf delete-service` otherwise removing the broker will fail.
 
