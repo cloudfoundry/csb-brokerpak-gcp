@@ -8,12 +8,12 @@ The service broker is deployed to CloudFoundry as a `cf push`ed application.
 * [GCP](./gcp-installation.md)
 
 ## Cloud Service Broker General
-* [Consuming Services](./use.md)
+* Consuming Services are documented in Tanzu CSB for GCP official docs.
 
 ## Brokerpak Specifications
-* [Brokerpak Intro](https://github.com/cloudfoundry-incubator/cloud-service-broker/tree/master/docs/brokerpak-intro.md)
-* [Brokerpak Specification](https://github.com/cloudfoundry-incubator/cloud-service-broker/tree/master/docs/brokerpak-specification.md)
+* [Brokerpak Intro](https://github.com/cloudfoundry/cloud-service-broker/tree/main/docs/brokerpak-intro.md)
+* [Brokerpak Specification](https://github.com/cloudfoundry/cloud-service-broker/tree/main/docs/brokerpak-specification.md)
 
 ## Brokerpak Development
-* [Brokerpak Dissection](https://github.com/cloudfoundry-incubator/cloud-service-broker/tree/master/docs/brokerpak-dissection.md)
+* [Brokerpak Dissection](https://github.com/cloudfoundry/cloud-service-broker/tree/main/docs/brokerpak-dissection.md)
 
