@@ -1,4 +1,4 @@
-package redis_test
+package acceptance_test
 
 import (
 	"csbbrokerpakgcp/acceptance-tests/helpers/apps"
@@ -10,7 +10,7 @@ import (
 	. "github.com/onsi/gomega"
 )
 
-var _ = Describe("Redis", func() {
+var _ = Describe("Redis", Label("redis"), func() {
 	It("can be accessed by an app", func() {
 		By("creating a service instance")
 		serviceInstance := services.CreateInstance("csb-google-redis", "basic")

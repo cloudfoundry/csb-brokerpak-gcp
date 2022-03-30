@@ -1,4 +1,4 @@
-package mysql_test
+package acceptance_test
 
 import (
 	"csbbrokerpakgcp/acceptance-tests/helpers/apps"
@@ -10,7 +10,7 @@ import (
 	. "github.com/onsi/gomega"
 )
 
-var _ = Describe("Mysql", func() {
+var _ = Describe("Mysql", Label("mysql"), func() {
 	It("can be accessed by an app", func() {
 		By("creating a service instance")
 		serviceInstance := services.CreateInstance("csb-google-mysql", "small")
