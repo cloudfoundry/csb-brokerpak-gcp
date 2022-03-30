@@ -1,4 +1,4 @@
-package postgresql_test
+package acceptance_test
 
 import (
 	"csbbrokerpakgcp/acceptance-tests/helpers/apps"
@@ -10,7 +10,7 @@ import (
 	. "github.com/onsi/gomega"
 )
 
-var _ = Describe("PostgreSQL", func() {
+var _ = Describe("PostgreSQL", Label("postgresql"), func() {
 	It("can be accessed by an app", func() {
 		By("creating a service instance")
 		serviceInstance := services.CreateInstance("csb-google-postgres", "small")
