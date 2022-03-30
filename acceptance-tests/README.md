@@ -28,4 +28,4 @@ The main pattern is:
 ### Run tests
 
 - Move in the test folder e.g `acceptance-tests`
-- Run tests from IDE or run command `go run github.com/onsi/ginkgo/v2/ginkgo -v`
+- Run tests from IDE or run command `go run github.com/onsi/ginkgo/v2/ginkgo -v --label-filter=<test-label>`
