@@ -11,7 +11,6 @@ func (b *Broker) UpdateBroker(dir string) {
 		apps.WithDir(dir),
 	)
 
-	WithEnv(b.latestEnv()...)(b)
 	b.app.SetEnv(b.env()...)
 	b.app.Restart()
 
