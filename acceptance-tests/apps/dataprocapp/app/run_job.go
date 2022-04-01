@@ -4,7 +4,7 @@ import (
 	"context"
 	"dataprocapp/credentials"
 	"fmt"
-	"io/ioutil"
+	"io"
 	"log"
 	"net/http"
 	"regexp"
@@ -82,7 +82,7 @@ func handleRunJob(jobClient dataproc.JobControllerClient, creds credentials.Data
 
 		defer reader.Close()
 
-		body, err := ioutil.ReadAll(reader)
+		body, err := io.ReadAll(reader)
 		if err != nil {
 			fail(w, http.StatusFailedDependency, "could not read output from Dataproc Job: %v", err)
 			return
