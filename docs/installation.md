@@ -210,7 +210,7 @@ Grab the source code, build and deploy.
 ### Requirements
 
 The following tools are needed on your workstation:
-- [go 1.17](https://golang.org/dl/)
+- [go 1.18](https://golang.org/dl/)
 - make
 - [cf cli](https://docs.cloudfoundry.org/cf-cli/install-go-cli.html)
 
