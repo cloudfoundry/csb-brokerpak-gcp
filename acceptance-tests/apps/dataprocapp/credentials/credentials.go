@@ -3,6 +3,7 @@ package credentials
 import (
 	b64 "encoding/base64"
 	"fmt"
+
 	"github.com/cloudfoundry-community/go-cfenv"
 	"github.com/mitchellh/mapstructure"
 )
