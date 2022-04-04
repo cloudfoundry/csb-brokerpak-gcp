@@ -60,7 +60,7 @@ provision:
     default: 10
     constraints:
       maximum: 4096
-      minumum: 10
+      minimum: 10
   user_inputs:
   - field_name: config
     type: string
