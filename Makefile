@@ -9,9 +9,6 @@ help: ## list Makefile targets
 IAAS=gcp
 CSB_VERSION := $(or $(CSB_VERSION), $(shell grep 'github.com/cloudfoundry/cloud-service-broker' go.mod | grep -v replace | awk '{print $$NF}' | sed -e 's/v//'))
 CSB_RELEASE_VERSION := CSB_VERSION # this doesnt work well if we did make latest-csb.
-#CSB_RELEASE_VERSION := $(shell echo '0.10.1-0.20220330112451-7ce0dfa511c7' | awk -F'-' '{print $1}')
-#$(info $$CSB_VERSION is [${CSB_VERSION}])
-#$(info $$CSB_RELEASE_VERSION is [${CSB_RELEASE_VERSION}])
 
 CSB_DOCKER_IMAGE := $(or $(CSB), cfplatformeng/csb:$(CSB_VERSION))
 GO_OK :=  $(or $(USE_GO_CONTAINERS), $(shell which go 1>/dev/null 2>/dev/null; echo $$?))
