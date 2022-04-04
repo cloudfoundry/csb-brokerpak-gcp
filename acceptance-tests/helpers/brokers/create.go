@@ -5,6 +5,7 @@ import (
 	"csbbrokerpakgcp/acceptance-tests/helpers/cf"
 	"csbbrokerpakgcp/acceptance-tests/helpers/random"
 	"fmt"
+	"os"
 	"strings"
 )
 
@@ -64,18 +65,6 @@ func WithEnv(env ...apps.EnvVar) Option {
 	}
 }
 
-func WithReleaseEnv() Option {
-	return func(b *Broker) {
-		b.envExtras = append(b.envExtras, b.releaseEnv()...)
-	}
-}
-
-func WithLatestEnv() Option {
-	return func(b *Broker) {
-		b.envExtras = append(b.envExtras, b.latestEnv()...)
-	}
-}
-
 func WithUsername(username string) Option {
 	return func(b *Broker) {
 		b.username = username
@@ -91,11 +80,23 @@ func WithPassword(password string) Option {
 func defaultConfig(opts ...Option) (broker Broker) {
 	defaults := []Option{
 		WithName(random.Name(random.WithPrefix("broker"))),
-		WithSourceDir("../.."),
+		WithSourceDir(defaultSourceDir()),
 		WithUsername(random.Name()),
 		WithPassword(random.Password()),
 		WithEncryptionSecret(random.Password()),
 	}
 	WithOptions(append(defaults, opts...)...)(&broker)
 	return broker
+}
+
+func defaultSourceDir() string {
+	for _, d := range []string{"..", "../.."} {
+		p := fmt.Sprintf("%s/%s", d, "cf-manifest.yml")
+		_, err := os.Stat(p)
+		if err == nil {
+			return d
+		}
+	}
+
+	panic("could not find source for broker app")
 }

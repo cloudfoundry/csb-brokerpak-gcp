@@ -1,4 +1,4 @@
-package stackdrivertrace_test
+package acceptance_test
 
 import (
 	"context"
@@ -17,7 +17,7 @@ import (
 	cloudtracepb "google.golang.org/genproto/googleapis/devtools/cloudtrace/v1"
 )
 
-var _ = Describe("Stackdrivertrace", func() {
+var _ = Describe("Stackdrivertrace", Label("stackdrivertrace"), func() {
 	It("can emit app trace", func() {
 		By("creating a service instance")
 		serviceInstance := services.CreateInstance("csb-google-stackdriver-trace", "default")
