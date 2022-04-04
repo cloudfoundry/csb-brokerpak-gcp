@@ -1,17 +1,17 @@
 package app
 
 import (
-	"cloud.google.com/go/storage"
 	"context"
-	"github.com/gorilla/mux"
 	"log"
 	"net/http"
+
+	"cloud.google.com/go/storage"
+	"github.com/gorilla/mux"
 )
 
 func handleDelete(client *storage.Client, bucketName string) func(w http.ResponseWriter, r *http.Request) {
 	return func(w http.ResponseWriter, r *http.Request) {
 		log.Println("Handling delete.")
-
 
 		key, ok := mux.Vars(r)["fileName"]
 		if !ok {

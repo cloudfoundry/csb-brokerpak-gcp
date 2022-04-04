@@ -5,7 +5,6 @@ import (
 	"testing"
 
 	testframework "github.com/cloudfoundry/cloud-service-broker/brokerpaktestframework"
-
 	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
 )
@@ -15,11 +14,15 @@ func TestIntegrationTests(t *testing.T) {
 	RunSpecs(t, "IntegrationTests Suite")
 }
 
-var mockTerraform testframework.TerraformMock
-var broker *testframework.TestInstance
+var (
+	mockTerraform testframework.TerraformMock
+	broker        *testframework.TestInstance
+)
 
-var BrokerGCPProject = "broker-gcp-project"
-var BrokerGCPCreds = "broker-gcp-creds"
+const (
+	BrokerGCPProject = "broker-gcp-project"
+	BrokerGCPCreds   = "broker-gcp-creds"
+)
 
 var _ = BeforeSuite(func() {
 	var err error
@@ -37,6 +40,7 @@ var _ = BeforeSuite(func() {
 		"GOOGLE_CREDENTIALS=" + BrokerGCPCreds,
 		"GOOGLE_PROJECT=" + BrokerGCPProject,
 		`GSB_SERVICE_CSB_GOOGLE_POSTGRES_PLANS=` + string(postgresPlansJson),
+		"CSB_LISTENER_HOST=localhost", // prevents permissions popup
 	})).To(Succeed())
 })
 

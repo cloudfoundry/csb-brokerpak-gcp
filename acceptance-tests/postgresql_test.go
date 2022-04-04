@@ -39,7 +39,7 @@ var _ = Describe("PostgreSQL", Label("postgresql"), func() {
 		key := random.Hexadecimal()
 		value := random.Hexadecimal()
 		appOne.PUT(value, "%s/%s", schema, key)
-		
+
 		By("getting the value using the second app")
 		got := appTwo.GET("%s/%s", schema, key)
 		Expect(got).To(Equal(value))

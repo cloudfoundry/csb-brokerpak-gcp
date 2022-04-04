@@ -3,10 +3,11 @@ package app
 import (
 	"context"
 	"fmt"
-	"google.golang.org/api/option"
 	"log"
 	"net/http"
 	"storageapp/internal/credentials"
+
+	"google.golang.org/api/option"
 
 	"cloud.google.com/go/storage"
 	"github.com/gorilla/mux"

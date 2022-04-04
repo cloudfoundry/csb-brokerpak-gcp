@@ -2,6 +2,7 @@ package credentials
 
 import (
 	"fmt"
+
 	"github.com/mitchellh/mapstructure"
 
 	"github.com/cloudfoundry-community/go-cfenv"

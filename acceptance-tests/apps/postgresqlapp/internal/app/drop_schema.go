@@ -1,10 +1,12 @@
 package app
+
 import (
 	"database/sql"
 	"fmt"
 	"log"
 	"net/http"
 )
+
 func handleDropSchema(db *sql.DB) func(w http.ResponseWriter, r *http.Request) {
 	return func(w http.ResponseWriter, r *http.Request) {
 		log.Println("Handling drop schema.")

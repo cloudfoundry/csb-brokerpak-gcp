@@ -1,8 +1,8 @@
 package acceptance_test
 
 import (
-	"testing"
 	"csbbrokerpakgcp/acceptance-tests/helpers/environment"
+	"testing"
 
 	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"

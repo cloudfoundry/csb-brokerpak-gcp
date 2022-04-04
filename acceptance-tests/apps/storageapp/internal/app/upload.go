@@ -1,12 +1,13 @@
 package app
 
 import (
-	"cloud.google.com/go/storage"
 	"context"
-	"github.com/gorilla/mux"
 	"io"
 	"log"
 	"net/http"
+
+	"cloud.google.com/go/storage"
+	"github.com/gorilla/mux"
 )
 
 func handleUpload(client *storage.Client, bucketName string) func(w http.ResponseWriter, r *http.Request) {
