@@ -118,7 +118,7 @@ var _ = Describe("postgres", func() {
 		DescribeTable(
 			"does not allow versions other than 11-14",
 			func(version interface{}) {
-				_, err := broker.Provision("csb-google-postgres", postgresNoOverridesPlan["name"].(string), map[string]interface{}{"cores": 1,"postgres_version": version})
+				_, err := broker.Provision("csb-google-postgres", postgresNoOverridesPlan["name"].(string), map[string]interface{}{"cores": 1, "postgres_version": version})
 				Expect(err).To(HaveOccurred())
 				Expect(err).To(MatchError(ContainSubstring("postgres_version: postgres_version must be one of the following")))
 
@@ -147,21 +147,21 @@ var _ = Describe("postgres", func() {
 			Expect(invocations[0].TFVars()).To(HaveKeyWithValue("authorized_network", "default"))
 			Expect(invocations[0].TFVars()).To(HaveKeyWithValue("authorized_network_id", ""))
 			Expect(invocations[0].TFVars()).To(HaveKeyWithValue("public_ip", false))
-			Expect(invocations[0].TFVars()).To(HaveKeyWithValue("authorized_networks_cidrs",  make([]interface{}, 0)))
+			Expect(invocations[0].TFVars()).To(HaveKeyWithValue("authorized_networks_cidrs", make([]interface{}, 0)))
 		})
 
 		It("provision instance with user parameters", func() {
 			parameters := map[string]interface{}{
-				"cores":                 float64(10),
-				"postgres_version":      "POSTGRES_14",
-				"storage_gb":            float64(20),
-				"credentials":           "params_cred",
-				"project":               "params_project",
-				"db_name":               "params_db_name",
-				"region":                "europe-west3",
-				"authorized_network":    "params_authorized_network",
-				"authorized_network_id": "params_authorized_network_id",
-				"public_ip": true,
+				"cores":                     float64(10),
+				"postgres_version":          "POSTGRES_14",
+				"storage_gb":                float64(20),
+				"credentials":               "params_cred",
+				"project":                   "params_project",
+				"db_name":                   "params_db_name",
+				"region":                    "europe-west3",
+				"authorized_network":        "params_authorized_network",
+				"authorized_network_id":     "params_authorized_network_id",
+				"public_ip":                 true,
 				"authorized_networks_cidrs": []string{"params_authorized_network_cidr1", "params_authorized_network_cidr2"},
 			}
 			broker.Provision("csb-google-postgres", postgresNoOverridesPlan["name"].(string), parameters)
@@ -207,21 +207,21 @@ var _ = Describe("postgres", func() {
 	Context("bind a service ", func() {
 		It("return the bind values from terraform output", func() {
 			mockTerraform.ReturnTFState([]testframework.TFStateValue{
-				{"hostname", "string", "create.hostname.gcp.test"},
-				{"use_tls", "bool", false},
-				{"username", "string", "create.test.username"},
-				{"password", "string", "create.test.password"},
-				{"name", "string", "create.test.instancename"},
+				{Name: "hostname", Type: "string", Value: "create.hostname.gcp.test"},
+				{Name: "use_tls", Type: "bool", Value: false},
+				{Name: "username", Type: "string", Value: "create.test.username"},
+				{Name: "password", Type: "string", Value: "create.test.password"},
+				{Name: "name", Type: "string", Value: "create.test.instancename"},
 			})
 
 			instanceID, err := broker.Provision("csb-google-postgres", postgresAllOverridesPlan["name"].(string), nil)
 			Expect(err).NotTo(HaveOccurred())
 
 			mockTerraform.ReturnTFState([]testframework.TFStateValue{
-				{"username", "string", "bind.test.username"},
-				{"password", "string", "bind.test.password"},
-				{"uri", "string", "bind.test.uri"},
-				{"jdbcUrl", "string", "bind.test.jdbcUrl"},
+				{Name: "username", Type: "string", Value: "bind.test.username"},
+				{Name: "password", Type: "string", Value: "bind.test.password"},
+				{Name: "uri", Type: "string", Value: "bind.test.uri"},
+				{Name: "jdbcUrl", Type: "string", Value: "bind.test.jdbcUrl"},
 			})
 			bindResult, err := broker.Bind("csb-google-postgres", postgresAllOverridesPlan["name"].(string), instanceID, nil)
 			Expect(err).NotTo(HaveOccurred())

@@ -1,10 +1,11 @@
 package app
 
 import (
-	"cloud.google.com/go/storage"
 	"context"
-	"github.com/gorilla/mux"
 	"io"
+
+	"cloud.google.com/go/storage"
+	"github.com/gorilla/mux"
 
 	"log"
 	"net/http"
@@ -25,7 +26,6 @@ func handleDownload(client *storage.Client, bucketName string) func(w http.Respo
 			fail(w, http.StatusFailedDependency, "getting reader for bucket object: %v", err)
 			return
 		}
-
 
 		w.WriteHeader(http.StatusOK)
 		w.Header().Set("Content-Type", "text/html")

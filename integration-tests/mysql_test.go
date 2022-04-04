@@ -1,13 +1,14 @@
 package integration_tests
 
 import (
-	testframework "github.com/cloudfoundry/cloud-service-broker/brokerpaktestframework"
-	. "github.com/onsi/ginkgo/v2"
-	. "github.com/onsi/gomega"
 	"os"
 	"path/filepath"
 	"regexp"
 	"runtime"
+
+	testframework "github.com/cloudfoundry/cloud-service-broker/brokerpaktestframework"
+	. "github.com/onsi/ginkgo/v2"
+	. "github.com/onsi/gomega"
 )
 
 var _ = Describe("Mysql", func() {
