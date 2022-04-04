@@ -39,7 +39,7 @@ var _ = Describe("postgres", func() {
 		Expect(mockTerraform.Reset()).NotTo(HaveOccurred())
 	})
 
-	It("publish postgres in the catalog", func() {
+	It("publishes postgres in the catalog", func() {
 		catalog, err := broker.Catalog()
 		Expect(err).NotTo(HaveOccurred())
 		service := testframework.FindService(catalog, "csb-google-postgres")
@@ -50,14 +50,13 @@ var _ = Describe("postgres", func() {
 
 		planMetadata := testframework.FindServicePlan(catalog, "csb-google-postgres", postgresNoOverridesPlan["name"].(string))
 		Expect(planMetadata.Description).NotTo(BeEmpty())
-
 	})
 
 	Context("prevent updating properties of the service instance", func() {
 		var instanceGUID string
-		var err error
 
 		BeforeEach(func() {
+			var err error
 			instanceGUID, err = broker.Provision("csb-google-postgres", postgresNoOverridesPlan["name"].(string), map[string]interface{}{"cores": 1})
 
 			invocations, err := mockTerraform.ApplyInvocations()
@@ -70,7 +69,7 @@ var _ = Describe("postgres", func() {
 		DescribeTable(
 			"should prevent users from updating",
 			func(key string, value interface{}) {
-				err = broker.Update(instanceGUID, "csb-google-postgres", postgresNoOverridesPlan["name"].(string), map[string]interface{}{key: value})
+				err := broker.Update(instanceGUID, "csb-google-postgres", postgresNoOverridesPlan["name"].(string), map[string]interface{}{key: value})
 
 				Expect(err).To(HaveOccurred())
 				Expect(err).To(MatchError(ContainSubstring("attempt to update parameter that may result in service instance re-creation and data loss")))
@@ -89,8 +88,8 @@ var _ = Describe("postgres", func() {
 			Entry("authorized_network", "authorized_network", "new_network_id"),
 		)
 	})
-	Context("versions of postgres", func() {
 
+	Context("versions of postgres", func() {
 		It("defaults to postgres postgresql_13", func() {
 			broker.Provision("csb-google-postgres", postgresNoOverridesPlan["name"].(string), map[string]interface{}{"cores": 1})
 
@@ -99,6 +98,7 @@ var _ = Describe("postgres", func() {
 			Expect(invocations).To(HaveLen(1))
 			Expect(invocations[0].TFVars()).To(HaveKeyWithValue("database_version", "POSTGRES_13"))
 		})
+
 		DescribeTable(
 			"supports custom postgres versions",
 			func(version interface{}) {
@@ -150,7 +150,7 @@ var _ = Describe("postgres", func() {
 			Expect(invocations[0].TFVars()).To(HaveKeyWithValue("authorized_networks_cidrs", make([]interface{}, 0)))
 		})
 
-		It("provision instance with user parameters", func() {
+		It("provisions instance with user parameters", func() {
 			parameters := map[string]interface{}{
 				"cores":                     float64(10),
 				"postgres_version":          "POSTGRES_14",
@@ -181,7 +181,6 @@ var _ = Describe("postgres", func() {
 			Expect(invocations[0].TFVars()).To(HaveKeyWithValue("public_ip", true))
 			tfVars, _ := invocations[0].TFVars()
 			Expect(tfVars["authorized_networks_cidrs"]).To(ConsistOf("params_authorized_network_cidr1", "params_authorized_network_cidr2"))
-
 		})
 	})
 
@@ -236,5 +235,55 @@ var _ = Describe("postgres", func() {
 				"use_tls":  false,
 			}))
 		})
+	})
+
+	Describe("backup", func() {
+		It("enables backup by default", func() {
+			broker.Provision("csb-google-postgres", postgresNoOverridesPlan["name"].(string), map[string]interface{}{"cores": 1})
+
+			invocations, err := mockTerraform.ApplyInvocations()
+			Expect(err).NotTo(HaveOccurred())
+			Expect(invocations).To(HaveLen(1))
+			Expect(invocations[0].TFVars()).To(SatisfyAll(
+				HaveKeyWithValue("backups_retain_number", float64(7)),
+				HaveKeyWithValue("backups_location", "us"),
+				HaveKeyWithValue("backups_start_time", "07:00"),
+				HaveKeyWithValue("backups_point_in_time_log_retain_days", float64(7)),
+			))
+		})
+
+		It("allows backup to be configured", func() {
+			broker.Provision("csb-google-postgres", postgresNoOverridesPlan["name"].(string), map[string]interface{}{
+				"cores":                                 1,
+				"backups_retain_number":                 0,
+				"backups_location":                      "eu",
+				"backups_start_time":                    "09:15",
+				"backups_point_in_time_log_retain_days": 0,
+			})
+
+			invocations, err := mockTerraform.ApplyInvocations()
+			Expect(err).NotTo(HaveOccurred())
+			Expect(invocations).To(HaveLen(1))
+			Expect(invocations[0].TFVars()).To(SatisfyAll(
+				HaveKeyWithValue("backups_retain_number", float64(0)),
+				HaveKeyWithValue("backups_location", "eu"),
+				HaveKeyWithValue("backups_start_time", "09:15"),
+				HaveKeyWithValue("backups_point_in_time_log_retain_days", float64(0)),
+			))
+		})
+
+		DescribeTable(
+			"validation of backup properties",
+			func(prop string, value interface{}, substring string) {
+				_, err := broker.Provision("csb-google-postgres", postgresNoOverridesPlan["name"].(string), map[string]interface{}{"cores": 1, prop: value})
+				Expect(err).To(MatchError(ContainSubstring(substring)))
+			},
+			Entry("min backups_retain_number", "backups_retain_number", -1, "backups_retain_number: Must be greater than or equal to 0"),
+			Entry("max backups_retain_number", "backups_retain_number", 1001, "backups_retain_number: Must be less than or equal to 1000"),
+			Entry("invalid backups_location", "backups_location", "moon", `backups_location must be one of the following: \"asia\", \"eu\", \"us\"`),
+			Entry("invalid backups_start_time", "backups_start_time", "34:91", `backups_start_time: Does not match pattern`),
+			Entry("min backups_point_in_time_log_retain_days", "backups_point_in_time_log_retain_days", -1, "backups_point_in_time_log_retain_days: Must be greater than or equal to 0"),
+			Entry("max backups_point_in_time_log_retain_days", "backups_point_in_time_log_retain_days", 8, "backups_point_in_time_log_retain_days: Must be less than or equal to 7"),
+		)
 	})
 })

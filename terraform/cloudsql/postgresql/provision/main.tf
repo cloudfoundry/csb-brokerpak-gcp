@@ -24,13 +24,13 @@ resource "google_sql_database_instance" "instance" {
     }
 
     backup_configuration {
-      enabled = true
-      start_time = "17:00"
-      location = "us"
-      point_in_time_recovery_enabled = true
-      transaction_log_retention_days = 7
+      enabled = var.backups_retain_number != 0
+      start_time = var.backups_start_time
+      location = var.backups_location
+      point_in_time_recovery_enabled = var.backups_retain_number != 0 && var.backups_point_in_time_log_retain_days != 0
+      transaction_log_retention_days = var.backups_point_in_time_log_retain_days
       backup_retention_settings {
-        retained_backups = 7
+        retained_backups = var.backups_retain_number
       }
     }
   }
