@@ -1,13 +1,14 @@
 package app
 
 import (
-	dataproc "cloud.google.com/go/dataproc/apiv1"
 	"context"
 	"dataprocapp/credentials"
-	"github.com/gorilla/mux"
-	dataprocpb "google.golang.org/genproto/googleapis/cloud/dataproc/v1"
 	"log"
 	"net/http"
+
+	dataproc "cloud.google.com/go/dataproc/apiv1"
+	"github.com/gorilla/mux"
+	dataprocpb "google.golang.org/genproto/googleapis/cloud/dataproc/v1"
 )
 
 func handleGetJob(jobClient dataproc.JobControllerClient, creds credentials.DataprocCredentials) func(w http.ResponseWriter, r *http.Request) {

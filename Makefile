@@ -24,6 +24,7 @@ GSB_PROVISION_DEFAULTS := $(or $(GSB_PROVISION_DEFAULTS), {"authorized_network":
 
 ifeq ($(GO_OK), 0) # use local go binary
 GO=go
+GOFMT=gofmt
 BROKER_GO_OPTS=PORT=8080 \
 				DB_TYPE=sqlite3 \
 				DB_PATH=/tmp/csb-db \
@@ -62,6 +63,7 @@ PAK_PATH=/brokerpak
 
 GO_DOCKER_OPTS=--rm -v $(PWD):/brokerpak -w /brokerpak --network=host
 GO=docker run $(GO_DOCKER_OPTS) golang:latest go
+GOFMT=docker run $(GO_DOCKER_OPTS) golang:latest gofmt
 
 # this doesnt work well if we did make latest-csb. We should build it instead, with go inside a container.
 GET_CSB="wget -O cloud-service-broker https://github.com/cloudfoundry/cloud-service-broker/releases/download/v$(CSB_RELEASE_VERSION)/cloud-service-broker.linux && chmod +x cloud-service-broker"
@@ -102,7 +104,7 @@ run-examples: ## run examples against CSB on localhost (run "make run" to start 
 	$(RUN_CSB) client run-examples --service-name="$(service_name)" --example-name="$(example_name)" -j $(PARALLEL_JOB_COUNT)
 
 .PHONY: run-integration-tests
-run-integration-tests: latest-csb  ## run integration tests for this brokerpak
+run-integration-tests: lint ## run integration tests for this brokerpak
 	cd ./integration-tests && go run github.com/onsi/ginkgo/v2/ginkgo -r .
 
 .PHONY: info
@@ -160,3 +162,27 @@ latest-csb: ## point to the very latest CSB on GitHub
 local-csb: ## point to a local CSB repo
 	echo "replace \"github.com/cloudfoundry/cloud-service-broker\" => \"$$PWD/../cloud-service-broker\"" >>go.mod
 	$(GO) mod tidy
+
+.PHONY: lint
+lint: checkformat checkimports vet ## Checks format, imports and vet
+
+checkformat: ## Checks that the code is formatted correctly
+	@@if [ -n "$$(${GOFMT} -s -e -l -d .)" ]; then       \
+		echo "gofmt check failed: run 'make format'"; \
+		exit 1;                                       \
+	fi
+
+checkimports: ## Checks that imports are formatted correctly
+	@@if [ -n "$$(${GO} run golang.org/x/tools/cmd/goimports -l -d .)" ]; then \
+		echo "goimports check failed: run 'make format'";                      \
+		exit 1;                                                                \
+	fi
+
+vet: ## Runs go vet
+	${GO} vet ./...
+
+.PHONY: format
+format: ## format the source
+	${GOFMT} -s -e -l -w .
+	${GO} run golang.org/x/tools/cmd/goimports -l -w .
+

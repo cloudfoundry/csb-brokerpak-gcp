@@ -25,7 +25,7 @@ func Read() (*mysql.Config, error) {
 		Username string `mapstructure:"username"`
 		Password string `mapstructure:"password"`
 		Port     int    `mapstructure:"port"`
-		UseTLS   bool `mapstructure:"use_tls"`
+		UseTLS   bool   `mapstructure:"use_tls"`
 	}
 
 	if err := mapstructure.Decode(svs[0].Credentials, &m); err != nil {
@@ -46,4 +46,3 @@ func Read() (*mysql.Config, error) {
 
 	return c, nil
 }
-
