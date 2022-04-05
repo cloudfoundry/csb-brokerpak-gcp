@@ -50,7 +50,7 @@ provision:
     prohibit_update: true
     constraints:
       maximum: 4096
-      minumum: 10
+      minimum: 10
   # - field_name: use_tls
   #   type: boolean
   #   details: Use TLS for connection
