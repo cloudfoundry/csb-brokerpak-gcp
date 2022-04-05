@@ -26,7 +26,7 @@ plan_updateable: true
 plans:
 - name: small
   id: 8809fe67-99b5-48dd-a6dd-890ee45e86be
-  description: 'Beta - MySQL v5.7, minumum 2 cores, minumum 4GB ram, 10GB storage'
+  description: 'Beta - MySQL v5.7, minimum 2 cores, minimum 4GB ram, 10GB storage'
   display_name: "small (Beta)"
   properties:
     cores: 2
@@ -34,7 +34,7 @@ plans:
     storage_gb: 10
 - name: medium
   id: 753accb8-52a7-4673-8216-ffc539351aea
-  description: 'Beta - MySQL v5.7, minumum 4 cores, minumum 8GB ram, 10GB storage'
+  description: 'Beta - MySQL v5.7, minimum 4 cores, minimum 8GB ram, 10GB storage'
   display_name: "medium"
   properties:
     cores: 4
@@ -42,7 +42,7 @@ plans:
     storage_gb: 10
 - name: large
   id: 8f8fc4ab-2b37-41da-bc6a-e915497dac33
-  description: 'Beta - MySQL v5.7, minumum 8 cores, minumum 16GB ram, 20GB storage'
+  description: 'Beta - MySQL v5.7, minimum 8 cores, minimum 16GB ram, 20GB storage'
   display_name: "large"
   properties:
     cores: 8
@@ -67,7 +67,7 @@ provision:
     defualt: 10
     constraints:
       maximum: 4096
-      minumum: 10
+      minimum: 10
   # - field_name: use_tls
   #   type: boolean
   #   details: Use TLS for connection
