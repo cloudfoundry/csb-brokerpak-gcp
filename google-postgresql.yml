@@ -122,6 +122,55 @@ provision:
     details: Assign a public ip to the database
     default: false
     prohibit_update: true
+  - field_name: backups_retain_number
+    details: Number of backups to retain; setting to zero disables backups
+    type: integer
+    default: 7
+    constraints:
+      maximum: 1000
+      minimum: 0
+  - field_name: backups_location
+    details: Location where backups are stored
+    type: string
+    default: "us"
+    enum:
+      us: us
+      eu: eu
+      asia: asia
+      asia-east1: asia-east1
+      asia-east2: asia-east2
+      asia-northeast1: asia-northeast1
+      asia-northeast2: asia-northeast2
+      asia-northeast3: asia-northeast3
+      asia-south1: asia-south1
+      asia-southeast1: asia-southeast1
+      australia-southeast1: australia-southeast1
+      europe-north1: europe-north1
+      europe-west1: europe-west1
+      europe-west2: europe-west2
+      europe-west3: europe-west3
+      europe-west4: europe-west4
+      europe-west6: europe-west6
+      northamerica-northeast1: northamerica-northeast1
+      southamerica-east1: southamerica-east1
+      us-central1: us-central1
+      us-east1: us-east1
+      us-east4: us-east4
+      us-west1: us-west1
+      us-west2: us-west2
+  - field_name: backups_start_time
+    details: Start time of the backup window in UTC
+    type: string
+    default: "07:00"
+    constraints:
+      pattern: "^[0-2][0-9]:[0-5][0-9]$"
+  - field_name: backups_point_in_time_log_retain_days
+    details: Number of days to retain point in time logs; setting to zero disables point in time logging; backups must be enabled
+    type: integer
+    default: 7
+    constraints:
+      maximum: 7
+      minimum: 0
   computed_inputs:
   - name: labels
     default: ${json.marshal(request.default_labels)}
