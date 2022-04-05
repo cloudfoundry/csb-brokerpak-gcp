@@ -22,6 +22,17 @@ resource "google_sql_database_instance" "instance" {
         }
       }
     }
+
+    backup_configuration {
+      enabled = true
+      start_time = "17:00"
+      location = "us"
+      point_in_time_recovery_enabled = true
+      transaction_log_retention_days = 7
+      backup_retention_settings {
+        retained_backups = 7
+      }
+    }
   }
 
   deletion_protection = false
