@@ -23,6 +23,11 @@ resource "google_sql_database_instance" "instance" {
       }
     }
 
+    database_flags {
+      name = "password_encryption"
+      value = "scram-sha-256"
+    }
+
     backup_configuration {
       enabled = var.backups_retain_number != 0
       start_time = var.backups_start_time
