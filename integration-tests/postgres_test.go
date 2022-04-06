@@ -52,7 +52,7 @@ var _ = Describe("postgres", func() {
 		Expect(planMetadata.Description).NotTo(BeEmpty())
 	})
 
-	Context("prevent updating properties of the service instance", func() {
+	Context("updating properties of the service instance", func() {
 		var instanceGUID string
 
 		BeforeEach(func() {
@@ -71,21 +71,30 @@ var _ = Describe("postgres", func() {
 			func(key string, value interface{}) {
 				err := broker.Update(instanceGUID, "csb-google-postgres", postgresNoOverridesPlan["name"].(string), map[string]interface{}{key: value})
 
-				Expect(err).To(HaveOccurred())
 				Expect(err).To(MatchError(ContainSubstring("attempt to update parameter that may result in service instance re-creation and data loss")))
 
 				Expect(mockTerraform.ApplyInvocations()).To(HaveLen(0))
 			},
-			Entry("cores", "cores", 5),
 			Entry("postgres_version", "postgres_version", "POSTGRES_12"),
-			Entry("storage_gb", "storage_gb", 11),
-			Entry("credentials", "credentials", "creds"),
 			Entry("instance_name", "instance_name", "name"),
 			Entry("project", "project", "project_name"),
 			Entry("db_name", "db_name", "new_db_name"),
 			Entry("region", "region", "asia-northeast1"),
+		)
+
+		DescribeTable(
+			"some allowed update",
+			func(key string, value interface{}) {
+				err := broker.Update(instanceGUID, "csb-google-postgres", postgresNoOverridesPlan["name"].(string), map[string]interface{}{key: value})
+				Expect(err).NotTo(HaveOccurred())
+			},
+			Entry("cores", "cores", 5),
+			Entry("storage_gb", "storage_gb", 11),
 			Entry("authorized_network", "authorized_network", "new_network"),
-			Entry("authorized_network", "authorized_network", "new_network_id"),
+			Entry("authorized_network_id", "authorized_network_id", "new_network_id"),
+			Entry("authorized_networks_cidrs", "authorized_networks_cidrs", []string{"new cidr"}),
+			Entry("public_ip", "public_ip", true),
+			Entry("credentials", "credentials", "creds"),
 		)
 	})
 
