@@ -17,4 +17,4 @@ variable "backups_point_in_time_log_retain_days" { type = number }
 
 variable "credentials" { type = string }
 variable "project" { type = string }
-#variable use_tls { type = bool }
+variable "use_tls" { type = bool }
