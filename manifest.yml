@@ -21,6 +21,9 @@ terraform_binaries:
 - name: terraform-provider-mysql
   version: 1.9.0
   source: https://github.com/terraform-providers/terraform-provider-mysql/archive/v1.9.0.zip
+- name: terraform-provider-local
+  version: 2.2.2
+  source: https://github.com/terraform-providers/terraform-provider-local/archive/v2.2.2.zip
 - name: terraform-provider-postgresql
   version: 1.15.0
   provider: cyrilgdn/postgresql
