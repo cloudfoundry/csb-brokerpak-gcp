@@ -120,7 +120,7 @@ provision:
 
     - field_name: public_ip
       type: boolean
-      details: Assign a public ip to the database
+      details: Assigns a static IPV4 ip to the database. authorized_networks_cidrs must be configured on the selected network to enable access.
       default: false
 
     - field_name: backups_retain_number
