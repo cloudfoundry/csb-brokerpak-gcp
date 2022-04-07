@@ -13,35 +13,10 @@ resource "random_password" "password" {
 }
 
 resource "postgresql_role" "new_user" {
-  name       = random_string.username.result
-  login      = true
-  password   = random_password.password.result
-  roles      = [
+  name                = random_string.username.result
+  login               = true
+  password            = random_password.password.result
+  roles               = [
     var.admin_username
   ]
-  depends_on = [
-    # sslkey, sslcert, sslrootcert are used in the provider config
-    # depends_on relationship is required to remove flakiness in the deployment
-    local_file.sslkey,
-    local_file.sslcert,
-    local_file.sslrootcert
-  ]
-}
-
-resource "local_file" "sslcert" {
-  content         = var.sslcert
-  filename        = "${path.module}/sslcert.pem"
-  file_permission = "0600"
-}
-
-resource "local_file" "sslkey" {
-  content         = var.sslkey
-  filename        = "${path.module}/sslkey.pem"
-  file_permission = "0600"
-}
-
-resource "local_file" "sslrootcert" {
-  content         = var.sslrootcert
-  filename        = "${path.module}/sslrootcert.pem"
-  file_permission = "0600"
 }

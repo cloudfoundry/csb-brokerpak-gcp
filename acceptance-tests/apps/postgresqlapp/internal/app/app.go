@@ -5,8 +5,6 @@ import (
 	"fmt"
 	"log"
 	"net/http"
-	"os"
-	"postgresqlapp/internal/credentials"
 	"regexp"
 
 	"github.com/gorilla/mux"
@@ -19,11 +17,8 @@ const (
 	valueColumn = "valuedata"
 )
 
-func App(config *credentials.Config) *mux.Router {
-	db, err := connect(config)
-	if err != nil {
-		log.Fatal(err)
-	}
+func App(uri string) *mux.Router {
+	db := connect(uri)
 
 	r := mux.NewRouter()
 	r.HandleFunc("/", aliveness).Methods(http.MethodHead, http.MethodGet)
@@ -40,61 +35,24 @@ func aliveness(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusNoContent)
 }
 
-func connect(config *credentials.Config) (*sql.DB, error) {
-	connStr, err := createConnStr(config)
+func connect(uri string) *sql.DB {
+	db, err := sql.Open("pgx", uri)
 	if err != nil {
-		return nil, err
-	}
-
-	db, err := sql.Open("pgx", connStr)
-
-	if err != nil {
-		return nil, fmt.Errorf("%w: failed to connect to database", err)
+		log.Fatalf("failed to connect to database: %s", err)
 	}
 	db.SetMaxIdleConns(0)
 
 	_, err = db.Exec(fmt.Sprintf(`CREATE TABLE IF NOT EXISTS public.%s (%s VARCHAR(255) NOT NULL, %s VARCHAR(255) NOT NULL)`, tableName, keyColumn, valueColumn))
 	if err != nil {
-		return nil, fmt.Errorf("%w: error creating table", err)
+		log.Fatalf("Error creating table: %s", err)
 	}
 
 	_, err = db.Exec(fmt.Sprintf(`GRANT ALL ON TABLE public.%s TO PUBLIC`, tableName))
 	if err != nil {
-		return nil, fmt.Errorf("%w: error granting table permissions", err)
+		log.Fatalf("Error granting table permissions: %s", err)
 	}
 
-	return db, nil
-}
-func createConnStr(config *credentials.Config) (string, error) {
-	sslrootcert, err := writeToFile(config.SSLRootCert)
-	if err != nil {
-		return "", err
-	}
-	sslkey, err := writeToFile(config.SSLKey)
-	if err != nil {
-		return "", err
-	}
-	sslcert, err := writeToFile(config.SSLCert)
-	if err != nil {
-		return "", err
-	}
-	return fmt.Sprintf("%s?sslmode=verify-ca&sslrootcert=%s&sslkey=%s&sslcert=%s", config.URI, sslrootcert, sslkey, sslcert), nil
-}
-
-func writeToFile(data string) (string, error) {
-	file, err := os.CreateTemp("", "")
-	if err != nil {
-		return "", err
-	}
-	_, err = file.Write([]byte(data))
-	if err != nil {
-		return "", err
-	}
-	err = file.Close()
-	if err != nil {
-		return "", err
-	}
-	return file.Name(), nil
+	return db
 }
 
 func fail(w http.ResponseWriter, code int, format string, a ...interface{}) {
