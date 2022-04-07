@@ -11,7 +11,7 @@ resource "google_sql_database_instance" "instance" {
     ip_configuration {
       ipv4_enabled    = var.public_ip
       private_network = local.authorized_network_id
-      require_ssl     = var.use_tls
+      #require_ssl = var.use_tls
 
       dynamic "authorized_networks" {
         for_each = var.authorized_networks_cidrs
@@ -24,14 +24,14 @@ resource "google_sql_database_instance" "instance" {
     }
 
     database_flags {
-      name  = "password_encryption"
+      name = "password_encryption"
       value = "scram-sha-256"
     }
 
     backup_configuration {
-      enabled                        = var.backups_retain_number != 0
-      start_time                     = var.backups_start_time
-      location                       = var.backups_location
+      enabled = var.backups_retain_number != 0
+      start_time = var.backups_start_time
+      location = var.backups_location
       point_in_time_recovery_enabled = var.backups_retain_number != 0 && var.backups_point_in_time_log_retain_days != 0
       transaction_log_retention_days = var.backups_point_in_time_log_retain_days
       backup_retention_settings {
@@ -60,10 +60,10 @@ resource "random_password" "password" {
 }
 
 resource "google_sql_user" "admin_user" {
-  name            = random_string.username.result
-  instance        = google_sql_database_instance.instance.name
-  password        = random_password.password.result
-  deletion_policy = "ABANDON"
+  name     = random_string.username.result
+  instance = google_sql_database_instance.instance.name
+  password = random_password.password.result
+  deletion_policy="ABANDON"
 }
 
 resource "random_string" "createrole_username" {
@@ -77,19 +77,11 @@ resource "random_password" "createrole_password" {
 }
 
 resource "postgresql_role" "createrole_user" {
-  depends_on  = [
-    google_sql_user.admin_user,
-    google_sql_ssl_cert.client_cert,
-    # sslkey, sslcert, sslrootcert are used in the provider config
-    # depends_on relationship is required to remove flakiness in the deployment
-    local_file.sslkey,
-    local_file.sslcert,
-    local_file.sslrootcert,
-  ]
-  name        = random_string.createrole_username.result
-  password    = random_password.createrole_password.result
-  login       = true
-  create_role = true
+  depends_on  = [google_sql_user.admin_user]
+  name                = random_string.createrole_username.result
+  password            = random_password.createrole_password.result
+  login               = true
+  create_role         = true
 }
 
 resource "postgresql_grant" "db_access" {
@@ -108,31 +100,3 @@ resource "postgresql_grant" "table_access" {
   object_type = "table"
   privileges  = ["ALL"]
 }
-
-resource "local_file" "sslkey" {
-  depends_on      = [google_sql_ssl_cert.client_cert]
-  content         = google_sql_ssl_cert.client_cert.private_key
-  filename        = "${path.module}/sslkey.pem"
-  file_permission = "0600"
-}
-
-resource "local_file" "sslcert" {
-  depends_on      = [google_sql_ssl_cert.client_cert]
-  content         = google_sql_ssl_cert.client_cert.cert
-  filename        = "${path.module}/sslcert.pem"
-  file_permission = "0600"
-}
-
-resource "local_file" "sslrootcert" {
-  depends_on      = [google_sql_database_instance.instance]
-  content         = google_sql_database_instance.instance.server_ca_cert.0.cert
-  filename        = "${path.module}/sslrootcert.pem"
-  file_permission = "0600"
-}
-
-resource "google_sql_ssl_cert" "client_cert" {
-  depends_on  = [google_sql_database_instance.instance]
-  common_name = random_string.username.result
-  instance    = google_sql_database_instance.instance.name
-}
-
