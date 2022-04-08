@@ -8,7 +8,7 @@ help: ## list Makefile targets
 ###### Setup ##################################################################
 IAAS=gcp
 CSB_VERSION := $(or $(CSB_VERSION), $(shell grep 'github.com/cloudfoundry/cloud-service-broker' go.mod | grep -v replace | awk '{print $$NF}' | sed -e 's/v//'))
-CSB_RELEASE_VERSION := CSB_VERSION # this doesnt work well if we did make latest-csb.
+CSB_RELEASE_VERSION := $(CSB_VERSION)
 
 CSB_DOCKER_IMAGE := $(or $(CSB), cfplatformeng/csb:$(CSB_VERSION))
 GO_OK :=  $(or $(USE_GO_CONTAINERS), $(shell which go 1>/dev/null 2>/dev/null; echo $$?))
@@ -42,8 +42,8 @@ RUN_CSB=$(BROKER_GO_OPTS) go run github.com/cloudfoundry/cloud-service-broker
 LDFLAGS="-X github.com/cloudfoundry/cloud-service-broker/utils.Version=$(CSB_VERSION)"
 GET_CSB="env CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -ldflags $(LDFLAGS) github.com/cloudfoundry/cloud-service-broker"
 else ifeq ($(DOCKER_OK), 0) ## running the broker and go with docker
-BROKER_DOCKER_OPTS=--rm -v $(PWD):/brokerpak -w /brokerpak --network=host \
-    -p 8080:8080 \
+BROKER_DOCKER_OPTS=--rm -v $(PAK_CACHE):$(PAK_CACHE) -v $(PWD):/brokerpak -w /brokerpak --network=host \
+  -p 8080:8080 \
 	-e SECURITY_USER_NAME \
 	-e SECURITY_USER_PASSWORD \
 	-e GOOGLE_CREDENTIALS \
@@ -61,7 +61,7 @@ RUN_CSB=docker run $(BROKER_DOCKER_OPTS) $(CSB_DOCKER_IMAGE)
 # path inside the container
 PAK_PATH=/brokerpak
 
-GO_DOCKER_OPTS=--rm -v $(PWD):/brokerpak -w /brokerpak --network=host
+GO_DOCKER_OPTS=--rm -v $(PAK_CACHE):$(PAK_CACHE) -v $(PWD):/brokerpak -w /brokerpak --network=host
 GO=docker run $(GO_DOCKER_OPTS) golang:latest go
 GOFMT=docker run $(GO_DOCKER_OPTS) golang:latest gofmt
 
@@ -76,12 +76,8 @@ endif
 .PHONY: build
 build: $(IAAS)-services-*.brokerpak ## build brokerpak
 
-$(IAAS)-services-*.brokerpak: *.yml terraform/*/*/*.tf
+$(IAAS)-services-*.brokerpak: *.yml terraform/*/*/*.tf | $(PAK_CACHE)
 	$(RUN_CSB) pak build
-
-.pak-cache:
-	mkdir -p $(PAK_CACHE)
-
 
 .PHONY: run
 run: build google_credentials google_project ## start CSB in a docker container
@@ -90,11 +86,11 @@ run: build google_credentials google_project ## start CSB in a docker container
 .PHONY: docs
 docs: build brokerpak-user-docs.md ## build docs
 
-brokerpak-user-docs.md: *.yml # TODO: unificar
+brokerpak-user-docs.md: *.yml
 	$(RUN_CSB) pak docs $(PAK_PATH)/$(shell ls *.brokerpak) > $@ # GO
 
 .PHONY: examples
-examples: ## display available examples  ## TODO these need have the broker already running if not using docker
+examples: ## display available examples
 	 $(RUN_CSB) client examples
 
 PARALLEL_JOB_COUNT := $(or $(PARALLEL_JOB_COUNT), 10000)
@@ -153,6 +149,10 @@ clean: ## clean up build artifacts
 	- rm -f ./brokerpak-user-docs.md
 	- rm -rf $(PAK_CACHE)
 
+$(PAK_CACHE):
+	@echo "Folder $(PAK_CACHE) does not exist. Creating it..."
+	mkdir -p $@
+	
 .PHONY: latest-csb
 latest-csb: ## point to the very latest CSB on GitHub
 	$(GO) get -d github.com/cloudfoundry/cloud-service-broker@main
@@ -185,4 +185,3 @@ vet: ## Runs go vet
 format: ## format the source
 	${GOFMT} -s -e -l -w .
 	${GO} run golang.org/x/tools/cmd/goimports -l -w .
-
