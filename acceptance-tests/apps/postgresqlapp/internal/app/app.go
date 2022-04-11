@@ -5,7 +5,6 @@ import (
 	"fmt"
 	"log"
 	"net/http"
-	"regexp"
 
 	"github.com/gorilla/mux"
 	_ "github.com/jackc/pgx/v4/stdlib"
@@ -22,10 +21,8 @@ func App(uri string) *mux.Router {
 
 	r := mux.NewRouter()
 	r.HandleFunc("/", aliveness).Methods(http.MethodHead, http.MethodGet)
-	r.HandleFunc("/{schema}", handleCreateSchema(db)).Methods(http.MethodPut)
-	r.HandleFunc("/{schema}", handleDropSchema(db)).Methods(http.MethodDelete)
-	r.HandleFunc("/{schema}/{key}", handleSet(db)).Methods(http.MethodPut)
-	r.HandleFunc("/{schema}/{key}", handleGet(db)).Methods(http.MethodGet)
+	r.HandleFunc("/{key}", handleSet(db)).Methods(http.MethodPut)
+	r.HandleFunc("/{key}", handleGet(db)).Methods(http.MethodGet)
 
 	return r
 }
@@ -59,21 +56,4 @@ func fail(w http.ResponseWriter, code int, format string, a ...interface{}) {
 	msg := fmt.Sprintf(format, a...)
 	log.Println(msg)
 	http.Error(w, msg, code)
-}
-
-func schemaName(r *http.Request) (string, error) {
-	schema, ok := mux.Vars(r)["schema"]
-
-	switch {
-	case !ok:
-		return "", fmt.Errorf("schema missing")
-	case len(schema) > 50:
-		return "", fmt.Errorf("schema name too long")
-	case len(schema) == 0:
-		return "", fmt.Errorf("schema name cannot be zero length")
-	case !regexp.MustCompile(`^[a-zA-Z0-9]+$`).MatchString(schema):
-		return "", fmt.Errorf("schema name contains invalid characters")
-	default:
-		return schema, nil
-	}
 }

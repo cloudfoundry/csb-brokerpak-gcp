@@ -34,7 +34,7 @@ func handleGet(db *sql.DB) func(w http.ResponseWriter, r *http.Request) {
 		defer rows.Close()
 
 		if !rows.Next() {
-			fail(w, http.StatusNotFound, "Error finding value: %s", err)
+			fail(w, http.StatusNotFound, "Value was not found")
 			return
 		}
 

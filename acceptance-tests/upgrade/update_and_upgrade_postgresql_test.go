@@ -40,17 +40,13 @@ var _ = Describe("UpgradePostgreSQLTest", Label("postgresql"), func() {
 			By("starting the apps")
 			apps.Start(appOne, appTwo)
 
-			By("creating a schema using the first app")
-			schema := random.Name(random.WithMaxLength(10))
-			appOne.PUT("", schema)
-
 			By("setting a key-value using the first app")
 			keyOne := random.Hexadecimal()
 			valueOne := random.Hexadecimal()
-			appOne.PUT(valueOne, "%s/%s", schema, keyOne)
+			appOne.PUT(valueOne, keyOne)
 
 			By("getting the value using the second app")
-			got := appTwo.GET("%s/%s", schema, keyOne)
+			got := appTwo.GET(keyOne)
 			Expect(got).To(Equal(valueOne))
 
 			By("pushing the development version of the broker")
@@ -60,7 +56,7 @@ var _ = Describe("UpgradePostgreSQLTest", Label("postgresql"), func() {
 			serviceInstance.Update("-p", "medium")
 
 			By("checking previously written data still accessible")
-			got = appTwo.GET("%s/%s", schema, keyOne)
+			got = appTwo.GET(keyOne)
 			Expect(got).To(Equal(valueOne))
 
 			By("deleting bindings created before the upgrade")
@@ -73,15 +69,15 @@ var _ = Describe("UpgradePostgreSQLTest", Label("postgresql"), func() {
 			apps.Restage(appOne, appTwo)
 
 			By("checking previously written data still accessible")
-			got = appTwo.GET("%s/%s", schema, keyOne)
+			got = appTwo.GET(keyOne)
 			Expect(got).To(Equal(valueOne))
 
 			By("checking data can still be written and read")
 			keyTwo := random.Hexadecimal()
 			valueTwo := random.Hexadecimal()
-			appOne.PUT(valueTwo, "%s/%s", schema, keyTwo)
+			appOne.PUT(valueTwo, keyTwo)
 
-			got = appTwo.GET("%s/%s", schema, keyTwo)
+			got = appTwo.GET(keyTwo)
 			Expect(got).To(Equal(valueTwo))
 		})
 	})

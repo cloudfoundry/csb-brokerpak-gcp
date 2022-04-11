@@ -31,36 +31,29 @@ var _ = Describe("PostgreSQL", Label("postgresql"), func() {
 		By("checking that the app environment has a credhub reference for credentials")
 		Expect(binding.Credential()).To(matchers.HaveCredHubRef)
 
-		By("creating a schema using the first app")
-		schema := random.Name(random.WithMaxLength(10))
-		appOne.PUT("", schema)
-
 		By("setting a key-value using the first app")
 		key := random.Hexadecimal()
 		value := random.Hexadecimal()
-		appOne.PUT(value, "%s/%s", schema, key)
+		appOne.PUT(value, key)
 
 		By("getting the value using the second app")
-		got := appTwo.GET("%s/%s", schema, key)
+		got := appTwo.GET(key)
 		Expect(got).To(Equal(value))
 
-		By("triggering ownership of schema to pass to provision user")
+		By("triggering ownership of data to pass to provision user")
 		binding.Unbind()
 
 		By("getting the value again using the second app")
-		got2 := appTwo.GET("%s/%s", schema, key)
+		got2 := appTwo.GET(key)
 		Expect(got2).To(Equal(value))
 
 		By("setting another value using the second app")
 		key2 := random.Hexadecimal()
 		value2 := random.Hexadecimal()
-		appTwo.PUT(value2, "%s/%s", schema, key2)
+		appTwo.PUT(value2, key2)
 
 		By("getting the other value using the second app")
-		got3 := appTwo.GET("%s/%s", schema, key2)
+		got3 := appTwo.GET(key2)
 		Expect(got3).To(Equal(value2))
-
-		By("dropping the schema using the second app")
-		appTwo.DELETE(schema)
 	})
 })
