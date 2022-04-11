@@ -34,10 +34,11 @@ Make targets will run with the *cfplatformeng/csb* docker image. Alternatively, 
 ### Running with Go
 
 1. Make sure you have the right Go version installed (see `go.mod` file).
-2. Make sure `USE_GO_CONTAINERS` environment variable is ***NOT*** set. 
+2. Make sure `USE_GO_CONTAINERS` environment variable is ***NOT*** set.
 
 The make targets will build the source using the local go installation.
 
+### Other targets
 
 There is a make target to push the broker and brokerpak into a CloudFoundry foundation. It will be necessary to manually configure a few items for the broker to work.
 
@@ -64,9 +65,6 @@ terminal 2
 >> make run-examples
 ```
 
-The make targets will use docker to run the service broker with the brokerpak included to exercise the service lifecycle.
-
 ## Acceptance tests
 
 See [acceptance tests](acceptance-tests/README.md)
-    
