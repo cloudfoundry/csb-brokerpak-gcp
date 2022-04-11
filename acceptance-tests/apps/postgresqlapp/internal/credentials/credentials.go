@@ -2,10 +2,19 @@ package credentials
 
 import (
 	"fmt"
+	"os"
 
 	"github.com/cloudfoundry-community/go-cfenv"
 	"github.com/mitchellh/mapstructure"
 )
+
+type config struct {
+	URI         string `mapstructure:"uri"`
+	SSLCert     string `mapstructure:"sslcert"`
+	SSLKey      string `mapstructure:"sslkey"`
+	SSLRootCert string `mapstructure:"sslrootcert"`
+	TLS         bool   `mapstructure:"use_tls"`
+}
 
 func Read() (string, error) {
 	app, err := cfenv.Current()
@@ -17,17 +26,54 @@ func Read() (string, error) {
 		return "", fmt.Errorf("error reading PostgreSQL service details")
 	}
 
-	var m struct {
-		URI string `mapstructure:"uri"`
+	var c config
+	if err := mapstructure.Decode(svs[0].Credentials, &c); err != nil {
+		return "", fmt.Errorf("failed to decode credentials: %+v: %w", svs[0].Credentials, err)
 	}
 
-	if err := mapstructure.Decode(svs[0].Credentials, &m); err != nil {
-		return "", fmt.Errorf("failed to decode credentials: %w", err)
+	if c.URI == "" {
+		return "", fmt.Errorf("missing URI: %+v", svs[0].Credentials)
 	}
 
-	if m.URI == "" {
-		return "", fmt.Errorf("parsed credentials are not valid")
+	switch c.TLS {
+	case true:
+		return tlsURI(c)
+	default:
+		return c.URI, nil
+	}
+}
+
+func tlsURI(c config) (string, error) {
+	sslrootcert, err := writeTmp("sslrootcert", c.SSLRootCert)
+	if err != nil {
+		return "", err
+	}
+	sslkey, err := writeTmp("sslkey", c.SSLKey)
+	if err != nil {
+		return "", err
+	}
+	sslcert, err := writeTmp("sslcert", c.SSLCert)
+	if err != nil {
+		return "", err
+	}
+	return fmt.Sprintf("%s?sslmode=verify-ca&sslrootcert=%s&sslkey=%s&sslcert=%s", c.URI, sslrootcert, sslkey, sslcert), nil
+}
+
+func writeTmp(moniker, data string) (string, error) {
+	if data == "" {
+		return "", fmt.Errorf("TLS configuration error: %q is empty", moniker)
 	}
 
-	return m.URI, nil
+	fh, err := os.CreateTemp("", "")
+	if err != nil {
+		return "", fmt.Errorf("error opening temporary file: %w", err)
+	}
+	defer fh.Close()
+
+	_, err = fh.Write([]byte(data))
+	if err != nil {
+		return "", fmt.Errorf("error writing to temporary file %q: %w", fh.Name(), err)
+	}
+
+	return fh.Name(), nil
 }
