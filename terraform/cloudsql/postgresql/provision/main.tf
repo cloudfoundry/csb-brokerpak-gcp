@@ -24,14 +24,14 @@ resource "google_sql_database_instance" "instance" {
     }
 
     database_flags {
-      name = "password_encryption"
+      name  = "password_encryption"
       value = "scram-sha-256"
     }
 
     backup_configuration {
-      enabled = var.backups_retain_number != 0
-      start_time = var.backups_start_time
-      location = var.backups_location
+      enabled                        = var.backups_retain_number != 0
+      start_time                     = var.backups_start_time
+      location                       = var.backups_location
       point_in_time_recovery_enabled = var.backups_retain_number != 0 && var.backups_point_in_time_log_retain_days != 0
       transaction_log_retention_days = var.backups_point_in_time_log_retain_days
       backup_retention_settings {
@@ -60,10 +60,10 @@ resource "random_password" "password" {
 }
 
 resource "google_sql_user" "admin_user" {
-  name     = random_string.username.result
-  instance = google_sql_database_instance.instance.name
-  password = random_password.password.result
-  deletion_policy="ABANDON"
+  name            = random_string.username.result
+  instance        = google_sql_database_instance.instance.name
+  password        = random_password.password.result
+  deletion_policy = "ABANDON"
 }
 
 resource "random_string" "createrole_username" {
@@ -78,10 +78,10 @@ resource "random_password" "createrole_password" {
 
 resource "postgresql_role" "createrole_user" {
   depends_on  = [google_sql_user.admin_user]
-  name                = random_string.createrole_username.result
-  password            = random_password.createrole_password.result
-  login               = true
-  create_role         = true
+  name        = random_string.createrole_username.result
+  password    = random_password.createrole_password.result
+  login       = true
+  create_role = true
 }
 
 resource "postgresql_grant" "db_access" {
