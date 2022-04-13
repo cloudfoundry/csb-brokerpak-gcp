@@ -18,7 +18,10 @@ const (
 )
 
 func App(uri string) *mux.Router {
-	db := connect(uri)
+	db, err := connect(uri)
+	if err != nil {
+		log.Fatal(err)
+	}
 
 	r := mux.NewRouter()
 	r.HandleFunc("/", aliveness).Methods(http.MethodHead, http.MethodGet)
@@ -35,24 +38,25 @@ func aliveness(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusNoContent)
 }
 
-func connect(uri string) *sql.DB {
+func connect(uri string) (*sql.DB, error) {
 	db, err := sql.Open("pgx", uri)
+
 	if err != nil {
-		log.Fatalf("failed to connect to database: %s", err)
+		return nil, fmt.Errorf("%w: failed to connect to database", err)
 	}
 	db.SetMaxIdleConns(0)
 
 	_, err = db.Exec(fmt.Sprintf(`CREATE TABLE IF NOT EXISTS public.%s (%s VARCHAR(255) NOT NULL, %s VARCHAR(255) NOT NULL)`, tableName, keyColumn, valueColumn))
 	if err != nil {
-		log.Fatalf("Error creating table: %s", err)
+		return nil, fmt.Errorf("%w: error creating table", err)
 	}
 
 	_, err = db.Exec(fmt.Sprintf(`GRANT ALL ON TABLE public.%s TO PUBLIC`, tableName))
 	if err != nil {
-		log.Fatalf("Error granting table permissions: %s", err)
+		return nil, fmt.Errorf("%w: error granting table permissions", err)
 	}
 
-	return db
+	return db, nil
 }
 
 func fail(w http.ResponseWriter, code int, format string, a ...interface{}) {
