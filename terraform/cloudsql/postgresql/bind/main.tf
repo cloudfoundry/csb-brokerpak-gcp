@@ -20,3 +20,21 @@ resource "postgresql_role" "new_user" {
     var.admin_username
   ]
 }
+
+resource "local_file" "sslcert" {
+  content         = var.sslcert
+  filename        = "${path.module}/sslcert.pem"
+  file_permission = "0600"
+}
+
+resource "local_sensitive_file" "sslkey" {
+  content         = var.sslkey
+  filename        = "${path.module}/sslkey.pem"
+  file_permission = "0600"
+}
+
+resource "local_file" "sslrootcert" {
+  content         = var.sslrootcert
+  filename        = "${path.module}/sslrootcert.pem"
+  file_permission = "0600"
+}

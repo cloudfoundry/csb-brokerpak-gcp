@@ -196,6 +196,15 @@ provision:
   - field_name: use_tls
     type: boolean
     details: Using TLS for connection
+  - field_name: sslcert
+    type: string
+    details: The client CA Cert to authenticate with SQL instance
+  - field_name: sslkey
+    type: string
+    details: The client CA Cert to authenticate with SQL instance
+  - field_name: sslrootcert
+    type: string
+    details: The CA Certificate used to connect to the SQL instance via TLS
 bind:
   plan_inputs: []
   user_inputs: []
@@ -219,6 +228,18 @@ bind:
   - name: use_tls
     type: boolean
     default: ${instance.details["use_tls"]}
+    overwrite: true
+  - name: sslcert
+    type: string
+    default: ${instance.details["sslcert"]}
+    overwrite: true
+  - name: sslkey
+    type: string
+    default: ${instance.details["sslkey"]}
+    overwrite: true
+  - name: sslrootcert
+    type: string
+    default: ${instance.details["sslrootcert"]}
     overwrite: true
   template_refs:
     provider: terraform/cloudsql/postgresql/bind/provider.tf

@@ -11,7 +11,7 @@ resource "google_sql_database_instance" "instance" {
     ip_configuration {
       ipv4_enabled    = var.public_ip
       private_network = local.authorized_network_id
-      #require_ssl = var.use_tls
+      require_ssl     = true
 
       dynamic "authorized_networks" {
         for_each = var.authorized_networks_cidrs
@@ -99,4 +99,27 @@ resource "postgresql_grant" "table_access" {
   schema      = "public"
   object_type = "table"
   privileges  = ["ALL"]
+}
+
+resource "google_sql_ssl_cert" "client_cert" {
+  common_name = random_string.username.result
+  instance    = google_sql_database_instance.instance.name
+}
+
+resource "local_sensitive_file" "sslkey" {
+  content         = google_sql_ssl_cert.client_cert.private_key
+  filename        = "${path.module}/sslkey.pem"
+  file_permission = "0600"
+}
+
+resource "local_file" "sslcert" {
+  content         = google_sql_ssl_cert.client_cert.cert
+  filename        = "${path.module}/sslcert.pem"
+  file_permission = "0600"
+}
+
+resource "local_file" "sslrootcert" {
+  content         = google_sql_database_instance.instance.server_ca_cert.0.cert
+  filename        = "${path.module}/sslrootcert.pem"
+  file_permission = "0600"
 }
