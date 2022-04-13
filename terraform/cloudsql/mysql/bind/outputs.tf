@@ -12,7 +12,7 @@ output "uri" {
     local.port,
   var.mysql_db_name)
 }
-output "port" { value = local.port } 
+output "port" { value = local.port }
 output "jdbcUrl" {
   sensitive = true
   value = format("jdbc:mysql://%s:%d/%s?user=%s\u0026password=%s\u0026useSSL=%v",

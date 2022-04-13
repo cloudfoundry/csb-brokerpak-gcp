@@ -13,10 +13,10 @@ resource "random_password" "password" {
 }
 
 resource "postgresql_role" "new_user" {
-  name                = random_string.username.result
-  login               = true
-  password            = random_password.password.result
-  roles               = [
+  name     = random_string.username.result
+  login    = true
+  password = random_password.password.result
+  roles = [
     var.admin_username
   ]
 }
