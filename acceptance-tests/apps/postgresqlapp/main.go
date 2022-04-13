@@ -13,14 +13,14 @@ func main() {
 	log.Println("Starting.")
 
 	log.Println("Reading credentials.")
-	creds, err := credentials.Read()
+	uri, err := credentials.Read()
 	if err != nil {
 		panic(err)
 	}
 
 	port := port()
 	log.Printf("Listening on port: %s", port)
-	http.Handle("/", app.App(creds))
+	http.Handle("/", app.App(uri))
 	http.ListenAndServe(port, nil)
 }
 
