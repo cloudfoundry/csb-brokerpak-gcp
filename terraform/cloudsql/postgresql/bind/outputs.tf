@@ -10,9 +10,9 @@ output "uri" {
     random_password.password.result,
     var.hostname,
     local.port,
-    var.db_name)
+  var.db_name)
 }
-output "port" { value = local.port } 
+output "port" { value = local.port }
 output "jdbcUrl" {
   sensitive = true
   value = format("jdbc:%s://%s:%s/%s?user=%s\u0026password=%s\u0026verifyServerCertificate=true\u0026useSSL=%v\u0026requireSSL=false",
