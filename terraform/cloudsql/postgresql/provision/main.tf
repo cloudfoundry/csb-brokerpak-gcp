@@ -54,7 +54,7 @@ resource "random_string" "username" {
 }
 
 resource "random_password" "password" {
-  length           = 64
+  length           = 16
   special          = true
   override_special = "_@"
 }
@@ -71,7 +71,7 @@ resource "random_string" "createrole_username" {
   special = false
 }
 resource "random_password" "createrole_password" {
-  length           = 64
+  length           = 16
   special          = true
   override_special = "_@"
 }
