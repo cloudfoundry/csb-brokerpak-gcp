@@ -214,12 +214,20 @@ var _ = Describe("postgres", func() {
 
 	Context("bind a service ", func() {
 		It("return the bind values from terraform output", func() {
+			const (
+				fakeSSLRoot    = "REAL_SSL_ROOT_CERT"
+				fakeClientCert = "REAL_SSL_CLIENT_CERT"
+				fakeClientKey  = "REAL_SSL_CLIENT_KEY"
+			)
 			mockTerraform.ReturnTFState([]testframework.TFStateValue{
 				{Name: "hostname", Type: "string", Value: "create.hostname.gcp.test"},
-				{Name: "use_tls", Type: "bool", Value: false},
+				{Name: "use_tls", Type: "bool", Value: true},
 				{Name: "username", Type: "string", Value: "create.test.username"},
 				{Name: "password", Type: "string", Value: "create.test.password"},
 				{Name: "name", Type: "string", Value: "create.test.instancename"},
+				{Name: "sslrootcert", Type: "string", Value: fakeSSLRoot},
+				{Name: "sslcert", Type: "string", Value: fakeClientCert},
+				{Name: "sslkey", Type: "string", Value: fakeClientKey},
 			})
 
 			instanceID, err := broker.Provision("csb-google-postgres", postgresAllOverridesPlan["name"].(string), nil)
@@ -235,13 +243,16 @@ var _ = Describe("postgres", func() {
 			Expect(err).NotTo(HaveOccurred())
 
 			Expect(bindResult).To(Equal(map[string]interface{}{
-				"username": "bind.test.username",
-				"hostname": "create.hostname.gcp.test",
-				"jdbcUrl":  "bind.test.jdbcUrl",
-				"name":     "create.test.instancename",
-				"password": "bind.test.password",
-				"uri":      "bind.test.uri",
-				"use_tls":  false,
+				"username":    "bind.test.username",
+				"hostname":    "create.hostname.gcp.test",
+				"jdbcUrl":     "bind.test.jdbcUrl",
+				"name":        "create.test.instancename",
+				"password":    "bind.test.password",
+				"uri":         "bind.test.uri",
+				"use_tls":     true,
+				"sslrootcert": fakeSSLRoot,
+				"sslcert":     fakeClientCert,
+				"sslkey":      fakeClientKey,
 			}))
 		})
 	})

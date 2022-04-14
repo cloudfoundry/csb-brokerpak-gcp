@@ -15,9 +15,9 @@ terraform_binaries:
 - name: terraform-provider-google
   version: 4.17.0
   source: https://github.com/terraform-providers/terraform-provider-google/archive/v4.17.0.zip
-- name: terraform-provider-random
-  version: 3.1.2
-  source: https://github.com/terraform-providers/terraform-provider-random/archive/v3.1.2.zip
+- name: terraform-provider-local
+  version: 2.2.2
+  source: https://github.com/terraform-providers/terraform-provider-local/archive/v2.2.2.zip
 - name: terraform-provider-mysql
   version: 1.9.0
   source: https://github.com/terraform-providers/terraform-provider-mysql/archive/v1.9.0.zip
@@ -26,6 +26,9 @@ terraform_binaries:
   provider: cyrilgdn/postgresql
   source: https://github.com/cyrilgdn/terraform-provider-postgresql/archive/v1.15.0.zip
   url_template: https://github.com/cyrilgdn/${name}/releases/download/v${version}/${name}_${version}_${os}_${arch}.zip
+- name: terraform-provider-random
+  version: 3.1.2
+  source: https://github.com/terraform-providers/terraform-provider-random/archive/v3.1.2.zip
 env_config_mapping:
   GOOGLE_CREDENTIALS: gcp.credentials
   GOOGLE_PROJECT: gcp.project
