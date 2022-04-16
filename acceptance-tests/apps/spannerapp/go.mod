@@ -3,7 +3,7 @@ module spannerapp
 go 1.18
 
 require (
-	cloud.google.com/go/spanner v1.30.1
+	cloud.google.com/go/spanner v1.31.0
 	github.com/cloudfoundry-community/go-cfenv v1.18.0
 	github.com/gorilla/mux v1.8.0
 	google.golang.org/api v0.74.0
