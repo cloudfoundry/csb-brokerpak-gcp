@@ -23,6 +23,6 @@ output "jdbcUrl" {
     var.db_name,
     random_string.username.result,
     random_password.password.result,
-    var.use_tls,
+    true,
   )
 }
