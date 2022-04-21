@@ -1,3 +1,4 @@
+// Package csbpg is a Terraform provider specialised for CSB PostgreSQL bindings
 package csbpg
 
 import (
