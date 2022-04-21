@@ -76,7 +76,7 @@ endif
 .PHONY: build
 build: $(IAAS)-services-*.brokerpak ## build brokerpak
 
-$(IAAS)-services-*.brokerpak: *.yml terraform/*/*/*.tf | $(PAK_CACHE)
+$(IAAS)-services-*.brokerpak: ./providers/terraform-provider-csbpg/build/psqlcmd_*.zip *.yml terraform/*/*/*.tf | $(PAK_CACHE)
 	$(RUN_CSB) pak build
 
 .PHONY: run
@@ -185,3 +185,6 @@ vet: ## Runs go vet
 format: ## format the source
 	${GOFMT} -s -e -l -w .
 	${GO} run golang.org/x/tools/cmd/goimports -l -w .
+
+./providers/terraform-provider-csbpg/build/psqlcmd_*.zip: providers/terraform-provider-csbpg/*.go
+	cd providers/terraform-provider-csbpg; $(MAKE) build
