@@ -21,7 +21,7 @@ jobs:
         with:
           go-version: '1.18'
       - uses: actions/checkout@v2
-      - run: make run-integration-tests
+      - run: make test
   call-dependabot-pr-workflow:
     needs: test
     if: ${{ success() && github.actor == 'dependabot[bot]' }}

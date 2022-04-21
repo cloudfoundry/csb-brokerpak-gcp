@@ -11,3 +11,16 @@ cloudfoundry.org: *.go */*.go
 	mkdir -p cloudfoundry.org/cloud-service-broker/csbpg/1.0.0/darwin_amd64
 	GOOS=linux go build -o cloudfoundry.org/cloud-service-broker/csbpg/1.0.0/linux_amd64/terraform-provider-csbpg_v1.0.0
 	GOOS=darwin go build -o cloudfoundry.org/cloud-service-broker/csbpg/1.0.0/darwin_amd64/terraform-provider-csbpg_v1.0.0
+
+.PHONY: clean
+clean: ## clean up build artifacts
+	- rm -rf cloudfoundry.org
+
+.PHONY: test
+test: ## run the tests
+	go run github.com/onsi/ginkgo/v2/ginkgo -r
+
+
+.PHONY: init
+init: build ## perform terraform init with this provider
+	terraform init --plugin-dir .
