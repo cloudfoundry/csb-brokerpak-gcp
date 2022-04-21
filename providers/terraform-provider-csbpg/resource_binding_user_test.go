@@ -1,10 +1,10 @@
 package main_test
 
 import (
+	"csbbrokerpakgcp/providers/terraform-provider-csbpg/csbpg"
 	"database/sql"
 	"fmt"
 	"os/exec"
-	"terraform-provider-csbpg/csbpg"
 	"time"
 
 	"github.com/google/uuid"
