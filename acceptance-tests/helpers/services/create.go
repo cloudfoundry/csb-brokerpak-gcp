@@ -1,3 +1,4 @@
+// Package services manages service instances
 package services
 
 import (

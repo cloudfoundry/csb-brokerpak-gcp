@@ -40,8 +40,8 @@ var _ = Describe("Stackdrivertrace", Label("stackdrivertrace"), func() {
 		customSpan := random.Hexadecimal()
 		got := appOne.GET(customSpan)
 		var traceResp struct {
-			ProjectId string `json:"ProjectId"`
-			TraceId   string `json:"TraceId"`
+			ProjectID string `json:"ProjectId"`
+			TraceID   string `json:"TraceId"`
 		}
 		err := json.Unmarshal([]byte(got), &traceResp)
 		Expect(err).NotTo(HaveOccurred())
@@ -53,8 +53,8 @@ var _ = Describe("Stackdrivertrace", Label("stackdrivertrace"), func() {
 		defer traceClient.Close()
 
 		req := cloudtracepb.GetTraceRequest{
-			ProjectId: traceResp.ProjectId,
-			TraceId:   traceResp.TraceId,
+			ProjectId: traceResp.ProjectID,
+			TraceId:   traceResp.TraceID,
 		}
 
 		returnedSpanName := func() string {

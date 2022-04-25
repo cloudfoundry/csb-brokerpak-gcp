@@ -1,4 +1,4 @@
-package integration_tests
+package integration_test
 
 import (
 	testframework "github.com/cloudfoundry/cloud-service-broker/brokerpaktestframework"
@@ -57,7 +57,7 @@ var _ = Describe("postgres", func() {
 
 		BeforeEach(func() {
 			var err error
-			instanceGUID, err = broker.Provision("csb-google-postgres", postgresNoOverridesPlan["name"].(string), map[string]interface{}{"cores": 1})
+			instanceGUID, _ = broker.Provision("csb-google-postgres", postgresNoOverridesPlan["name"].(string), map[string]interface{}{"cores": 1})
 
 			invocations, err := mockTerraform.ApplyInvocations()
 			Expect(err).NotTo(HaveOccurred())

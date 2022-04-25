@@ -172,7 +172,7 @@ local-csb: ## point to a local CSB repo
 	$(GO) mod tidy
 
 .PHONY: lint
-lint: checkformat checkimports vet ## Checks format, imports and vet
+lint: checkformat checkimports vet staticcheck ## Checks format, imports and vet
 
 checkformat: ## Checks that the code is formatted correctly
 	@@if [ -n "$$(${GOFMT} -s -e -l -d .)" ]; then       \
@@ -188,6 +188,9 @@ checkimports: ## Checks that imports are formatted correctly
 
 vet: ## Runs go vet
 	${GO} vet ./...
+
+staticcheck: ## Runs staticcheck
+	${GO} run honnef.co/go/tools/cmd/staticcheck ./...
 
 .PHONY: format
 format: ## format the source

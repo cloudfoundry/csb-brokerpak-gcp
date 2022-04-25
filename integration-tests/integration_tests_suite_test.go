@@ -1,4 +1,4 @@
-package integration_tests
+package integration_test
 
 import (
 	"encoding/json"
@@ -32,14 +32,14 @@ var _ = BeforeSuite(func() {
 	broker, err = testframework.BuildTestInstance(testframework.PathToBrokerPack(), mockTerraform, GinkgoWriter)
 	Expect(err).NotTo(HaveOccurred())
 
-	postgresPlansJson, err := json.Marshal(postgresPlans)
+	postgresPlansJSON, err := json.Marshal(postgresPlans)
 	Expect(err).NotTo(HaveOccurred())
 
 	Expect(broker.Start(GinkgoWriter, []string{
 		"GSB_COMPATIBILITY_ENABLE_BETA_SERVICES=true",
 		"GOOGLE_CREDENTIALS=" + BrokerGCPCreds,
 		"GOOGLE_PROJECT=" + BrokerGCPProject,
-		`GSB_SERVICE_CSB_GOOGLE_POSTGRES_PLANS=` + string(postgresPlansJson),
+		`GSB_SERVICE_CSB_GOOGLE_POSTGRES_PLANS=` + string(postgresPlansJSON),
 		"CSB_LISTENER_HOST=localhost", // prevents permissions popup
 	})).To(Succeed())
 })
