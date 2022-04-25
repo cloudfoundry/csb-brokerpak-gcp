@@ -14,7 +14,7 @@ require (
 	github.com/onsi/gomega v1.19.0
 	golang.org/x/tools v0.1.11-0.20220316014157-77aa08bb151a
 	google.golang.org/api v0.74.0
-	google.golang.org/genproto v0.0.0-20220324131243-acbaeb5b85eb
+	google.golang.org/genproto v0.0.0-20220413183235-5e96e2839df9
 	honnef.co/go/tools v0.3.0
 )
 
