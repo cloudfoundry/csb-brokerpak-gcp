@@ -26,10 +26,10 @@ plan_updateable: true
 provision:
   plan_inputs:
   user_inputs:
-  - field_name: cores
+  - field_name: tier
     required: true
-    type: number
-    details: Minimum number of cores for service instance.
+    type: string
+    details: Google sql tier. This determines CPU and RAM resource.
   - field_name: postgres_version
     required: true
     type: string
