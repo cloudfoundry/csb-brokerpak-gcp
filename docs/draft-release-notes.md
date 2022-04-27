@@ -5,6 +5,7 @@
 - PostgreSQL password stored using `scram-sha-256` for additional security
 - PostgreSQL properties can now be updated: cores, storage_gb, credentials, authorized_network, authorized_network_id, authorized_networks_cidrs, public_ip
 - PostgreSQL connections must be via TLS
+- Google SQL service tiers are now exposed when provisioning, or updating an instance. The previous 'cores' abstraction has been removed, in favour of using the underlying Google tier.
 
 
 ### Fix:

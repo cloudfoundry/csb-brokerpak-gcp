@@ -126,7 +126,7 @@ service:
         "id":"85b27a04-8695-11ea-818a-274131861b81",
         "description":"PostgreSQL with default version, shared CPU, minimum 0.6GB ram, 10GB storage",
         "display_name":"small",
-        "cores":0.6,
+        "tier":"db-f1-micro",
         "storage_gb":10
       }
     ]'

@@ -4,7 +4,7 @@ resource "google_sql_database_instance" "instance" {
   region           = var.region
 
   settings {
-    tier        = local.service_tiers[var.cores]
+    tier        = var.tier
     disk_size   = var.storage_gb
     user_labels = var.labels
 
