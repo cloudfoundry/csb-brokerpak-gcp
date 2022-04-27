@@ -41,8 +41,8 @@ func resourceBindingUser() *schema.Resource {
 
 func resourceBindingUserCreate(ctx context.Context, d *schema.ResourceData, m any) diag.Diagnostics {
 
-	log.Println("[DEBUG] ENTRY resourceSharedRoleCreate()")
-	defer log.Println("[DEBUG] EXIT resourceSharedRoleCreate()")
+	log.Println("[DEBUG] ENTRY resourceBindingUserCreate()")
+	defer log.Println("[DEBUG] EXIT resourceBindingUserCreate()")
 
 	username := d.Get(bindingUsernameKey).(string)
 	password := d.Get(bindingPasswordKey).(string)
@@ -84,6 +84,27 @@ func resourceBindingUserUpdate(ctx context.Context, d *schema.ResourceData, m an
 }
 
 func resourceBindingUserDelete(ctx context.Context, d *schema.ResourceData, m any) diag.Diagnostics {
+
+	log.Println("[DEBUG] ENTRY resourceBindingUserDelete()")
+	defer log.Println("[DEBUG] EXIT resourceBindingUserDelete()")
+
+	username := d.Get(bindingUsernameKey).(string)
+
+	cf := m.(connectionFactory)
+
+	db, err := cf.Connect()
+	if err != nil {
+		return diag.FromErr(err)
+	}
+	defer db.Close()
+	log.Println("[DEBUG] connected")
+
+	log.Println("[DEBUG] dropping binding user")
+	_, err = db.Exec(fmt.Sprintf("DROP ROLE %s", pq.QuoteIdentifier(username)))
+	if err != nil {
+		return diag.FromErr(err)
+	}
+
 	return nil
 }
 
