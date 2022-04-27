@@ -9,34 +9,78 @@ import (
 	"github.com/hashicorp/terraform-plugin-sdk/v2/helper/validation"
 )
 
+const (
+	dataOwnerRoleKey = "data_owner_role"
+	databaseKey      = "database"
+	passwordKey      = "password"
+	usernameKey      = "username"
+	portKey          = "port"
+	hostKey          = "host"
+	sslModeKey       = "sslmode"
+	clientCertKey    = "clientcert"
+	sslRootCertKey   = "sslrootcert"
+)
+
 func Provider() *schema.Provider {
+
 	return &schema.Provider{
 		Schema: map[string]*schema.Schema{
-			"host": {
+			hostKey: {
 				Type:     schema.TypeString,
 				Required: true,
 			},
-			"port": {
+			portKey: {
 				Type:         schema.TypeInt,
 				Required:     true,
 				ValidateFunc: validation.IsPortNumber,
 			},
-			"username": {
+			usernameKey: {
 				Type:     schema.TypeString,
 				Required: true,
 			},
-			"password": {
+			passwordKey: {
 				Type:      schema.TypeString,
 				Required:  true,
 				Sensitive: true,
 			},
-			"database": {
+			databaseKey: {
 				Type:     schema.TypeString,
 				Required: true,
 			},
-			"data_owner_role": {
+			dataOwnerRoleKey: {
 				Type:     schema.TypeString,
 				Required: true,
+			},
+			sslModeKey: {
+				Type:        schema.TypeString,
+				Optional:    true,
+				Default:     "verify-ca",
+				Description: "This option determines whether or with what priority a secure SSL TCP/IP connection will be negotiated with the PostgreSQL server",
+			},
+			clientCertKey: {
+				Type:        schema.TypeList,
+				Optional:    true,
+				Description: "SSL client certificate if required by the database.",
+				Elem: &schema.Resource{
+					Schema: map[string]*schema.Schema{
+						"cert": {
+							Type:        schema.TypeString,
+							Description: "The SSL client certificate file path, must contain PEM encoded data.",
+							Required:    true,
+						},
+						"key": {
+							Type:        schema.TypeString,
+							Description: "The SSL client certificate private key, must contain PEM encoded data.",
+							Required:    true,
+						},
+					},
+				},
+				MaxItems: 1,
+			},
+			sslRootCertKey: {
+				Type:        schema.TypeString,
+				Description: "The SSL server root, must contain PEM encoded data.",
+				Optional:    true,
 			},
 		},
 		ConfigureContextFunc: providerConfigure,
@@ -49,19 +93,25 @@ func Provider() *schema.Provider {
 func providerConfigure(ctx context.Context, d *schema.ResourceData) (any, diag.Diagnostics) {
 	var diags diag.Diagnostics
 
-	host := d.Get("host").(string)
-	port := d.Get("port").(int)
-	username := d.Get("username").(string)
-	password := d.Get("password").(string)
-	database := d.Get("database").(string)
-	dataOwnerRole := d.Get("data_owner_role").(string)
+	factory := connectionFactory{
+		host:          d.Get(hostKey).(string),
+		port:          d.Get(portKey).(int),
+		username:      d.Get(usernameKey).(string),
+		password:      d.Get(passwordKey).(string),
+		database:      d.Get(databaseKey).(string),
+		dataOwnerRole: d.Get(dataOwnerRoleKey).(string),
+		sslMode:       d.Get(sslModeKey).(string),
+		sslRootCert:   d.Get(sslRootCertKey).(string),
+	}
 
-	return connectionFactory{
-		host:          host,
-		port:          port,
-		username:      username,
-		password:      password,
-		database:      database,
-		dataOwnerRole: dataOwnerRole,
-	}, diags
+	if value, ok := d.GetOk(clientCertKey); ok {
+		if spec, ok := value.([]interface{})[0].(map[string]interface{}); ok {
+			factory.sslClientCert = &clientCertificateConfig{
+				Certificate: spec["cert"].(string),
+				Key:         spec["key"].(string),
+			}
+		}
+	}
+
+	return factory, diags
 }

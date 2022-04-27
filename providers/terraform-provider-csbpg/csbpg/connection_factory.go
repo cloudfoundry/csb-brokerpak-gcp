@@ -3,11 +3,10 @@ package csbpg
 import (
 	"database/sql"
 	"fmt"
+	"strings"
 
 	_ "github.com/lib/pq"
 )
-
-const uriFormat = "postgres://%s:%s@%s:%d/%s?sslmode=disable"
 
 type connectionFactory struct {
 	host          string
@@ -16,6 +15,9 @@ type connectionFactory struct {
 	password      string
 	database      string
 	dataOwnerRole string
+	sslClientCert *clientCertificateConfig
+	sslRootCert   string
+	sslMode       string
 }
 
 func (c connectionFactory) Connect() (*sql.DB, error) {
@@ -28,9 +30,25 @@ func (c connectionFactory) Connect() (*sql.DB, error) {
 }
 
 func (c connectionFactory) uri() string {
-	return fmt.Sprintf(uriFormat, c.username, c.password, c.host, c.port, c.database)
+	return strings.Join([]string{
+		"host=" + c.host,
+		fmt.Sprintf("port=%d", c.port),
+		"user=" + c.username,
+		"password=" + c.password,
+		"database=" + c.database,
+		"sslmode=" + c.sslMode,
+		"sslinline=true",
+		fmt.Sprintf("sslcert='%s'", c.sslClientCert.Certificate),
+		fmt.Sprintf("sslkey='%s'", c.sslClientCert.Key),
+		fmt.Sprintf("sslrootcert='%s'", c.sslRootCert),
+	}, " ")
 }
 
 func (c connectionFactory) uriRedacted() string {
-	return fmt.Sprintf(uriFormat, c.username, "REDACTED", c.host, c.port, c.database)
+	return strings.ReplaceAll(c.uri(), c.password, "REDACTED")
+}
+
+type clientCertificateConfig struct {
+	Certificate string
+	Key         string
 }
