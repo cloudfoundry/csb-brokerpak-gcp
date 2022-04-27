@@ -12,14 +12,19 @@ import (
 	"github.com/lib/pq"
 )
 
+const (
+	bindingUsernameKey = "username"
+	bindingPasswordKey = "password"
+)
+
 func resourceBindingUser() *schema.Resource {
 	return &schema.Resource{
 		Schema: map[string]*schema.Schema{
-			"username": {
+			bindingUsernameKey: {
 				Type:     schema.TypeString,
 				Required: true,
 			},
-			"password": {
+			bindingPasswordKey: {
 				Type:      schema.TypeString,
 				Required:  true,
 				Sensitive: true,
@@ -39,8 +44,8 @@ func resourceBindingUserCreate(ctx context.Context, d *schema.ResourceData, m an
 	log.Println("[DEBUG] ENTRY resourceSharedRoleCreate()")
 	defer log.Println("[DEBUG] EXIT resourceSharedRoleCreate()")
 
-	username := d.Get("username").(string)
-	password := d.Get("password").(string)
+	username := d.Get(bindingUsernameKey).(string)
+	password := d.Get(bindingPasswordKey).(string)
 
 	id := fmt.Sprintf("bindinguser/%s", username)
 

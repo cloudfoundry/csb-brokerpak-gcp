@@ -14,7 +14,7 @@ func TestTerraformProviderCSBPG(t *testing.T) {
 }
 
 var _ = BeforeSuite(func() {
-
+	createVolume("ssl_postgres")
 })
 
 var _ = AfterSuite(func() {
