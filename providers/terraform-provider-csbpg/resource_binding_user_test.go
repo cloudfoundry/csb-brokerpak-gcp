@@ -4,8 +4,6 @@ import (
 	"csbbrokerpakgcp/providers/terraform-provider-csbpg/csbpg"
 	"database/sql"
 	"fmt"
-	"io/fs"
-	"os"
 	"os/exec"
 	"path"
 	"path/filepath"
@@ -47,20 +45,16 @@ var _ = Describe("SSL Postgres Bindings", func() {
 		password = uuid.New().String()
 		database = uuid.New().String()
 		port = freePort()
-		ensurePermissionsOnPGConf("ssl_postgres")
+
 		cmd := exec.Command(
 			"docker", "run",
 			"-e", fmt.Sprintf("POSTGRES_PASSWORD=%s", password),
 			"-e", fmt.Sprintf("POSTGRES_DB=%s", database),
 			"-p", fmt.Sprintf("%d:5432", port),
-			"-v", getPWD()+"/testfixtures/ssl_postgres:/mnt",
-			//"-v", getPWD()+"/testfixtures/ssl_postgres/pgconf:/mnt/pgconf",
-			//"-v", getPWD()+"/testfixtures/ssl_postgres/certs:/mnt/certs",
-			//"-v", getPWD()+"/testfixtures/ssl_postgres/keys/server.key:/mnt/keys/server.key:ro",
+			"--mount", "source=ssl_postgres,destination=/mnt",
 			"-t", "postgres",
-			//"-c", "config_file=/mnt/pgconf/postgresql.conf",
-			//"-c", "hba_file=/mnt/pgconf/pg_hba.conf",
-			"ls", "-l", "/mnt/keys/",
+			"-c", "config_file=/mnt/pgconf/postgresql.conf",
+			"-c", "hba_file=/mnt/pgconf/pg_hba.conf",
 		)
 		session, err = gexec.Start(cmd, GinkgoWriter, GinkgoWriter)
 		Expect(err).NotTo(HaveOccurred())
@@ -80,7 +74,7 @@ var _ = Describe("SSL Postgres Bindings", func() {
 		session.Terminate()
 	})
 
-	FIt("creates a binding user", func() {
+	It("creates a binding user", func() {
 		dataOwnerRole := uuid.New().String()
 		bindingUsername := uuid.New().String()
 		bindingPassword := uuid.New().String()
@@ -203,21 +197,40 @@ EOF
 	})
 })
 
+func createVolume(fixtureName string) {
+	path := path.Join(getPWD(), "testfixtures", fixtureName)
+	mustRun("docker", "volume", "create", fixtureName)
+	for _, folder := range []string{"certs", "keys", "pgconf"} {
+		mustRun("docker", "run",
+			"-v", path+":/fixture",
+			"--mount", fmt.Sprintf("source=%s,destination=/mnt", fixtureName),
+			"postgres", "rm", "-rf", "/mnt/"+folder)
+		mustRun("docker", "run",
+			"-v", path+":/fixture",
+			"--mount", fmt.Sprintf("source=%s,destination=/mnt", fixtureName),
+			"postgres", "cp", "-r", "/fixture/"+folder, "/mnt")
+	}
+	mustRun("docker", "run",
+		"-v", path+":/fixture",
+		"--mount", fmt.Sprintf("source=%s,destination=/mnt", fixtureName),
+		"postgres", "chmod", "-R", "0600", "/mnt/keys/server.key")
+	mustRun("docker", "run",
+		"-v", path+":/fixture",
+		"--mount", fmt.Sprintf("source=%s,destination=/mnt", fixtureName),
+		"postgres", "chown", "-R", "postgres:postgres", "/mnt/keys/server.key")
+}
+
+func mustRun(command ...string) {
+	start, err := gexec.Start(exec.Command(
+		command[0], command[1:]...,
+	), GinkgoWriter, GinkgoWriter)
+	Expect(err).NotTo(HaveOccurred())
+	Eventually(start).WithTimeout(30 * time.Second).WithPolling(time.Second).Should(gexec.Exit(0))
+}
+
 func getPWD() string {
 	_, file, _, _ := runtime.Caller(1)
 	return filepath.Dir(file)
-}
-
-func ensurePermissionsOnPGConf(fixtureName string) {
-	path := path.Join(getPWD(), "testfixtures", fixtureName, "keys")
-	filepath.Walk(path, func(path string, info fs.FileInfo, err error) error {
-		if info.IsDir() {
-			return nil
-		} else {
-			//os.Chown(path, 999, 999)
-			return os.Chmod(path, 0600)
-		}
-	})
 }
 
 func query(db *sql.DB, query string) (any, error) {
