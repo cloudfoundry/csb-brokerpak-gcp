@@ -99,6 +99,11 @@ func resourceBindingUserDelete(ctx context.Context, d *schema.ResourceData, m an
 	defer db.Close()
 	log.Println("[DEBUG] connected")
 
+	_, err = db.Exec(fmt.Sprintf("REASSIGN OWNED BY %s TO %s", pq.QuoteIdentifier(username), pq.QuoteIdentifier(cf.dataOwnerRole)))
+	if err != nil {
+		return diag.FromErr(err)
+	}
+
 	log.Println("[DEBUG] dropping binding user")
 	_, err = db.Exec(fmt.Sprintf("DROP ROLE %s", pq.QuoteIdentifier(username)))
 	if err != nil {
