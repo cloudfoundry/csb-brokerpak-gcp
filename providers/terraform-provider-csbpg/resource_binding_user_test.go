@@ -8,6 +8,7 @@ import (
 	"path"
 	"path/filepath"
 	"runtime"
+	"strings"
 	"time"
 
 	"github.com/hashicorp/terraform-plugin-sdk/v2/terraform"
@@ -24,33 +25,33 @@ import (
 )
 
 const (
-	username = "postgres"
-	hostname = "localhost"
+	adminUsername = "postgres"
+	hostname      = "localhost"
 )
 
 //go:embed "testfixtures/ssl_postgres/certs/ca.crt"
 var postgresSSLCACert string
 
-//go:embed "testfixtures/ssl_postgres/certs/server.crt"
-var postgresSSLServerCert string
+//go:embed "testfixtures/ssl_postgres/certs/client.crt"
+var postgresSSLClientCert string
 
-//go:embed "testfixtures/ssl_postgres/keys/server.key"
-var postgresSSLServerKey string
+//go:embed "testfixtures/ssl_postgres/keys/client.key"
+var postgresSSLClientKey string
 
 var _ = Describe("SSL Postgres Bindings", func() {
 	var session *gexec.Session
-	var uri, password, database string
+	var adminUserURI, adminPassword, database string
 	var port int
 
 	BeforeEach(func() {
 		var err error
-		password = uuid.New().String()
+		adminPassword = uuid.New().String()
 		database = uuid.New().String()
 		port = freePort()
 
 		cmd := exec.Command(
 			"docker", "run",
-			"-e", fmt.Sprintf("POSTGRES_PASSWORD=%s", password),
+			"-e", fmt.Sprintf("POSTGRES_PASSWORD=%s", adminPassword),
 			"-e", fmt.Sprintf("POSTGRES_DB=%s", database),
 			"-p", fmt.Sprintf("%d:5432", port),
 			"--mount", "source=ssl_postgres,destination=/mnt",
@@ -61,9 +62,9 @@ var _ = Describe("SSL Postgres Bindings", func() {
 		session, err = gexec.Start(cmd, GinkgoWriter, GinkgoWriter)
 		Expect(err).NotTo(HaveOccurred())
 
-		uri = fmt.Sprintf("postgres://%s:%s@%s:%d/%s?sslmode=disable", username, password, hostname, port, database)
+		adminUserURI = buildConnectionString(adminUsername, adminPassword, port, database)
 		Eventually(func() error {
-			db, err := sql.Open("postgres", uri)
+			db, err := sql.Open("postgres", adminUserURI)
 			if err != nil {
 				return err
 			}
@@ -106,12 +107,12 @@ EOF
 		  username = "%s"
 		  password = "%s"
 		}
-		`, hostname, port, username, password, database, dataOwnerRole,
-			postgresSSLCACert, postgresSSLServerCert, postgresSSLServerKey,
+		`, hostname, port, adminUsername, adminPassword, database, dataOwnerRole,
+			postgresSSLCACert, postgresSSLClientCert, postgresSSLClientKey,
 			bindingUsername, bindingPassword), func(state *terraform.State) error {
 			By("CHECKING RESOURCE CREATE")
 
-			db, err := sql.Open("postgres", uri)
+			db, err := sql.Open("postgres", adminUserURI)
 			Expect(err).NotTo(HaveOccurred())
 
 			By("checking that the data owner role is created")
@@ -132,10 +133,23 @@ EOF
 			Expect(rows.Scan(&result)).To(Succeed())
 			Expect(result).To(BeTrue(), "binding user is not a member of the data_owner_role")
 
+			By("by adding data as the new user")
+			bindingDB, err := sql.Open("postgres", buildConnectionString(bindingUsername, bindingPassword, port, database))
+			Expect(err).NotTo(HaveOccurred())
+
+			_, err = bindingDB.Exec("CREATE SCHEMA foo")
+			Expect(err).NotTo(HaveOccurred())
+
+			_, err = bindingDB.Exec("CREATE TABLE foo.bar(PK   INT primary key,  Name VARCHAR(30))")
+			Expect(err).NotTo(HaveOccurred())
+
+			_, err = bindingDB.Exec("INSERT INTO foo.bar (pk, name) VALUES(1,'Test name');")
+			Expect(err).NotTo(HaveOccurred())
+
 			return nil
 		}, func(state *terraform.State) error {
 			By("CHECKING RESOURCE DELETE")
-			db, err := sql.Open("postgres", uri)
+			db, err := sql.Open("postgres", adminUserURI)
 			Expect(err).NotTo(HaveOccurred())
 
 			By("checking that the data owner role is not deleted")
@@ -147,6 +161,9 @@ EOF
 			rows, err = db.Query(fmt.Sprintf("SELECT FROM pg_catalog.pg_roles WHERE rolname = '%s'", bindingUsername))
 			Expect(err).NotTo(HaveOccurred())
 			Expect(rows.Next()).To(BeFalse(), fmt.Sprintf("role %q still exists", bindingUsername))
+
+			By("checking that data persists")
+			Expect(query(db, "SELECT name FROM foo.bar where pk = 1")).To(ConsistOf("Test name"))
 
 			return nil
 		})
@@ -190,12 +207,12 @@ EOF
 		  username = "%s"
 		  password = "%s"
 		}
-		`, hostname, port, username, password, database, dataOwnerRole,
-			postgresSSLCACert, postgresSSLServerCert, postgresSSLServerKey,
+		`, hostname, port, adminUsername, adminPassword, database, dataOwnerRole,
+			postgresSSLCACert, postgresSSLClientCert, postgresSSLClientKey,
 			bindingUsername1, bindingPassword1, bindingUsername2, bindingPassword2), func(state *terraform.State) error {
 			By("CHECKING RESOURCE CREATE")
 
-			db, err := sql.Open("postgres", uri)
+			db, err := sql.Open("postgres", adminUserURI)
 			Expect(err).NotTo(HaveOccurred())
 
 			By("checking that the data owner role is created")
@@ -221,7 +238,7 @@ EOF
 		}, func(state *terraform.State) error {
 			By("CHECKING RESOURCE DELETE")
 
-			db, err := sql.Open("postgres", uri)
+			db, err := sql.Open("postgres", adminUserURI)
 			Expect(err).NotTo(HaveOccurred())
 
 			By("checking that the data owner role is not deleted")
@@ -242,6 +259,21 @@ EOF
 		})
 	})
 })
+
+func buildConnectionString(username, password string, port int, database string) string {
+	return strings.Join([]string{
+		"host=" + hostname,
+		fmt.Sprintf("port=%d", port),
+		"user=" + username,
+		"password=" + password,
+		"database=" + database,
+		"sslmode=verify-ca",
+		"sslinline=true",
+		fmt.Sprintf("sslcert='%s'", postgresSSLClientCert),
+		fmt.Sprintf("sslkey='%s'", postgresSSLClientKey),
+		fmt.Sprintf("sslrootcert='%s'", postgresSSLCACert),
+	}, " ")
+}
 
 func createVolume(fixtureName string) {
 	path := path.Join(getPWD(), "testfixtures", fixtureName)
