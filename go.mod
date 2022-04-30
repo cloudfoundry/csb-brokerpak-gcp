@@ -10,7 +10,7 @@ require (
 	github.com/google/uuid v1.3.0
 	github.com/hashicorp/terraform-plugin-sdk/v2 v2.14.0
 	github.com/lib/pq v1.10.5
-	github.com/onsi/ginkgo/v2 v2.1.3
+	github.com/onsi/ginkgo/v2 v2.1.4
 	github.com/onsi/gomega v1.19.0
 	golang.org/x/tools v0.1.11-0.20220316014157-77aa08bb151a
 	google.golang.org/api v0.77.0
