@@ -15,7 +15,7 @@ require (
 	golang.org/x/tools v0.1.11-0.20220316014157-77aa08bb151a
 	google.golang.org/api v0.77.0
 	google.golang.org/genproto v0.0.0-20220414192740-2d67ff6cf2b4
-	honnef.co/go/tools v0.3.0
+	honnef.co/go/tools v0.3.1
 )
 
 require (
