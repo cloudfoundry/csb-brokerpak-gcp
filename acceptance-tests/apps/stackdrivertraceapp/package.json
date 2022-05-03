@@ -5,7 +5,7 @@
   "main": "index.js",
   "scripts": {
     "start": "node index.js",
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "npx standard --fix"
   },
   "keywords": [
     "gcp"
@@ -17,5 +17,8 @@
     "express": "^4.18.1",
     "helmet": "^5.0.2",
     "vcap_services": "^0.7.1"
+  },
+  "devDependencies": {
+    "standard": "^17.0.0"
   }
 }
