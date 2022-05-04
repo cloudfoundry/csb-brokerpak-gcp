@@ -1,6 +1,7 @@
 ## Release notes for next release:
 
 ### New feature:
+- PostgreSQL had had the "beta" label removed
 - BREAKING: Due to new features in the PostgreSQL service offering, it is not possible to upgrade from
   a previous (Beta) version to this version. You should either delete existing PostgreSQL instances before upgrade, or
   run "cf purge-service-instance" on them to remove them from CloudFoundry management.
