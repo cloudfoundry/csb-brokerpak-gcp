@@ -20,21 +20,28 @@ type connectionFactory struct {
 	sslMode       string
 }
 
-func (c connectionFactory) Connect() (*sql.DB, error) {
-	db, err := sql.Open("postgres", c.uri())
+func (c connectionFactory) ConnectAsAdmin() (*sql.DB, error) {
+	return c.connect(c.uri())
+}
+
+func (c connectionFactory) ConnectAsUser(bindingUser string, bindingUserPassword string) (*sql.DB, error) {
+	return c.connect(c.uriWithCreds(bindingUser, bindingUserPassword))
+}
+
+func (c connectionFactory) connect(uri string) (*sql.DB, error) {
+	db, err := sql.Open("postgres", uri)
 	if err != nil {
 		return nil, fmt.Errorf("failed to connect to PostgreSQL %q: %w", c.uriRedacted(), err)
 	}
 
 	return db, nil
 }
-
-func (c connectionFactory) uri() string {
+func (c connectionFactory) uriWithCreds(username, password string) string {
 	return strings.Join([]string{
 		"host=" + c.host,
 		fmt.Sprintf("port=%d", c.port),
-		"user=" + c.username,
-		"password=" + c.password,
+		"user=" + username,
+		"password=" + password,
 		"database=" + c.database,
 		"sslmode=" + c.sslMode,
 		"sslinline=true",
@@ -42,6 +49,10 @@ func (c connectionFactory) uri() string {
 		fmt.Sprintf("sslkey='%s'", c.sslClientCert.Key),
 		fmt.Sprintf("sslrootcert='%s'", c.sslRootCert),
 	}, " ")
+}
+
+func (c connectionFactory) uri() string {
+	return c.uriWithCreds(c.username, c.password)
 }
 
 func (c connectionFactory) uriRedacted() string {
