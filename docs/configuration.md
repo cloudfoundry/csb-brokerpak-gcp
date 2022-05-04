@@ -123,7 +123,7 @@ service:
     plans: '[
       {
         "name":"small",
-        "id":"85b27a04-8695-11ea-818a-274131861b81",
+        "id":"5b45de36-cb90-11ec-a755-77f8be95a49d",
         "description":"PostgreSQL with default version, shared CPU, minimum 0.6GB ram, 10GB storage",
         "display_name":"small",
         "tier":"db-f1-micro",
