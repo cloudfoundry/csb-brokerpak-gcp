@@ -15,13 +15,12 @@
 version: 1
 name: csb-google-postgres
 id: 40501b82-cb90-11ec-b1c2-e3a703778055
-description: Beta - PostgreSQL is a fully managed service for the
-  Google Cloud Platform.
-display_name: Google Cloud PostgreSQL (Beta)
+description: PostgreSQL is a fully managed service for the Google Cloud Platform.
+display_name: Google Cloud PostgreSQL
 image_url: https://cloud.google.com/_static/images/cloud/products/logos/svg/sql.svg
 documentation_url: https://cloud.google.com/sql/docs/postgres
 support_url: https://cloud.google.com/support/
-tags: [gcp, postgresql, postgres, beta]
+tags: [gcp, postgresql, postgres]
 plan_updateable: true
 provision:
   plan_inputs:
