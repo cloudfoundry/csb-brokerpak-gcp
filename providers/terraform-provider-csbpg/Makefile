@@ -1,6 +1,6 @@
 .DEFAULT_GOAL = help
 
-GO-VERSION = 1.18
+GO-VERSION = 1.18.1
 GO_OK :=  $(or $(USE_GO_CONTAINERS), $(shell which go 1>/dev/null 2>/dev/null; echo $$?))
 DOCKER_OK := $(shell which docker 1>/dev/null 2>/dev/null; echo $$?)
 ifeq ($(GO_OK), 0)
