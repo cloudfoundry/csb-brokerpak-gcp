@@ -1,6 +1,7 @@
 ## Release notes for next release:
 
 ### New feature:
+- PostgreSQL is no longer in beta, and can be used in production
 - BREAKING: Due to new features in the PostgreSQL service offering, it is not possible to upgrade from
   a previous (Beta) version to this version. You should either delete existing PostgreSQL instances before upgrade, or
   run "cf purge-service-instance" on them to remove them from CloudFoundry management.

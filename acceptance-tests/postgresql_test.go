@@ -2,6 +2,7 @@ package acceptance_test
 
 import (
 	"csbbrokerpakgcp/acceptance-tests/helpers/apps"
+	"csbbrokerpakgcp/acceptance-tests/helpers/brokers"
 	"csbbrokerpakgcp/acceptance-tests/helpers/matchers"
 	"csbbrokerpakgcp/acceptance-tests/helpers/random"
 	"csbbrokerpakgcp/acceptance-tests/helpers/services"
@@ -12,8 +13,15 @@ import (
 
 var _ = Describe("PostgreSQL", Label("postgresql"), func() {
 	It("can be accessed by an app", func() {
+		By("creating a service broker with Beta services disabled")
+		broker := brokers.Create(
+			brokers.WithPrefix("csb-postgresql"),
+			brokers.WithEnv(apps.EnvVar{Name: "GSB_COMPATIBILITY_ENABLE_BETA_SERVICES", Value: "false"}),
+		)
+		defer broker.Delete()
+
 		By("creating a service instance")
-		serviceInstance := services.CreateInstance("csb-google-postgres", "small")
+		serviceInstance := services.CreateInstance("csb-google-postgres", "small", services.WithBroker(broker))
 		defer serviceInstance.Delete()
 
 		By("pushing the unstarted app twice")
