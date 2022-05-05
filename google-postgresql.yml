@@ -29,7 +29,7 @@ provision:
   - field_name: tier
     required: true
     type: string
-    details: Google sql tier. This determines CPU and RAM resource.
+    details: Google machine tier. This determines CPU and RAM resource. Please review the Google [documentation for machine tiers](https://cloud.google.com/sql/docs/postgres/create-instance#machine-types), to specify an appropriate machine.
   - field_name: postgres_version
     required: true
     type: string
