@@ -66,60 +66,7 @@ resource "google_sql_user" "admin_user" {
   deletion_policy = "ABANDON"
 }
 
-resource "random_string" "createrole_username" {
-  length  = 16
-  special = false
-}
-resource "random_password" "createrole_password" {
-  length           = 16
-  special          = true
-  override_special = "_@"
-}
-
-resource "postgresql_role" "createrole_user" {
-  depends_on  = [google_sql_user.admin_user]
-  name        = random_string.createrole_username.result
-  password    = random_password.createrole_password.result
-  login       = true
-  create_role = true
-}
-
-resource "postgresql_grant" "db_access" {
-  depends_on  = [postgresql_role.createrole_user]
-  database    = var.db_name
-  role        = postgresql_role.createrole_user.name
-  object_type = "database"
-  privileges  = ["ALL"]
-}
-
-resource "postgresql_grant" "table_access" {
-  depends_on  = [postgresql_role.createrole_user]
-  database    = var.db_name
-  role        = postgresql_role.createrole_user.name
-  schema      = "public"
-  object_type = "table"
-  privileges  = ["ALL"]
-}
-
 resource "google_sql_ssl_cert" "client_cert" {
   common_name = random_string.username.result
   instance    = google_sql_database_instance.instance.name
-}
-
-resource "local_sensitive_file" "sslkey" {
-  content         = google_sql_ssl_cert.client_cert.private_key
-  filename        = "${path.module}/sslkey.pem"
-  file_permission = "0600"
-}
-
-resource "local_file" "sslcert" {
-  content         = google_sql_ssl_cert.client_cert.cert
-  filename        = "${path.module}/sslcert.pem"
-  file_permission = "0600"
-}
-
-resource "local_file" "sslrootcert" {
-  content         = google_sql_database_instance.instance.server_ca_cert.0.cert
-  filename        = "${path.module}/sslrootcert.pem"
-  file_permission = "0600"
 }
