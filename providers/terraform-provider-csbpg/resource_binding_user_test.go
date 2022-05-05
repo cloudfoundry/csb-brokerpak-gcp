@@ -5,9 +5,6 @@ import (
 	"database/sql"
 	"fmt"
 	"os/exec"
-	"path"
-	"path/filepath"
-	"runtime"
 	"strings"
 	"time"
 
@@ -58,7 +55,6 @@ var _ = Describe("SSL Postgres Bindings", func() {
 			"-e", fmt.Sprintf("POSTGRES_DB=%s", defaultDatabase),
 			"-p", fmt.Sprintf("%d:5432", port),
 			"--mount", "source=ssl_postgres,destination=/mnt",
-			"--mount", fmt.Sprintf("type=bind,source=%s/testfixtures/ssl_postgres/init.sql,target=/docker-entrypoint-initdb.d/init.sql", getPWD()),
 			"-t", "postgres",
 			"-c", "config_file=/mnt/pgconf/postgresql.conf",
 			"-c", "hba_file=/mnt/pgconf/pg_hba.conf",
@@ -75,7 +71,7 @@ var _ = Describe("SSL Postgres Bindings", func() {
 			return db.Ping()
 		}).WithTimeout(10 * time.Second).WithPolling(time.Second).Should(Succeed())
 
-		createTestDatabase(port, database)
+		replicateGCPPostgresEnv(port, database, adminPassword)
 
 		adminUserURI = buildConnectionString(adminUsername, adminPassword, port, database)
 	})
@@ -271,10 +267,19 @@ EOF
 	})
 })
 
-func createTestDatabase(port int, database string) {
-	db, err := sql.Open("postgres", buildConnectionString(cloudsqlsuperuser, cloudsqlsuperpassword, port, defaultDatabase))
+func replicateGCPPostgresEnv(port int, database, adminPassword string) {
+	adminConn, err := sql.Open("postgres", buildConnectionString(adminUsername, adminPassword, port, defaultDatabase))
 	Expect(err).NotTo(HaveOccurred())
-	_, err = db.Exec(fmt.Sprintf("CREATE DATABASE \"%s\"", database))
+	defer adminConn.Close()
+
+	_, err = adminConn.Exec(fmt.Sprintf("CREATE ROLE %s WITH LOGIN PASSWORD '%s' NOSUPERUSER CREATEDB CREATEROLE", cloudsqlsuperuser, cloudsqlsuperpassword))
+	Expect(err).NotTo(HaveOccurred())
+
+	cloudSQLSuperUserConn, err := sql.Open("postgres", buildConnectionString(cloudsqlsuperuser, cloudsqlsuperpassword, port, defaultDatabase))
+	Expect(err).NotTo(HaveOccurred())
+	defer cloudSQLSuperUserConn.Close()
+
+	_, err = cloudSQLSuperUserConn.Exec(fmt.Sprintf("CREATE DATABASE \"%s\"", database))
 	Expect(err).NotTo(HaveOccurred())
 }
 
@@ -291,42 +296,6 @@ func buildConnectionString(username, password string, port int, database string)
 		fmt.Sprintf("sslkey='%s'", postgresSSLClientKey),
 		fmt.Sprintf("sslrootcert='%s'", postgresSSLCACert),
 	}, " ")
-}
-
-func createVolume(fixtureName string) {
-	path := path.Join(getPWD(), "testfixtures", fixtureName)
-	mustRun("docker", "volume", "create", fixtureName)
-	for _, folder := range []string{"certs", "keys", "pgconf"} {
-		mustRun("docker", "run",
-			"-v", path+":/fixture",
-			"--mount", fmt.Sprintf("source=%s,destination=/mnt", fixtureName),
-			"postgres", "rm", "-rf", "/mnt/"+folder)
-		mustRun("docker", "run",
-			"-v", path+":/fixture",
-			"--mount", fmt.Sprintf("source=%s,destination=/mnt", fixtureName),
-			"postgres", "cp", "-r", "/fixture/"+folder, "/mnt")
-	}
-	mustRun("docker", "run",
-		"-v", path+":/fixture",
-		"--mount", fmt.Sprintf("source=%s,destination=/mnt", fixtureName),
-		"postgres", "chmod", "-R", "0600", "/mnt/keys/server.key")
-	mustRun("docker", "run",
-		"-v", path+":/fixture",
-		"--mount", fmt.Sprintf("source=%s,destination=/mnt", fixtureName),
-		"postgres", "chown", "-R", "postgres:postgres", "/mnt/keys/server.key")
-}
-
-func mustRun(command ...string) {
-	start, err := gexec.Start(exec.Command(
-		command[0], command[1:]...,
-	), GinkgoWriter, GinkgoWriter)
-	Expect(err).NotTo(HaveOccurred())
-	Eventually(start).WithTimeout(30 * time.Second).WithPolling(time.Second).Should(gexec.Exit(0))
-}
-
-func getPWD() string {
-	_, file, _, _ := runtime.Caller(1)
-	return filepath.Dir(file)
 }
 
 func query(db *sql.DB, query string) (any, error) {
