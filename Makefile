@@ -103,7 +103,7 @@ run-examples: ## run examples against CSB on localhost (run "make run" to start 
 test: lint provider-tests run-integration-tests
 
 .PHONY: run-integration-tests
-run-integration-tests: ## run integration tests for this brokerpak
+run-integration-tests: latest-csb ## run integration tests for this brokerpak
 	cd ./integration-tests && go run github.com/onsi/ginkgo/v2/ginkgo -r .
 
 .PHONY: provider-tests
