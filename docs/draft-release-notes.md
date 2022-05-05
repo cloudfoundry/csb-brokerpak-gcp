@@ -13,5 +13,6 @@
 
 
 ### Fix:
-- minimum constraints on MySQL, PostreSQL, and Spanner storage_gb are now enforced
 
+- Minimum constraints on MySQL, PostreSQL, and Spanner storage_gb are now enforced.
+- Postgres admin password is now 64 bytes.
