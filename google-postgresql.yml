@@ -14,7 +14,7 @@
 ---
 version: 1
 name: csb-google-postgres
-id: e4ac5b1c-8693-11ea-8977-1f3cd95a07dd
+id: 40501b82-cb90-11ec-b1c2-e3a703778055
 description: Beta - PostgreSQL is a fully managed service for the
   Google Cloud Platform.
 display_name: Google Cloud PostgreSQL (Beta)
@@ -266,7 +266,7 @@ bind:
 examples:
 - name: small configuration
   description: Create a small postgres instance
-  plan_id: 85b27a04-8695-11ea-818a-274131861b81
+  plan_id: 5b45de36-cb90-11ec-a755-77f8be95a49d
   provision_params: { "authorized_networks_cidrs": ["0.0.0.0/0"], "public_ip": true}
   bind_params: {}
   bind_can_fail: true
