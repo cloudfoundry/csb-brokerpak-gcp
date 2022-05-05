@@ -28,7 +28,7 @@ fi
 cf set-env "${APP_NAME}" SECURITY_USER_PASSWORD "${SECURITY_USER_PASSWORD}"
 cf set-env "${APP_NAME}" SECURITY_USER_NAME "${SECURITY_USER_NAME}"
 cf set-env "${APP_NAME}" BROKERPAK_UPDATES_ENABLED true
-cf set-env "${APP_NAME}" GSB_COMPATIBILITY_ENABLE_BETA_SERVICES true
+cf set-env "${APP_NAME}" GSB_COMPATIBILITY_ENABLE_BETA_SERVICES "${GSB_COMPATIBILITY_ENABLE_BETA_SERVICES:-true}"
 
 if [[ ${GSB_PROVISION_DEFAULTS} ]]; then
   cf set-env "${APP_NAME}" GSB_PROVISION_DEFAULTS "${GSB_PROVISION_DEFAULTS}"
@@ -99,7 +99,7 @@ if [[ ${GSB_DEBUG} ]]; then
 fi
 
 if [[ -z "$GSB_SERVICE_CSB_GOOGLE_POSTGRES_PLANS" ]]; then
-  GSB_SERVICE_CSB_GOOGLE_POSTGRES_PLANS='[{"name":"small","id":"5b45de36-cb90-11ec-a755-77f8be95a49d","description":"PostgreSQL with default version, shared CPU, minimum 0.6GB ram, 10GB storage","display_name":"small","cores":0.6,"storage_gb":10},{"name":"medium","id":"a3359fa6-cb90-11ec-bcb6-cb68544eda78","description":"PostgreSQL with default version, shared CPU, minimum 1.7GB ram, 20GB storage","display_name":"medium","cores":1.7,"storage_gb":20},{"name":"large","id":"cd95c5b4-cb90-11ec-a5da-df87b7fb7426","description":"PostgreSQL with default version, minimum 8 cores, minimum 8GB ram, 50GB storage","display_name":"large","cores":8,"storage_gb":50}]'
+  GSB_SERVICE_CSB_GOOGLE_POSTGRES_PLANS='[{"name":"small","id":"5b45de36-cb90-11ec-a755-77f8be95a49d","description":"PostgreSQL with default version, shared CPU, minimum 0.6GB ram, 10GB storage","display_name":"small","tier":"db-f1-micro","storage_gb":10},{"name":"medium","id":"a3359fa6-cb90-11ec-bcb6-cb68544eda78","description":"PostgreSQL with default version, shared CPU, minimum 1.7GB ram, 20GB storage","display_name":"medium","tier":"db-g1-small","storage_gb":20},{"name":"large","id":"cd95c5b4-cb90-11ec-a5da-df87b7fb7426","description":"PostgreSQL with default version, minimum 8 cores, minimum 8GB ram, 50GB storage","display_name":"large","tier":"db-n1-standard-8","storage_gb":50}]'
 fi
 cf set-env "${APP_NAME}" GSB_SERVICE_CSB_GOOGLE_POSTGRES_PLANS "${GSB_SERVICE_CSB_GOOGLE_POSTGRES_PLANS}"
 
