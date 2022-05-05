@@ -258,14 +258,6 @@ var _ = Describe("postgres", func() {
 	})
 
 	Context("property validation", func() {
-		Describe("tiers", func() {
-			It("should validate the tier", func() {
-				_, err := broker.Provision("csb-google-postgres", postgresNoOverridesPlan["name"].(string), map[string]interface{}{"tier": "non-existent-tier"})
-
-				Expect(err).To(MatchError(ContainSubstring("tier must be one of the following:")))
-			})
-		})
-
 		Describe("region", func() {
 			It("should validate the region", func() {
 				_, err := broker.Provision("csb-google-postgres", postgresNoOverridesPlan["name"].(string), map[string]interface{}{"region": "non-existent-region"})
