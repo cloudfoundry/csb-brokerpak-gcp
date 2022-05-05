@@ -25,8 +25,11 @@ import (
 )
 
 const (
-	adminUsername = "postgres"
-	hostname      = "localhost"
+	adminUsername         = "postgres"
+	cloudsqlsuperuser     = "cloudsqlsuperuser"
+	cloudsqlsuperpassword = "password"
+	hostname              = "localhost"
+	defaultDatabase       = "default"
 )
 
 //go:embed "testfixtures/ssl_postgres/certs/ca.crt"
@@ -52,9 +55,10 @@ var _ = Describe("SSL Postgres Bindings", func() {
 		cmd := exec.Command(
 			"docker", "run",
 			"-e", fmt.Sprintf("POSTGRES_PASSWORD=%s", adminPassword),
-			"-e", fmt.Sprintf("POSTGRES_DB=%s", database),
+			"-e", fmt.Sprintf("POSTGRES_DB=%s", defaultDatabase),
 			"-p", fmt.Sprintf("%d:5432", port),
 			"--mount", "source=ssl_postgres,destination=/mnt",
+			"--mount", fmt.Sprintf("type=bind,source=%s/testfixtures/ssl_postgres/init.sql,target=/docker-entrypoint-initdb.d/init.sql", getPWD()),
 			"-t", "postgres",
 			"-c", "config_file=/mnt/pgconf/postgresql.conf",
 			"-c", "hba_file=/mnt/pgconf/pg_hba.conf",
@@ -62,15 +66,18 @@ var _ = Describe("SSL Postgres Bindings", func() {
 		session, err = gexec.Start(cmd, GinkgoWriter, GinkgoWriter)
 		Expect(err).NotTo(HaveOccurred())
 
-		adminUserURI = buildConnectionString(adminUsername, adminPassword, port, database)
 		Eventually(func() error {
-			db, err := sql.Open("postgres", adminUserURI)
+			db, err := sql.Open("postgres", buildConnectionString(adminUsername, adminPassword, port, defaultDatabase))
 			if err != nil {
 				return err
 			}
 			defer db.Close()
 			return db.Ping()
 		}).WithTimeout(10 * time.Second).WithPolling(time.Second).Should(Succeed())
+
+		createTestDatabase(port, database)
+
+		adminUserURI = buildConnectionString(adminUsername, adminPassword, port, database)
 	})
 
 	AfterEach(func() {
@@ -78,8 +85,8 @@ var _ = Describe("SSL Postgres Bindings", func() {
 	})
 
 	It("creates a binding user", func() {
-		dataOwnerRole := uuid.New().String()
-		bindingUsername := uuid.New().String()
+		dataOwnerRole := "dataOwnerRole_" + uuid.New().String()
+		bindingUsername := "bindingUsername_" + uuid.New().String()
 		bindingPassword := uuid.New().String()
 		applyHCL(fmt.Sprintf(`
 		provider "csbpg" {
@@ -107,66 +114,68 @@ EOF
 		  username = "%s"
 		  password = "%s"
 		}
-		`, hostname, port, adminUsername, adminPassword, database, dataOwnerRole,
+		`, hostname, port, cloudsqlsuperuser, cloudsqlsuperpassword, database, dataOwnerRole,
 			postgresSSLCACert, postgresSSLClientCert, postgresSSLClientKey,
-			bindingUsername, bindingPassword), func(state *terraform.State) error {
-			By("CHECKING RESOURCE CREATE")
+			bindingUsername, bindingPassword),
+			func(state *terraform.State) error {
+				By("CHECKING RESOURCE CREATE")
 
-			db, err := sql.Open("postgres", adminUserURI)
-			Expect(err).NotTo(HaveOccurred())
+				db, err := sql.Open("postgres", adminUserURI)
+				Expect(err).NotTo(HaveOccurred())
 
-			By("checking that the data owner role is created")
-			rows, err := db.Query(fmt.Sprintf("SELECT FROM pg_catalog.pg_roles WHERE rolname = '%s'", dataOwnerRole))
-			Expect(err).NotTo(HaveOccurred())
-			Expect(rows.Next()).To(BeTrue(), fmt.Sprintf("role %q has not been created", dataOwnerRole))
+				By("checking that the data owner role is created")
+				rows, err := db.Query(fmt.Sprintf("SELECT FROM pg_catalog.pg_roles WHERE rolname = '%s'", dataOwnerRole))
+				Expect(err).NotTo(HaveOccurred())
+				Expect(rows.Next()).To(BeTrue(), fmt.Sprintf("role %q has not been created", dataOwnerRole))
 
-			By("checking that the binding user is created")
-			rows, err = db.Query(fmt.Sprintf("SELECT FROM pg_catalog.pg_roles WHERE rolname = '%s'", bindingUsername))
-			Expect(err).NotTo(HaveOccurred())
-			Expect(rows.Next()).To(BeTrue(), fmt.Sprintf("role %q has not been created", bindingUsername))
+				By("checking that the binding user is created")
+				rows, err = db.Query(fmt.Sprintf("SELECT FROM pg_catalog.pg_roles WHERE rolname = '%s'", bindingUsername))
+				Expect(err).NotTo(HaveOccurred())
+				Expect(rows.Next()).To(BeTrue(), fmt.Sprintf("role %q has not been created", bindingUsername))
 
-			By("checking that the binding user is a member of the data owner role")
-			rows, err = db.Query(fmt.Sprintf("SELECT pg_has_role('%s', '%s', 'member')", bindingUsername, dataOwnerRole))
-			Expect(err).NotTo(HaveOccurred())
-			var result bool
-			Expect(rows.Next()).To(BeTrue(), "pg_has_role() query failed")
-			Expect(rows.Scan(&result)).To(Succeed())
-			Expect(result).To(BeTrue(), "binding user is not a member of the data_owner_role")
+				By("checking that the binding user is a member of the data owner role")
+				rows, err = db.Query(fmt.Sprintf("SELECT pg_has_role('%s', '%s', 'member')", bindingUsername, dataOwnerRole))
+				Expect(err).NotTo(HaveOccurred())
+				var result bool
+				Expect(rows.Next()).To(BeTrue(), "pg_has_role() query failed")
+				Expect(rows.Scan(&result)).To(Succeed())
+				Expect(result).To(BeTrue(), "binding user is not a member of the data_owner_role")
 
-			By("by adding data as the new user")
-			bindingDB, err := sql.Open("postgres", buildConnectionString(bindingUsername, bindingPassword, port, database))
-			Expect(err).NotTo(HaveOccurred())
+				By("by adding data as the new user")
+				bindingDB, err := sql.Open("postgres", buildConnectionString(bindingUsername, bindingPassword, port, database))
+				Expect(err).NotTo(HaveOccurred())
 
-			_, err = bindingDB.Exec("CREATE SCHEMA foo")
-			Expect(err).NotTo(HaveOccurred())
+				_, err = bindingDB.Exec("CREATE SCHEMA foo")
+				Expect(err).NotTo(HaveOccurred())
 
-			_, err = bindingDB.Exec("CREATE TABLE foo.bar(PK   INT primary key,  Name VARCHAR(30))")
-			Expect(err).NotTo(HaveOccurred())
+				_, err = bindingDB.Exec("CREATE TABLE foo.bar(PK   INT primary key,  Name VARCHAR(30))")
+				Expect(err).NotTo(HaveOccurred())
 
-			_, err = bindingDB.Exec("INSERT INTO foo.bar (pk, name) VALUES(1,'Test name');")
-			Expect(err).NotTo(HaveOccurred())
+				_, err = bindingDB.Exec("INSERT INTO foo.bar (pk, name) VALUES(1,'Test name');")
+				Expect(err).NotTo(HaveOccurred())
 
-			return nil
-		}, func(state *terraform.State) error {
-			By("CHECKING RESOURCE DELETE")
-			db, err := sql.Open("postgres", adminUserURI)
-			Expect(err).NotTo(HaveOccurred())
+				return nil
+			},
+			func(state *terraform.State) error {
+				By("CHECKING RESOURCE DELETE")
+				db, err := sql.Open("postgres", adminUserURI)
+				Expect(err).NotTo(HaveOccurred())
 
-			By("checking that the data owner role is not deleted")
-			rows, err := db.Query(fmt.Sprintf("SELECT FROM pg_catalog.pg_roles WHERE rolname = '%s'", dataOwnerRole))
-			Expect(err).NotTo(HaveOccurred())
-			Expect(rows.Next()).To(BeTrue(), fmt.Sprintf("role %q has been deleted", dataOwnerRole))
+				By("checking that the data owner role is not deleted")
+				rows, err := db.Query(fmt.Sprintf("SELECT FROM pg_catalog.pg_roles WHERE rolname = '%s'", dataOwnerRole))
+				Expect(err).NotTo(HaveOccurred())
+				Expect(rows.Next()).To(BeTrue(), fmt.Sprintf("role %q has been deleted", dataOwnerRole))
 
-			By("checking that the binding user is deleted")
-			rows, err = db.Query(fmt.Sprintf("SELECT FROM pg_catalog.pg_roles WHERE rolname = '%s'", bindingUsername))
-			Expect(err).NotTo(HaveOccurred())
-			Expect(rows.Next()).To(BeFalse(), fmt.Sprintf("role %q still exists", bindingUsername))
+				By("checking that the binding user is deleted")
+				rows, err = db.Query(fmt.Sprintf("SELECT FROM pg_catalog.pg_roles WHERE rolname = '%s'", bindingUsername))
+				Expect(err).NotTo(HaveOccurred())
+				Expect(rows.Next()).To(BeFalse(), fmt.Sprintf("role %q still exists", bindingUsername))
 
-			By("checking that data persists")
-			Expect(query(db, "SELECT name FROM foo.bar where pk = 1")).To(ConsistOf("Test name"))
+				By("checking that data persists")
+				Expect(query(db, "SELECT name FROM foo.bar where pk = 1")).To(ConsistOf("Test name"))
 
-			return nil
-		})
+				return nil
+			})
 	})
 
 	It("can create multiple binding user", func() {
@@ -209,56 +218,65 @@ EOF
 		}
 		`, hostname, port, adminUsername, adminPassword, database, dataOwnerRole,
 			postgresSSLCACert, postgresSSLClientCert, postgresSSLClientKey,
-			bindingUsername1, bindingPassword1, bindingUsername2, bindingPassword2), func(state *terraform.State) error {
-			By("CHECKING RESOURCE CREATE")
+			bindingUsername1, bindingPassword1, bindingUsername2, bindingPassword2),
+			func(state *terraform.State) error {
+				By("CHECKING RESOURCE CREATE")
 
-			db, err := sql.Open("postgres", adminUserURI)
-			Expect(err).NotTo(HaveOccurred())
+				db, err := sql.Open("postgres", adminUserURI)
+				Expect(err).NotTo(HaveOccurred())
 
-			By("checking that the data owner role is created")
-			rows, err := db.Query(fmt.Sprintf("SELECT FROM pg_catalog.pg_roles WHERE rolname = '%s'", dataOwnerRole))
-			Expect(err).NotTo(HaveOccurred())
-			Expect(rows.Next()).To(BeTrue(), fmt.Sprintf("role %q has not been created", dataOwnerRole))
+				By("checking that the data owner role is created")
+				rows, err := db.Query(fmt.Sprintf("SELECT FROM pg_catalog.pg_roles WHERE rolname = '%s'", dataOwnerRole))
+				Expect(err).NotTo(HaveOccurred())
+				Expect(rows.Next()).To(BeTrue(), fmt.Sprintf("role %q has not been created", dataOwnerRole))
 
-			By("checking that the binding user is created")
-			rows, err = db.Query(fmt.Sprintf("SELECT FROM pg_catalog.pg_roles WHERE rolname = '%s'", bindingUsername1))
-			Expect(err).NotTo(HaveOccurred())
-			Expect(rows.Next()).To(BeTrue(), fmt.Sprintf("role %q has not been created", bindingUsername1))
+				By("checking that the binding user is created")
+				rows, err = db.Query(fmt.Sprintf("SELECT FROM pg_catalog.pg_roles WHERE rolname = '%s'", bindingUsername1))
+				Expect(err).NotTo(HaveOccurred())
+				Expect(rows.Next()).To(BeTrue(), fmt.Sprintf("role %q has not been created", bindingUsername1))
 
-			By("checking that the binding user is a member of the data owner role")
-			rows, err = db.Query(fmt.Sprintf("SELECT pg_has_role('%s', '%s', 'member')", bindingUsername1, dataOwnerRole))
-			Expect(err).NotTo(HaveOccurred())
-			var result bool
-			Expect(rows.Next()).To(BeTrue(), "pg_has_role() query failed")
-			Expect(rows.Scan(&result)).To(Succeed())
-			Expect(result).To(BeTrue(), "binding user is not a member of the data_owner_role")
+				By("checking that the binding user is a member of the data owner role")
+				rows, err = db.Query(fmt.Sprintf("SELECT pg_has_role('%s', '%s', 'member')", bindingUsername1, dataOwnerRole))
+				Expect(err).NotTo(HaveOccurred())
+				var result bool
+				Expect(rows.Next()).To(BeTrue(), "pg_has_role() query failed")
+				Expect(rows.Scan(&result)).To(Succeed())
+				Expect(result).To(BeTrue(), "binding user is not a member of the data_owner_role")
 
-			Expect(query(db, fmt.Sprintf("SELECT pg_has_role('%s', '%s', 'member')", bindingUsername1, dataOwnerRole))).To(ConsistOf(true))
-			return nil
-		}, func(state *terraform.State) error {
-			By("CHECKING RESOURCE DELETE")
+				Expect(query(db, fmt.Sprintf("SELECT pg_has_role('%s', '%s', 'member')", bindingUsername1, dataOwnerRole))).To(ConsistOf(true))
+				return nil
+			},
+			func(state *terraform.State) error {
+				By("CHECKING RESOURCE DELETE")
 
-			db, err := sql.Open("postgres", adminUserURI)
-			Expect(err).NotTo(HaveOccurred())
+				db, err := sql.Open("postgres", adminUserURI)
+				Expect(err).NotTo(HaveOccurred())
 
-			By("checking that the data owner role is not deleted")
-			rows, err := db.Query(fmt.Sprintf("SELECT FROM pg_catalog.pg_roles WHERE rolname = '%s'", dataOwnerRole))
-			Expect(err).NotTo(HaveOccurred())
-			Expect(rows.Next()).To(BeTrue(), fmt.Sprintf("role %q has been deleted", dataOwnerRole))
+				By("checking that the data owner role is not deleted")
+				rows, err := db.Query(fmt.Sprintf("SELECT FROM pg_catalog.pg_roles WHERE rolname = '%s'", dataOwnerRole))
+				Expect(err).NotTo(HaveOccurred())
+				Expect(rows.Next()).To(BeTrue(), fmt.Sprintf("role %q has been deleted", dataOwnerRole))
 
-			By("checking that both binding users are deleted")
-			rows, err = db.Query(fmt.Sprintf("SELECT FROM pg_catalog.pg_roles WHERE rolname = '%s'", bindingUsername1))
-			Expect(err).NotTo(HaveOccurred())
-			Expect(rows.Next()).To(BeFalse(), fmt.Sprintf("role %q still exists", bindingUsername1))
+				By("checking that both binding users are deleted")
+				rows, err = db.Query(fmt.Sprintf("SELECT FROM pg_catalog.pg_roles WHERE rolname = '%s'", bindingUsername1))
+				Expect(err).NotTo(HaveOccurred())
+				Expect(rows.Next()).To(BeFalse(), fmt.Sprintf("role %q still exists", bindingUsername1))
 
-			rows, err = db.Query(fmt.Sprintf("SELECT FROM pg_catalog.pg_roles WHERE rolname = '%s'", bindingUsername2))
-			Expect(err).NotTo(HaveOccurred())
-			Expect(rows.Next()).To(BeFalse(), fmt.Sprintf("role %q still exists", bindingUsername2))
+				rows, err = db.Query(fmt.Sprintf("SELECT FROM pg_catalog.pg_roles WHERE rolname = '%s'", bindingUsername2))
+				Expect(err).NotTo(HaveOccurred())
+				Expect(rows.Next()).To(BeFalse(), fmt.Sprintf("role %q still exists", bindingUsername2))
 
-			return nil
-		})
+				return nil
+			})
 	})
 })
+
+func createTestDatabase(port int, database string) {
+	db, err := sql.Open("postgres", buildConnectionString(cloudsqlsuperuser, cloudsqlsuperpassword, port, defaultDatabase))
+	Expect(err).NotTo(HaveOccurred())
+	_, err = db.Exec(fmt.Sprintf("CREATE DATABASE \"%s\"", database))
+	Expect(err).NotTo(HaveOccurred())
+}
 
 func buildConnectionString(username, password string, port int, database string) string {
 	return strings.Join([]string{
