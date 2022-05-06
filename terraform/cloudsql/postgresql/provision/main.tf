@@ -11,7 +11,7 @@ resource "google_sql_database_instance" "instance" {
     ip_configuration {
       ipv4_enabled    = var.public_ip
       private_network = local.authorized_network_id
-      require_ssl     = true
+      require_ssl     = var.require_ssl
 
       dynamic "authorized_networks" {
         for_each = var.authorized_networks_cidrs

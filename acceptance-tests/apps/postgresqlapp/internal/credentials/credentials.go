@@ -13,7 +13,7 @@ type config struct {
 	SSLCert     string `mapstructure:"sslcert"`
 	SSLKey      string `mapstructure:"sslkey"`
 	SSLRootCert string `mapstructure:"sslrootcert"`
-	TLS         bool   `mapstructure:"use_tls"`
+	TLS         bool   `mapstructure:"require_ssl"`
 }
 
 func Read() (string, error) {

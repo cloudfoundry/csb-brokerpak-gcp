@@ -48,10 +48,10 @@ provision:
     constraints:
       maximum: 4096
       minimum: 10
-  # - field_name: use_tls
-  #   type: boolean
-  #   details: Use TLS for connection
-  #   default: true
+  - field_name: require_ssl
+    type: boolean
+    details: Allow only connections with valid client certificate
+    default: true
   - field_name: credentials
     type: string
     details: GCP credentials
@@ -192,7 +192,7 @@ provision:
   - field_name: password
     type: string
     details: The password to authenticate to the database instance.
-  - field_name: use_tls
+  - field_name: require_ssl
     type: boolean
     details: Using TLS for connection
   - field_name: sslcert
@@ -224,9 +224,9 @@ bind:
     type: string
     default: ${instance.details["password"]}
     overwrite: true
-  - name: use_tls
+  - name: require_ssl
     type: boolean
-    default: ${instance.details["use_tls"]}
+    default: ${instance.details["require_ssl"]}
     overwrite: true
   - name: sslcert
     type: string
