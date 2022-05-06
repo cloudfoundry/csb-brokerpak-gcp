@@ -27,6 +27,7 @@ var postgresAllOverridesPlan = map[string]interface{}{
 	"region":                "europe-west3",
 	"authorized_network":    "plan_authorized_network",
 	"authorized_network_id": "plan_authorized_network_id",
+	"require_ssl":           false,
 }
 
 var postgresPlans = []map[string]interface{}{
@@ -157,6 +158,7 @@ var _ = Describe("postgres", func() {
 			Expect(invocations[0].TFVars()).To(HaveKeyWithValue("authorized_network_id", ""))
 			Expect(invocations[0].TFVars()).To(HaveKeyWithValue("public_ip", false))
 			Expect(invocations[0].TFVars()).To(HaveKeyWithValue("authorized_networks_cidrs", make([]interface{}, 0)))
+			Expect(invocations[0].TFVars()).To(HaveKeyWithValue("require_ssl", true))
 		})
 
 		It("provisions instance with user parameters", func() {
@@ -172,6 +174,7 @@ var _ = Describe("postgres", func() {
 				"authorized_network_id":     "params_authorized_network_id",
 				"public_ip":                 true,
 				"authorized_networks_cidrs": []string{"params_authorized_network_cidr1", "params_authorized_network_cidr2"},
+				"require_ssl":               false,
 			}
 			broker.Provision("csb-google-postgres", postgresNoOverridesPlan["name"].(string), parameters)
 
@@ -188,6 +191,7 @@ var _ = Describe("postgres", func() {
 			Expect(invocations[0].TFVars()).To(HaveKeyWithValue("authorized_network", parameters["authorized_network"]))
 			Expect(invocations[0].TFVars()).To(HaveKeyWithValue("authorized_network_id", parameters["authorized_network_id"]))
 			Expect(invocations[0].TFVars()).To(HaveKeyWithValue("public_ip", true))
+			Expect(invocations[0].TFVars()).To(HaveKeyWithValue("require_ssl", false))
 			tfVars, _ := invocations[0].TFVars()
 			Expect(tfVars["authorized_networks_cidrs"]).To(ConsistOf("params_authorized_network_cidr1", "params_authorized_network_cidr2"))
 		})
@@ -209,11 +213,12 @@ var _ = Describe("postgres", func() {
 			Expect(invocations[0].TFVars()).To(HaveKeyWithValue("project", postgresAllOverridesPlan["project"]))
 			Expect(invocations[0].TFVars()).To(HaveKeyWithValue("authorized_network", postgresAllOverridesPlan["authorized_network"]))
 			Expect(invocations[0].TFVars()).To(HaveKeyWithValue("authorized_network_id", postgresAllOverridesPlan["authorized_network_id"]))
+			Expect(invocations[0].TFVars()).To(HaveKeyWithValue("require_ssl", postgresAllOverridesPlan["require_ssl"]))
 		})
 	})
 
 	Context("bind a service ", func() {
-		It("return the bind values from terraform output", func() {
+		FIt("return the bind values from terraform output", func() {
 			const (
 				fakeSSLRoot    = "REAL_SSL_ROOT_CERT"
 				fakeClientCert = "REAL_SSL_CLIENT_CERT"
@@ -221,10 +226,10 @@ var _ = Describe("postgres", func() {
 			)
 			mockTerraform.ReturnTFState([]testframework.TFStateValue{
 				{Name: "hostname", Type: "string", Value: "create.hostname.gcp.test"},
-				{Name: "use_tls", Type: "bool", Value: true},
 				{Name: "username", Type: "string", Value: "create.test.username"},
 				{Name: "password", Type: "string", Value: "create.test.password"},
 				{Name: "name", Type: "string", Value: "create.test.instancename"},
+				{Name: "require_ssl", Type: "bool", Value: false},
 				{Name: "sslrootcert", Type: "string", Value: fakeSSLRoot},
 				{Name: "sslcert", Type: "string", Value: fakeClientCert},
 				{Name: "sslkey", Type: "string", Value: fakeClientKey},
@@ -249,7 +254,7 @@ var _ = Describe("postgres", func() {
 				"name":        "create.test.instancename",
 				"password":    "bind.test.password",
 				"uri":         "bind.test.uri",
-				"use_tls":     true,
+				"require_ssl": false,
 				"sslrootcert": fakeSSLRoot,
 				"sslcert":     fakeClientCert,
 				"sslkey":      fakeClientKey,

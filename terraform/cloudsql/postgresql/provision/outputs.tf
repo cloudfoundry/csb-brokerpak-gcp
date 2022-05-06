@@ -6,7 +6,7 @@ output "password" {
   sensitive = true
   value     = google_sql_user.admin_user.password
 }
-output "use_tls" { value = true }
+output "require_ssl" { value = var.require_ssl }
 
 output "sslcert" { value = google_sql_ssl_cert.client_cert.cert }
 output "sslkey" {
