@@ -16,13 +16,13 @@ output "uri" {
 output "port" { value = local.port }
 output "jdbcUrl" {
   sensitive = true
-  value = format("jdbc:%s://%s:%s/%s?user=%s\u0026password=%s\u0026verifyServerCertificate=true\u0026useSSL=%v\u0026requireSSL=true",
+  value = format("jdbc:%s://%s:%s/%s?user=%s\u0026password=%s\u0026ssl=%v",
     "postgresql",
     var.hostname,
     local.port,
     var.db_name,
     random_string.username.result,
     random_password.password.result,
-    true,
+    var.require_ssl,
   )
 }
