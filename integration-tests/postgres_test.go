@@ -218,7 +218,7 @@ var _ = Describe("postgres", func() {
 	})
 
 	Context("bind a service ", func() {
-		FIt("return the bind values from terraform output", func() {
+		It("return the bind values from terraform output", func() {
 			const (
 				fakeSSLRoot    = "REAL_SSL_ROOT_CERT"
 				fakeClientCert = "REAL_SSL_CLIENT_CERT"
