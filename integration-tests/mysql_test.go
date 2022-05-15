@@ -23,8 +23,11 @@ var _ = Describe("Mysql", func() {
 
 		service := testframework.FindService(catalog, "csb-google-mysql")
 		Expect(service.Plans).To(HaveLen(3))
-		Expect(service.Tags).To(ContainElement("beta"))
+		Expect(service.ID).NotTo(BeNil())
+		Expect(service.Name).NotTo(BeNil())
+		Expect(service.Tags).Should(ConsistOf([]string{"gcp", "mysql", "beta"}))
 		Expect(service.Metadata.ImageUrl).NotTo(BeNil())
+		Expect(service.Metadata.DisplayName).NotTo(BeNil())
 	})
 
 	Describe("provisioning", func() {
@@ -65,6 +68,12 @@ var _ = Describe("Mysql", func() {
 
 			Expect(err).To(MatchError(ContainSubstring("instance_name: String length must be greater than or equal to 6")))
 		})
+
+		// FIt("should validate instance storage capacity", func() {
+		// 	_, err := broker.Provision("csb-google-mysql", mySQLAllOverriddenPlan["name"].(string), map[string]interface{}{})
+		//
+		// 	Expect(err).To(MatchError(ContainSubstring("instance_name: String length must be greater than or equal to 6")))
+		// })
 	})
 })
 
