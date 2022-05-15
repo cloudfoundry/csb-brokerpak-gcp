@@ -16,18 +16,18 @@ var _ = Describe("Mysql", func() {
 		Expect(mockTerraform.Reset()).NotTo(HaveOccurred())
 	})
 
-	It("should publish mysql in the catalog", func() {
+	FIt("should publish mysql in the catalog", func() {
 		catalog, err := broker.Catalog()
 
 		Expect(err).NotTo(HaveOccurred())
 
 		service := testframework.FindService(catalog, "csb-google-mysql")
 		Expect(service.Plans).To(HaveLen(3))
-		Expect(service.ID).NotTo(BeNil())
-		Expect(service.Name).NotTo(BeNil())
+		Expect(service.ID).ShouldNot(BeNil())
+		Expect(service.Name).ShouldNot(BeNil())
 		Expect(service.Tags).Should(ConsistOf([]string{"gcp", "mysql", "beta"}))
-		Expect(service.Metadata.ImageUrl).NotTo(BeNil())
-		Expect(service.Metadata.DisplayName).NotTo(BeNil())
+		Expect(service.Metadata.ImageUrl).ShouldNot(BeNil())
+		Expect(service.Metadata.DisplayName).ShouldNot(BeNil())
 	})
 
 	Describe("provisioning", func() {
