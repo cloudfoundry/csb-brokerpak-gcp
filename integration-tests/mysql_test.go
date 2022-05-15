@@ -16,7 +16,7 @@ var _ = Describe("Mysql", func() {
 		Expect(mockTerraform.Reset()).NotTo(HaveOccurred())
 	})
 
-	FIt("should publish mysql in the catalog", func() {
+	It("should publish mysql in the catalog", func() {
 		catalog, err := broker.Catalog()
 
 		Expect(err).NotTo(HaveOccurred())
@@ -68,12 +68,6 @@ var _ = Describe("Mysql", func() {
 
 			Expect(err).To(MatchError(ContainSubstring("instance_name: String length must be greater than or equal to 6")))
 		})
-
-		// FIt("should validate instance storage capacity", func() {
-		// 	_, err := broker.Provision("csb-google-mysql", mySQLAllOverriddenPlan["name"].(string), map[string]interface{}{})
-		//
-		// 	Expect(err).To(MatchError(ContainSubstring("instance_name: String length must be greater than or equal to 6")))
-		// })
 	})
 })
 
