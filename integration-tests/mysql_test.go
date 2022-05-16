@@ -31,17 +31,21 @@ var _ = Describe("Mysql", func() {
 	})
 
 	It("should publish mysql in the catalog", func() {
-		catalog, err := broker.Catalog()
+		expectedPlans := []string{"small", "medium", "large", customMySQLPlan["name"].(string)}
 
-		Expect(err).NotTo(HaveOccurred())
+		catalog, err := broker.Catalog()
+		Expect(err).ShouldNot(HaveOccurred())
 
 		service := testframework.FindService(catalog, "csb-google-mysql")
-		Expect(service.Plans).To(HaveLen(3))
+		Expect(service.Plans).To(HaveLen(4))
 		Expect(service.ID).ShouldNot(BeNil())
 		Expect(service.Name).ShouldNot(BeNil())
 		Expect(service.Tags).Should(ConsistOf([]string{"gcp", "mysql", "beta"}))
 		Expect(service.Metadata.ImageUrl).ShouldNot(BeNil())
 		Expect(service.Metadata.DisplayName).ShouldNot(BeNil())
+		for _, plan := range service.Plans {
+			Expect(plan.Name).Should(BeElementOf(expectedPlans))
+		}
 	})
 
 	Describe("provisioning", func() {
