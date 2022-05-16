@@ -23,8 +23,11 @@ var _ = Describe("Mysql", func() {
 
 		service := testframework.FindService(catalog, "csb-google-mysql")
 		Expect(service.Plans).To(HaveLen(3))
-		Expect(service.Tags).To(ContainElement("beta"))
-		Expect(service.Metadata.ImageUrl).NotTo(BeNil())
+		Expect(service.ID).ShouldNot(BeNil())
+		Expect(service.Name).ShouldNot(BeNil())
+		Expect(service.Tags).Should(ConsistOf([]string{"gcp", "mysql", "beta"}))
+		Expect(service.Metadata.ImageUrl).ShouldNot(BeNil())
+		Expect(service.Metadata.DisplayName).ShouldNot(BeNil())
 	})
 
 	Describe("provisioning", func() {
