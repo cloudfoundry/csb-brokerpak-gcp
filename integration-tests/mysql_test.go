@@ -73,57 +73,22 @@ var _ = Describe("Mysql", func() {
 		})
 	})
 
-	type constraint struct {
-		params           map[string]interface{}
-		expectedErrorMsg string
-	}
-
 	DescribeTable("property constraints",
 		func(params map[string]any, expectedErrorMsg string) {
 			_, err := broker.Provision("csb-google-mysql", customMySQLPlan["name"].(string), params)
 
 			Expect(err).To(MatchError(ContainSubstring(expectedErrorMsg)))
 		},
-		Entry("should not allow setting the number of cores because the maximum value is 64",
-			map[string]any{"cores": 65},
-			"cores: Must be a multiple of 2; cores: Must be less than or equal to 64",
-		),
-		Entry("should not allow setting the number of cores because the minimum value is 1",
-			map[string]any{"cores": 0},
-			"cores: Must be greater than or equal to 1",
-		),
-		Entry("should not allow setting the number of cores because it is not a multiple of 2",
-			map[string]any{"cores": 3},
-			"cores: Must be a multiple of 2",
-		),
-		Entry("should not allow setting the storage capacity because the maximum value is 4096",
-			map[string]any{"storage_gb": 4097},
-			"storage_gb: Must be less than or equal to 4096",
-		),
-		Entry("should not allow setting the storage capacity because the minimum value is 10",
-			map[string]any{"storage_gb": 9},
-			"storage_gb: Must be greater than or equal to 10",
-		),
-		Entry("should not allow setting the instance name because the maximum length is 98 characters",
-			map[string]any{"instance_name": generateString(99)},
-			"instance_name: String length must be less than or equal to 98",
-		),
-		Entry("should not allow setting the instance name because the minimum length is 6 characters",
-			map[string]any{"instance_name": generateString(5)},
-			"instance_name: String length must be greater than or equal to 6",
-		),
-		Entry("should not allow setting the instance name because of invalid characters",
-			map[string]any{"instance_name": ".aaaaa"},
-			"instance_name: Does not match pattern '^[a-z][a-z0-9-]+$'",
-		),
-		Entry("should not allow setting the name of the database because the maximum length is 64 characters",
-			map[string]any{"db_name": generateString(65)},
-			"db_name: String length must be less than or equal to 64",
-		),
-		Entry("should not allow setting an invalid region",
-			map[string]any{"region": "invalid-region"},
-			"region must be one of the following:",
-		),
+		Entry("cores maximum value is 64", map[string]any{"cores": 65}, "cores: Must be a multiple of 2; cores: Must be less than or equal to 64"),
+		Entry("cores minimum value is 1", map[string]any{"cores": 0}, "cores: Must be greater than or equal to 1"),
+		Entry("cores multiple of 2", map[string]any{"cores": 3}, "cores: Must be a multiple of 2"),
+		Entry("storage capacity maximum value is 4096", map[string]any{"storage_gb": 4097}, "storage_gb: Must be less than or equal to 4096"),
+		Entry("storage capacity minimum value is 10", map[string]any{"storage_gb": 9}, "storage_gb: Must be greater than or equal to 10"),
+		Entry("instance name maximum length is 98 characters", map[string]any{"instance_name": generateString(99)}, "instance_name: String length must be less than or equal to 98"),
+		Entry("instance name minimum length is 6 characters", map[string]any{"instance_name": generateString(5)}, "instance_name: String length must be greater than or equal to 6"),
+		Entry("instance name invalid characters", map[string]any{"instance_name": ".aaaaa"}, "instance_name: Does not match pattern '^[a-z][a-z0-9-]+$'"),
+		Entry("database name maximum length is 64 characters", map[string]any{"db_name": generateString(65)}, "db_name: String length must be less than or equal to 64"),
+		Entry("invalid region", map[string]any{"region": "invalid-region"}, "region must be one of the following:"),
 	)
 })
 
