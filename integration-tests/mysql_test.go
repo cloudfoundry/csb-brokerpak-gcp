@@ -1,6 +1,7 @@
 package integration_test
 
 import (
+	"encoding/json"
 	"os"
 	"path/filepath"
 	"regexp"
@@ -12,17 +13,19 @@ import (
 	. "github.com/onsi/gomega"
 )
 
-var customMySQLPlan = map[string]interface{}{
+var customMySQLPlan = map[string]any{
 	"name":                  "custom-plan",
 	"id":                    "9daa07f1-78e8-4bda-9efe-91576102c30d",
 	"description":           "custom plan defined by customer",
-	"display_name":          "custom plan defined by customer (beta)",
 	"mysql_version":         "MYSQL_5_7",
 	"credentials":           "plan_cred",
 	"project":               "plan_project",
 	"authorized_network":    "plan_authorized_network",
 	"authorized_network_id": "plan_authorized_network_id",
 	"require_ssl":           false,
+	"metadata": map[string]any{
+		"displayName": "custom plan defined by customer (beta)",
+	},
 }
 
 var _ = Describe("Mysql", func() {
@@ -31,8 +34,6 @@ var _ = Describe("Mysql", func() {
 	})
 
 	It("should publish mysql in the catalog", func() {
-		expectedPlans := []string{"small", "medium", "large", customMySQLPlan["name"].(string)}
-
 		catalog, err := broker.Catalog()
 		Expect(err).NotTo(HaveOccurred())
 
@@ -43,9 +44,7 @@ var _ = Describe("Mysql", func() {
 		Expect(service.Tags).To(ConsistOf([]string{"gcp", "mysql", "beta"}))
 		Expect(service.Metadata.ImageUrl).NotTo(BeNil())
 		Expect(service.Metadata.DisplayName).NotTo(BeNil())
-		for _, plan := range service.Plans {
-			Expect(plan.Name).To(BeElementOf(expectedPlans))
-		}
+		Expect(marshall(service.Plans)).To(MatchJSON(getResultContents("mysql-plans")))
 	})
 
 	Describe("provisioning", func() {
@@ -147,4 +146,10 @@ func getResultFilePath(name string) string {
 
 func generateString(length int) string {
 	return strings.Repeat("a", length)
+}
+
+func marshall(element any) []byte {
+	b, err := json.Marshal(element)
+	Expect(err).NotTo(HaveOccurred())
+	return b
 }

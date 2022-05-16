@@ -1,0 +1,37 @@
+[
+  {
+    "id": "8809fe67-99b5-48dd-a6dd-890ee45e86be",
+    "name": "small",
+    "description": "Beta - MySQL v5.7, minimum 2 cores, minimum 4GB ram, 10GB storage",
+    "free": false,
+    "metadata": {
+      "displayName": "small (Beta)"
+    }
+  },
+  {
+    "id": "753accb8-52a7-4673-8216-ffc539351aea",
+    "name": "medium",
+    "description": "Beta - MySQL v5.7, minimum 4 cores, minimum 8GB ram, 10GB storage",
+    "free": false,
+    "metadata": {
+      "displayName": "medium"
+    }
+  },
+  {
+    "id": "8f8fc4ab-2b37-41da-bc6a-e915497dac33",
+    "name": "large",
+    "description": "Beta - MySQL v5.7, minimum 8 cores, minimum 16GB ram, 20GB storage",
+    "free": false,
+    "metadata": {
+      "displayName": "large"
+    }
+  },
+  {
+    "id": "9daa07f1-78e8-4bda-9efe-91576102c30d",
+    "name": "custom-plan",
+    "description": "custom plan defined by customer",
+    "metadata": {
+      "displayName": "custom plan defined by customer (beta)"
+    }
+  }
+]
