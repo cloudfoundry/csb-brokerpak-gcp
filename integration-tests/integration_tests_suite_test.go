@@ -27,16 +27,16 @@ const (
 var _ = BeforeSuite(func() {
 	var err error
 	mockTerraform, err = testframework.NewTerraformMock()
-	Expect(err).ShouldNot(HaveOccurred())
+	Expect(err).NotTo(HaveOccurred())
 
 	broker, err = testframework.BuildTestInstance(testframework.PathToBrokerPack(), mockTerraform, GinkgoWriter)
-	Expect(err).ShouldNot(HaveOccurred())
+	Expect(err).NotTo(HaveOccurred())
 
 	postgresPlansJSON, err := json.Marshal(postgresPlans)
-	Expect(err).ShouldNot(HaveOccurred())
+	Expect(err).NotTo(HaveOccurred())
 
 	mySQLPlansJSON, err := json.Marshal([]map[string]interface{}{customMySQLPlan})
-	Expect(err).ShouldNot(HaveOccurred())
+	Expect(err).NotTo(HaveOccurred())
 
 	Expect(broker.Start(GinkgoWriter, []string{
 		"GSB_COMPATIBILITY_ENABLE_BETA_SERVICES=true",

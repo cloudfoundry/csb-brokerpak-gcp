@@ -34,17 +34,17 @@ var _ = Describe("Mysql", func() {
 		expectedPlans := []string{"small", "medium", "large", customMySQLPlan["name"].(string)}
 
 		catalog, err := broker.Catalog()
-		Expect(err).ShouldNot(HaveOccurred())
+		Expect(err).NotTo(HaveOccurred())
 
 		service := testframework.FindService(catalog, "csb-google-mysql")
 		Expect(service.Plans).To(HaveLen(4))
-		Expect(service.ID).ShouldNot(BeNil())
-		Expect(service.Name).ShouldNot(BeNil())
-		Expect(service.Tags).Should(ConsistOf([]string{"gcp", "mysql", "beta"}))
-		Expect(service.Metadata.ImageUrl).ShouldNot(BeNil())
-		Expect(service.Metadata.DisplayName).ShouldNot(BeNil())
+		Expect(service.ID).NotTo(BeNil())
+		Expect(service.Name).NotTo(BeNil())
+		Expect(service.Tags).To(ConsistOf([]string{"gcp", "mysql", "beta"}))
+		Expect(service.Metadata.ImageUrl).NotTo(BeNil())
+		Expect(service.Metadata.DisplayName).NotTo(BeNil())
 		for _, plan := range service.Plans {
-			Expect(plan.Name).Should(BeElementOf(expectedPlans))
+			Expect(plan.Name).To(BeElementOf(expectedPlans))
 		}
 	})
 
