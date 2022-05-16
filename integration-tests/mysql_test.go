@@ -84,10 +84,10 @@ var _ = Describe("Mysql", func() {
 		Entry("cores multiple of 2", map[string]any{"cores": 3}, "cores: Must be a multiple of 2"),
 		Entry("storage capacity maximum value is 4096", map[string]any{"storage_gb": 4097}, "storage_gb: Must be less than or equal to 4096"),
 		Entry("storage capacity minimum value is 10", map[string]any{"storage_gb": 9}, "storage_gb: Must be greater than or equal to 10"),
-		Entry("instance name maximum length is 98 characters", map[string]any{"instance_name": generateString(99)}, "instance_name: String length must be less than or equal to 98"),
-		Entry("instance name minimum length is 6 characters", map[string]any{"instance_name": generateString(5)}, "instance_name: String length must be greater than or equal to 6"),
+		Entry("instance name maximum length is 98 characters", map[string]any{"instance_name": stringOfLen(99)}, "instance_name: String length must be less than or equal to 98"),
+		Entry("instance name minimum length is 6 characters", map[string]any{"instance_name": stringOfLen(5)}, "instance_name: String length must be greater than or equal to 6"),
 		Entry("instance name invalid characters", map[string]any{"instance_name": ".aaaaa"}, "instance_name: Does not match pattern '^[a-z][a-z0-9-]+$'"),
-		Entry("database name maximum length is 64 characters", map[string]any{"db_name": generateString(65)}, "db_name: String length must be less than or equal to 64"),
+		Entry("database name maximum length is 64 characters", map[string]any{"db_name": stringOfLen(65)}, "db_name: String length must be less than or equal to 64"),
 		Entry("invalid region", map[string]any{"region": "invalid-region"}, "region must be one of the following:"),
 	)
 })
@@ -109,7 +109,7 @@ func getResultFilePath(name string) string {
 	return filepath.Join(filepath.Dir(file), "results", name+".json")
 }
 
-func generateString(length int) string {
+func stringOfLen(length int) string {
 	return strings.Repeat("a", length)
 }
 
