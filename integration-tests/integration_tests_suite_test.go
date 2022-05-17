@@ -20,8 +20,8 @@ var (
 )
 
 const (
-	BrokerGCPProject = "broker-gcp-project"
-	BrokerGCPCreds   = "broker-gcp-creds"
+	brokerGCPProject = "broker-gcp-project"
+	brokerGCPCreds   = "broker-gcp-creds"
 )
 
 var _ = BeforeSuite(func() {
@@ -32,14 +32,12 @@ var _ = BeforeSuite(func() {
 	broker, err = testframework.BuildTestInstance(testframework.PathToBrokerPack(), mockTerraform, GinkgoWriter)
 	Expect(err).NotTo(HaveOccurred())
 
-	postgresPlansJSON, err := json.Marshal(postgresPlans)
-	Expect(err).NotTo(HaveOccurred())
-
 	Expect(broker.Start(GinkgoWriter, []string{
 		"GSB_COMPATIBILITY_ENABLE_BETA_SERVICES=true",
-		"GOOGLE_CREDENTIALS=" + BrokerGCPCreds,
-		"GOOGLE_PROJECT=" + BrokerGCPProject,
-		`GSB_SERVICE_CSB_GOOGLE_POSTGRES_PLANS=` + string(postgresPlansJSON),
+		"GOOGLE_CREDENTIALS=" + brokerGCPCreds,
+		"GOOGLE_PROJECT=" + brokerGCPProject,
+		`GSB_SERVICE_CSB_GOOGLE_POSTGRES_PLANS=` + marshall(postgresPlans),
+		"GSB_SERVICE_CSB_GOOGLE_MYSQL_PLANS=" + marshall(customMySQLPlans),
 		"CSB_LISTENER_HOST=localhost", // prevents permissions popup
 	})).To(Succeed())
 })
@@ -49,3 +47,9 @@ var _ = AfterSuite(func() {
 		Expect(broker.Cleanup()).To(Succeed())
 	}
 })
+
+func marshall(element any) string {
+	b, err := json.Marshal(element)
+	Expect(err).NotTo(HaveOccurred())
+	return string(b)
+}
