@@ -7,17 +7,15 @@ import (
 )
 
 var postgresNoOverridesPlan = map[string]interface{}{
-	"name":         "no-overrides",
-	"id":           "5f60d632-8f1e-11ec-9832-7bd519d660a9",
-	"description":  "no-override-description",
-	"display_name": "no-overrides-plan-display-name",
+	"name":        "no-overrides",
+	"id":          "5f60d632-8f1e-11ec-9832-7bd519d660a9",
+	"description": "no-override-description",
 }
 
 var postgresAllOverridesPlan = map[string]interface{}{
 	"name":                  "all-overrides",
 	"id":                    "4be43944-8f20-11ec-9ea5-834eb2499c32",
 	"description":           "all-override-description",
-	"display_name":          "all-overrides-plan-display-name",
 	"tier":                  "db-f1-micro",
 	"postgres_version":      "POSTGRES_14",
 	"storage_gb":            float64(20),
@@ -152,8 +150,8 @@ var _ = Describe("postgres", func() {
 			Expect(invocations[0].TFVars()).To(HaveKeyWithValue("database_version", "POSTGRES_13"))
 			Expect(invocations[0].TFVars()).To(HaveKeyWithValue("tier", "db-f1-micro"))
 			Expect(invocations[0].TFVars()).To(HaveKeyWithValue("storage_gb", float64(10)))
-			Expect(invocations[0].TFVars()).To(HaveKeyWithValue("credentials", BrokerGCPCreds))
-			Expect(invocations[0].TFVars()).To(HaveKeyWithValue("project", BrokerGCPProject))
+			Expect(invocations[0].TFVars()).To(HaveKeyWithValue("credentials", brokerGCPCreds))
+			Expect(invocations[0].TFVars()).To(HaveKeyWithValue("project", brokerGCPProject))
 			Expect(invocations[0].TFVars()).To(HaveKeyWithValue("authorized_network", "default"))
 			Expect(invocations[0].TFVars()).To(HaveKeyWithValue("authorized_network_id", ""))
 			Expect(invocations[0].TFVars()).To(HaveKeyWithValue("public_ip", false))

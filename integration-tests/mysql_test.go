@@ -1,17 +1,17 @@
 package integration_test
 
 import (
-	"encoding/json"
-	"os"
-	"path/filepath"
-	"regexp"
-	"runtime"
 	"strings"
 
 	testframework "github.com/cloudfoundry/cloud-service-broker/brokerpaktestframework"
 	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
+	. "github.com/onsi/gomega/gstruct"
 )
+
+var customMySQLPlans = []map[string]interface{}{
+	customMySQLPlan,
+}
 
 var customMySQLPlan = map[string]any{
 	"name":                  "custom-plan",
@@ -38,26 +38,40 @@ var _ = Describe("Mysql", func() {
 		Expect(err).NotTo(HaveOccurred())
 
 		service := testframework.FindService(catalog, "csb-google-mysql")
-		Expect(service.Plans).To(HaveLen(4))
 		Expect(service.ID).NotTo(BeNil())
 		Expect(service.Name).NotTo(BeNil())
-		Expect(service.Tags).To(ConsistOf([]string{"gcp", "mysql", "beta"}))
+		Expect(service.Tags).To(ConsistOf("gcp", "mysql", "beta"))
 		Expect(service.Metadata.ImageUrl).NotTo(BeNil())
 		Expect(service.Metadata.DisplayName).NotTo(BeNil())
-		Expect(marshall(service.Plans)).To(MatchJSON(getResultContents("mysql-plans")))
+		Expect(service.Plans).To(
+			ConsistOf(
+				MatchFields(IgnoreExtras, Fields{"Name": Equal("small")}),
+				MatchFields(IgnoreExtras, Fields{"Name": Equal("medium")}),
+				MatchFields(IgnoreExtras, Fields{"Name": Equal("large")}),
+				MatchFields(IgnoreExtras, Fields{"Name": Equal("custom-plan")}),
+			),
+		)
 	})
 
 	Describe("provisioning", func() {
 		It("should provision small plan", func() {
-			broker.Provision("csb-google-mysql", "small", nil)
+			instanceID, _ := broker.Provision("csb-google-mysql", "small", nil)
 
-			invocations, err := mockTerraform.ApplyInvocations()
-			Expect(err).NotTo(HaveOccurred())
-			Expect(invocations).To(HaveLen(1))
-
-			contents, err := invocations[0].TFVarsContents()
-			Expect(err).NotTo(HaveOccurred())
-			Expect(replaceGUIDs(contents)).To(MatchJSON(getResultContents("mysql-result")))
+			Expect(mockTerraform.FirstTerraformInvocationVars()).To(
+				SatisfyAll(
+					HaveKeyWithValue("db_name", "csb-db"),
+					HaveKeyWithValue("authorized_network", "default"),
+					HaveKeyWithValue("authorized_network_id", ""),
+					HaveKeyWithValue("cores", float64(2)),
+					HaveKeyWithValue("credentials", "broker-gcp-creds"),
+					HaveKeyWithValue("database_version", "MYSQL_5_7"),
+					HaveKeyWithValue("db_name", "csb-db"),
+					HaveKeyWithValue("instance_name", "csb-mysql-"+instanceID),
+					HaveKeyWithValue("project", "broker-gcp-project"),
+					HaveKeyWithValue("region", "us-central1"),
+					HaveKeyWithValue("storage_gb", float64(10)),
+				),
+			)
 		})
 
 		It("should allow setting of database name", func() {
@@ -132,29 +146,6 @@ var _ = Describe("Mysql", func() {
 	)
 })
 
-var guidRegex = regexp.MustCompile("[{]?[0-9a-fA-F]{8}-([0-9a-fA-F]{4}-){3}[0-9a-fA-F]{12}[}]?")
-
-func replaceGUIDs(contents string) string {
-	return guidRegex.ReplaceAllString(contents, "GUID")
-}
-
-func getResultContents(name string) string {
-	contents, err := os.ReadFile(getResultFilePath(name))
-	Expect(err).NotTo(HaveOccurred())
-	return string(contents)
-}
-
-func getResultFilePath(name string) string {
-	_, file, _, _ := runtime.Caller(1)
-	return filepath.Join(filepath.Dir(file), "results", name+".json")
-}
-
 func stringOfLen(length int) string {
 	return strings.Repeat("a", length)
-}
-
-func marshall(element any) []byte {
-	b, err := json.Marshal(element)
-	Expect(err).NotTo(HaveOccurred())
-	return b
 }
