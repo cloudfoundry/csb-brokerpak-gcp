@@ -9,20 +9,18 @@ import (
 	. "github.com/onsi/gomega/gstruct"
 )
 
-var customMySQLPlans = []map[string]interface{}{
+var customMySQLPlans = []map[string]any{
 	customMySQLPlan,
 }
 
 var customMySQLPlan = map[string]any{
-	"name":                  "custom-plan",
-	"id":                    "9daa07f1-78e8-4bda-9efe-91576102c30d",
-	"description":           "custom plan defined by customer",
-	"mysql_version":         "MYSQL_5_7",
-	"credentials":           "plan_cred",
-	"project":               "plan_project",
-	"authorized_network":    "plan_authorized_network",
-	"authorized_network_id": "plan_authorized_network_id",
-	"require_ssl":           false,
+	"name":          "custom-plan",
+	"id":            "9daa07f1-78e8-4bda-9efe-91576102c30d",
+	"description":   "custom plan defined by customer",
+	"mysql_version": "MYSQL_5_7",
+	"credentials":   "plan_cred",
+	"project":       "plan_project",
+	"require_ssl":   false,
 	"metadata": map[string]any{
 		"displayName": "custom plan defined by customer (beta)",
 	},
@@ -161,6 +159,39 @@ var _ = Describe("Mysql", func() {
 				"region must be one of the following:",
 			),
 		)
+	})
+
+	Describe("updating instance", func() {
+		Context("should prevent users update parameters", func() {
+			var instanceID string
+
+			BeforeEach(func() {
+				instanceID, _ = broker.Provision("csb-google-mysql", customMySQLPlan["name"].(string), nil)
+
+				Expect(mockTerraform.FirstTerraformInvocationVars()).To(
+					HaveKeyWithValue("instance_name", "csb-mysql-"+instanceID),
+				)
+				_ = mockTerraform.Reset()
+			})
+
+			DescribeTable("because it can result in recreation of the service instance and lost data",
+				func(params map[string]any) {
+					err := broker.Update(instanceID, "csb-google-mysql", customMySQLPlan["name"].(string), params)
+
+					Expect(err).To(MatchError(
+						ContainSubstring(
+							"attempt to update parameter that may result in service instance re-creation and data loss",
+						),
+					))
+					Expect(mockTerraform.ApplyInvocations()).To(HaveLen(0))
+				},
+				Entry("update instance_name", map[string]any{"instance_name": "another-instance-name"}),
+				Entry("update db_name", map[string]any{"db_name": "another-db-name"}),
+				Entry("update region", map[string]any{"region": "australia-southeast1"}),
+				Entry("update authorized_network", map[string]any{"authorized_network": "another-authorized-network"}),
+				Entry("update authorized_network_id", map[string]any{"authorized_network_id": "another-authorized-network_id"}),
+			)
+		})
 	})
 
 })
