@@ -4,6 +4,7 @@ import (
 	testframework "github.com/cloudfoundry/cloud-service-broker/brokerpaktestframework"
 	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
+	. "github.com/onsi/gomega/gstruct"
 )
 
 var postgresNoOverridesPlan = map[string]interface{}{
@@ -41,14 +42,19 @@ var _ = Describe("postgres", func() {
 	It("publishes postgres in the catalog", func() {
 		catalog, err := broker.Catalog()
 		Expect(err).NotTo(HaveOccurred())
-		service := testframework.FindService(catalog, "csb-google-postgres")
-		Expect(service.Plans).To(HaveLen(2))
-		Expect(service.Metadata.ImageUrl).NotTo(BeEmpty())
-		Expect(service.Metadata.DocumentationUrl).NotTo(BeEmpty())
-		Expect(service.Metadata.SupportUrl).NotTo(BeEmpty())
 
-		planMetadata := testframework.FindServicePlan(catalog, "csb-google-postgres", postgresNoOverridesPlan["name"].(string))
-		Expect(planMetadata.Description).NotTo(BeEmpty())
+		service := testframework.FindService(catalog, "csb-google-postgres")
+		Expect(service.ID).NotTo(BeNil())
+		Expect(service.Name).NotTo(BeNil())
+		Expect(service.Tags).To(ConsistOf("gcp", "postgresql", "postgres"))
+		Expect(service.Metadata.ImageUrl).NotTo(BeNil())
+		Expect(service.Metadata.DisplayName).NotTo(BeNil())
+		Expect(service.Plans).To(
+			ConsistOf(
+				MatchFields(IgnoreExtras, Fields{"Name": Equal("all-overrides")}),
+				MatchFields(IgnoreExtras, Fields{"Name": Equal("no-overrides")}),
+			),
+		)
 	})
 
 	Context("updating properties of the service instance", func() {
