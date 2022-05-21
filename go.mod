@@ -9,7 +9,7 @@ require (
 	github.com/cloudfoundry/cloud-service-broker v0.10.1
 	github.com/google/uuid v1.3.0
 	github.com/hashicorp/terraform-plugin-sdk/v2 v2.16.0
-	github.com/lib/pq v1.10.5
+	github.com/lib/pq v1.10.6
 	github.com/onsi/ginkgo/v2 v2.1.4
 	github.com/onsi/gomega v1.19.0
 	golang.org/x/tools v0.1.11-0.20220316014157-77aa08bb151a
