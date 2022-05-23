@@ -1,6 +1,7 @@
 package integration_test
 
 import (
+	"fmt"
 	"strings"
 
 	testframework "github.com/cloudfoundry/cloud-service-broker/brokerpaktestframework"
@@ -18,8 +19,6 @@ var customMySQLPlan = map[string]any{
 	"id":            "9daa07f1-78e8-4bda-9efe-91576102c30d",
 	"description":   "custom plan defined by customer",
 	"mysql_version": "MYSQL_5_7",
-	"credentials":   "plan_cred",
-	"project":       "plan_project",
 	"require_ssl":   false,
 	"metadata": map[string]any{
 		"displayName": "custom plan defined by customer (beta)",
@@ -162,36 +161,76 @@ var _ = Describe("Mysql", func() {
 	})
 
 	Describe("updating instance", func() {
-		Context("should prevent users update parameters", func() {
-			var instanceID string
+		var instanceID string
 
-			BeforeEach(func() {
-				instanceID, _ = broker.Provision("csb-google-mysql", customMySQLPlan["name"].(string), nil)
+		BeforeEach(func() {
+			instanceID, _ = broker.Provision("csb-google-mysql", customMySQLPlan["name"].(string), nil)
 
-				Expect(mockTerraform.FirstTerraformInvocationVars()).To(
-					HaveKeyWithValue("instance_name", "csb-mysql-"+instanceID),
-				)
-				_ = mockTerraform.Reset()
-			})
-
-			DescribeTable("because it can result in recreation of the service instance and lost data",
-				func(params map[string]any) {
-					err := broker.Update(instanceID, "csb-google-mysql", customMySQLPlan["name"].(string), params)
-
-					Expect(err).To(MatchError(
-						ContainSubstring(
-							"attempt to update parameter that may result in service instance re-creation and data loss",
-						),
-					))
-					Expect(mockTerraform.ApplyInvocations()).To(HaveLen(0))
-				},
-				Entry("update instance_name", map[string]any{"instance_name": "another-instance-name"}),
-				Entry("update db_name", map[string]any{"db_name": "another-db-name"}),
-				Entry("update region", map[string]any{"region": "australia-southeast1"}),
-				Entry("update authorized_network", map[string]any{"authorized_network": "another-authorized-network"}),
-				Entry("update authorized_network_id", map[string]any{"authorized_network_id": "another-authorized-network_id"}),
+			Expect(mockTerraform.FirstTerraformInvocationVars()).To(
+				HaveKeyWithValue("instance_name", "csb-mysql-"+instanceID),
 			)
+			_ = mockTerraform.Reset()
 		})
+
+		DescribeTable("should allow updating properties not flagged as `prohibit_update` and not specified in the plan",
+			func(params map[string]any) {
+				err := broker.Update(instanceID, "csb-google-mysql", customMySQLPlan["name"].(string), params)
+
+				Expect(err).NotTo(HaveOccurred())
+			},
+			Entry("update credentials", map[string]any{"credentials": "other-credentials"}),
+			Entry("update project", map[string]any{"project": "another-project"}),
+		)
+
+		DescribeTable("should prevent updating properties flagged as `prohibit_update` because it can result in the recreation of the service instance and lost data",
+			func(params map[string]any) {
+				err := broker.Update(instanceID, "csb-google-mysql", customMySQLPlan["name"].(string), params)
+
+				Expect(err).To(MatchError(
+					ContainSubstring(
+						"attempt to update parameter that may result in service instance re-creation and data loss",
+					),
+				))
+				Expect(mockTerraform.ApplyInvocations()).To(HaveLen(0))
+			},
+			Entry("update instance_name", map[string]any{"instance_name": "another-instance-name"}),
+			Entry("update db_name", map[string]any{"db_name": "another-db-name"}),
+			Entry("update region", map[string]any{"region": "australia-southeast1"}),
+			Entry("update authorized_network", map[string]any{"authorized_network": "another-authorized-network"}),
+			Entry("update authorized_network_id", map[string]any{"authorized_network_id": "another-authorized-network_id"}),
+		)
+
+		DescribeTable("should not allow updating properties that are specified in the plan",
+			func(key string, value any) {
+				err := broker.Update(instanceID, "csb-google-mysql", customMySQLPlan["name"].(string), map[string]any{key: value})
+
+				Expect(err).To(
+					MatchError(
+						ContainSubstring(
+							fmt.Sprintf("plan defined properties cannot be changed: %s", key),
+						),
+					),
+				)
+			},
+			Entry("update require_ssl", "require_ssl", true),
+			Entry("update mysql_version", "mysql_version", "MYSQL_5_7"),
+		)
+
+		DescribeTable("should not allow updating additional properties",
+			func(key string, value any) {
+				err := broker.Update(instanceID, "csb-google-mysql", customMySQLPlan["name"].(string), map[string]any{key: value})
+
+				Expect(err).To(
+					MatchError(
+						ContainSubstring(
+							fmt.Sprintf("additional properties are not allowed: %s", key),
+						),
+					),
+				)
+			},
+			Entry("update name", "name", "fake-name"),
+			Entry("update id", "id", "fake-id"),
+		)
 	})
 
 })
