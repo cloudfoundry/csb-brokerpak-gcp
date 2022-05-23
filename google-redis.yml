@@ -50,6 +50,8 @@ provision:
     details: The size of the instance in gigabytes.
     default: 4
     constraints:
+      # Max Redis node size: Basic Tier 300 GB; Standard Tier (read replicas disabled) 300 GB;
+      # Note: if we enable read replicas the maximum value for Standard Tier will change.
       maximum: 300
       minimum: 1
   - field_name: instance_id
@@ -70,11 +72,28 @@ provision:
     type: string
     details: The region of the Redis instance.
     default: us-central1
-    constraints:
-      examples:
-      - us-central1
-      - asia-northeast1
-      pattern: ^[A-Za-z][-a-z0-9A-Z]+$
+    enum:
+      asia-east1: asia-east1
+      asia-east2: asia-east2
+      asia-northeast1: asia-northeast1
+      asia-northeast2: asia-northeast2
+      asia-northeast3: asia-northeast3
+      asia-south1: asia-south1
+      asia-southeast1: asia-southeast1
+      australia-southeast1: australia-southeast1
+      europe-north1: europe-north1
+      europe-west1: europe-west1
+      europe-west2: europe-west2
+      europe-west3: europe-west3
+      europe-west4: europe-west4
+      europe-west6: europe-west6
+      northamerica-northeast1: northamerica-northeast1
+      southamerica-east1: southamerica-east1
+      us-central1: us-central1
+      us-east1: us-east1
+      us-east4: us-east4
+      us-west1: us-west1
+      us-west2: us-west2
   - field_name: credentials
     type: string
     details: GCP credentials
