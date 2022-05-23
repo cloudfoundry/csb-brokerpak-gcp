@@ -1,6 +1,7 @@
 package integration_test
 
 import (
+	"fmt"
 	"strings"
 
 	testframework "github.com/cloudfoundry/cloud-service-broker/brokerpaktestframework"
@@ -171,39 +172,65 @@ var _ = Describe("Mysql", func() {
 			_ = mockTerraform.Reset()
 		})
 
-		Context("should prevent users update parameters", func() {
+		DescribeTable("should allow updating properties not flagged as `prohibit_update` and not specified in the plan",
+			func(params map[string]any) {
+				err := broker.Update(instanceID, "csb-google-mysql", customMySQLPlan["name"].(string), params)
 
-			DescribeTable("because it can result in recreation of the service instance and lost data",
-				func(params map[string]any) {
-					err := broker.Update(instanceID, "csb-google-mysql", customMySQLPlan["name"].(string), params)
+				Expect(err).NotTo(HaveOccurred())
+			},
+			Entry("update credentials", map[string]any{"credentials": "other-credentials"}),
+			Entry("update project", map[string]any{"project": "another-project"}),
+		)
 
-					Expect(err).To(MatchError(
+		DescribeTable("should prevent updating properties flagged as `prohibit_update` because it can result in the recreation of the service instance and lost data",
+			func(params map[string]any) {
+				err := broker.Update(instanceID, "csb-google-mysql", customMySQLPlan["name"].(string), params)
+
+				Expect(err).To(MatchError(
+					ContainSubstring(
+						"attempt to update parameter that may result in service instance re-creation and data loss",
+					),
+				))
+				Expect(mockTerraform.ApplyInvocations()).To(HaveLen(0))
+			},
+			Entry("update instance_name", map[string]any{"instance_name": "another-instance-name"}),
+			Entry("update db_name", map[string]any{"db_name": "another-db-name"}),
+			Entry("update region", map[string]any{"region": "australia-southeast1"}),
+			Entry("update authorized_network", map[string]any{"authorized_network": "another-authorized-network"}),
+			Entry("update authorized_network_id", map[string]any{"authorized_network_id": "another-authorized-network_id"}),
+		)
+
+		DescribeTable("should not allow updating properties that are specified in the plan",
+			func(key string, value any) {
+				err := broker.Update(instanceID, "csb-google-mysql", customMySQLPlan["name"].(string), map[string]any{key: value})
+
+				Expect(err).To(
+					MatchError(
 						ContainSubstring(
-							"attempt to update parameter that may result in service instance re-creation and data loss",
+							fmt.Sprintf("plan defined properties cannot be changed: %s", key),
 						),
-					))
-					Expect(mockTerraform.ApplyInvocations()).To(HaveLen(0))
-				},
-				Entry("update instance_name", map[string]any{"instance_name": "another-instance-name"}),
-				Entry("update db_name", map[string]any{"db_name": "another-db-name"}),
-				Entry("update region", map[string]any{"region": "australia-southeast1"}),
-				Entry("update authorized_network", map[string]any{"authorized_network": "another-authorized-network"}),
-				Entry("update authorized_network_id", map[string]any{"authorized_network_id": "another-authorized-network_id"}),
-			)
-		})
+					),
+				)
+			},
+			Entry("update require_ssl", "require_ssl", true),
+			Entry("update mysql_version", "mysql_version", "MYSQL_5_7"),
+		)
 
-		Context("should allow users update parameters", func() {
+		DescribeTable("should not allow updating additional properties",
+			func(key string, value any) {
+				err := broker.Update(instanceID, "csb-google-mysql", customMySQLPlan["name"].(string), map[string]any{key: value})
 
-			DescribeTable("not marked as prohibited to update not included in the plan",
-				func(params map[string]any) {
-					err := broker.Update(instanceID, "csb-google-mysql", customMySQLPlan["name"].(string), params)
-
-					Expect(err).NotTo(HaveOccurred())
-				},
-				Entry("update credentials", map[string]any{"credentials": "other-credentials"}),
-				Entry("update project", map[string]any{"project": "another-project"}),
-			)
-		})
+				Expect(err).To(
+					MatchError(
+						ContainSubstring(
+							fmt.Sprintf("additional properties are not allowed: %s", key),
+						),
+					),
+				)
+			},
+			Entry("update name", "name", "fake-name"),
+			Entry("update id", "id", "fake-id"),
+		)
 	})
 
 })
