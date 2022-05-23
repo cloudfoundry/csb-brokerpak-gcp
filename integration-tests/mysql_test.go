@@ -232,21 +232,4 @@ var _ = Describe("Mysql", func() {
 		)
 	})
 
-		DescribeTable("should not allow updating additional properties",
-			func(key string, value any) {
-				err := broker.Update(instanceID, "csb-google-mysql", customMySQLPlan["name"].(string), map[string]any{key: value})
-
-				Expect(err).To(
-					MatchError(
-						ContainSubstring(
-							fmt.Sprintf("additional properties are not allowed: %s", key),
-						),
-					),
-				)
-			},
-			Entry("update name", "name", "fake-name"),
-			Entry("update id", "id", "fake-id"),
-		)
-	})
-
 })
