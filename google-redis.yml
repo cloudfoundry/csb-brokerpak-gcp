@@ -50,8 +50,6 @@ provision:
     details: The size of the instance in gigabytes.
     default: 4
     constraints:
-      # Max Redis node size: Basic Tier 300 GB; Standard Tier (read replicas disabled) 300 GB;
-      # Note: if we enable read replicas the maximum value for Standard Tier will change.
       maximum: 300
       minimum: 1
   - field_name: instance_id
