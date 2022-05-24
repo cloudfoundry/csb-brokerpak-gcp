@@ -156,7 +156,7 @@ var _ = Describe("Redis", func() {
 			Expect(mockTerraform.FirstTerraformInvocationVars()).To(
 				SatisfyAll(
 					HaveKeyWithValue("instance_id", ContainSubstring("pcf-sb-")),
-					HaveKeyWithValue("instance_id", ContainSubstring("pcf-sb-")),
+					HaveKeyWithValue("labels", HaveKeyWithValue("pcf-instance-id", instanceID)),
 					HaveKeyWithValue("service_tier", "TIER_UNSPECIFIED"),
 				),
 			)
