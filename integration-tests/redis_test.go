@@ -144,6 +144,11 @@ var _ = Describe("Redis", func() {
 				map[string]any{"display_name": stringOfLen(81)},
 				"display_name: String length must be less than or equal to 80",
 			),
+			Entry(
+				"region invalid characters",
+				map[string]any{"region": "-Asia-northeast1"},
+				"region: Does not match pattern '^[a-z][a-z0-9-]+$'",
+			),
 		)
 	})
 
