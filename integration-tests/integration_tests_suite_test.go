@@ -2,6 +2,7 @@ package integration_test
 
 import (
 	"encoding/json"
+	"strings"
 	"testing"
 
 	testframework "github.com/cloudfoundry/cloud-service-broker/brokerpaktestframework"
@@ -38,6 +39,7 @@ var _ = BeforeSuite(func() {
 		"GOOGLE_PROJECT=" + brokerGCPProject,
 		`GSB_SERVICE_CSB_GOOGLE_POSTGRES_PLANS=` + marshall(postgresPlans),
 		"GSB_SERVICE_CSB_GOOGLE_MYSQL_PLANS=" + marshall(customMySQLPlans),
+		"GSB_SERVICE_CSB_GOOGLE_REDIS_PLANS=" + marshall(customRedisPlans),
 		"CSB_LISTENER_HOST=localhost", // prevents permissions popup
 	})).To(Succeed())
 })
@@ -52,4 +54,8 @@ func marshall(element any) string {
 	b, err := json.Marshal(element)
 	Expect(err).NotTo(HaveOccurred())
 	return string(b)
+}
+
+func stringOfLen(length int) string {
+	return strings.Repeat("a", length)
 }

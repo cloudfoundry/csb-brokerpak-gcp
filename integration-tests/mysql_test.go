@@ -2,7 +2,6 @@ package integration_test
 
 import (
 	"fmt"
-	"strings"
 
 	testframework "github.com/cloudfoundry/cloud-service-broker/brokerpaktestframework"
 	. "github.com/onsi/ginkgo/v2"
@@ -234,7 +233,3 @@ var _ = Describe("Mysql", func() {
 	})
 
 })
-
-func stringOfLen(length int) string {
-	return strings.Repeat("a", length)
-}

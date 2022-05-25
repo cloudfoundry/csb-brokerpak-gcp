@@ -72,9 +72,9 @@ provision:
     default: us-central1
     constraints:
       examples:
-      - us-central1
-      - asia-northeast1
-      pattern: ^[A-Za-z][-a-z0-9A-Z]+$
+        - us-central1
+        - asia-northeast1
+      pattern: ^[a-z][a-z0-9-]+$
   - field_name: credentials
     type: string
     details: GCP credentials
