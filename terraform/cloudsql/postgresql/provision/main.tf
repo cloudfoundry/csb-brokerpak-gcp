@@ -41,11 +41,19 @@ resource "google_sql_database_instance" "instance" {
   }
 
   deletion_protection = false
+
+  lifecycle {
+    prevent_destroy = true
+  }
 }
 
 resource "google_sql_database" "database" {
   name     = var.db_name
   instance = google_sql_database_instance.instance.name
+
+  lifecycle {
+    prevent_destroy = true
+  }
 }
 
 resource "random_string" "username" {
