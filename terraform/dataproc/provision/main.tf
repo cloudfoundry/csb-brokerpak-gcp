@@ -18,4 +18,8 @@ resource "google_dataproc_cluster" "cluster" {
       num_instances = var.preemptible_count
     }
   }
+
+  lifecycle {
+    prevent_destroy = true
+  }
 }

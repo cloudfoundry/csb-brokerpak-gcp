@@ -17,4 +17,7 @@ resource "google_bigquery_dataset" "csb_dataset" {
     special_group = "allAuthenticatedUsers"
   }
 
+  lifecycle {
+    prevent_destroy = true
+  }
 }
