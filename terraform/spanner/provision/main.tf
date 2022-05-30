@@ -13,6 +13,7 @@ resource "google_spanner_instance" "spanner_instance" {
   lifecycle {
     ignore_changes        = []
     create_before_destroy = true
+    prevent_destroy       = true
   }
 }
 
