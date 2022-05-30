@@ -13,4 +13,8 @@ resource "google_redis_instance" "instance" {
     update = "15m"
     delete = "15m"
   }
+
+  lifecycle {
+    prevent_destroy = true
+  }
 }
