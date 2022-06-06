@@ -163,6 +163,7 @@ var _ = Describe("Mysql", func() {
 		var instanceID string
 
 		BeforeEach(func() {
+			mockTerraform.SetTFState([]testframework.TFStateValue{})
 			instanceID, _ = broker.Provision("csb-google-mysql", customMySQLPlan["name"].(string), nil)
 
 			Expect(mockTerraform.FirstTerraformInvocationVars()).To(

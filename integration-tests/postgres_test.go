@@ -61,6 +61,7 @@ var _ = Describe("postgres", func() {
 		var instanceGUID string
 
 		BeforeEach(func() {
+			mockTerraform.SetTFState([]testframework.TFStateValue{})
 			instanceGUID, _ = broker.Provision("csb-google-postgres", postgresNoOverridesPlan["name"].(string), map[string]any{"tier": "db-f1-micro"})
 
 			Expect(mockTerraform.FirstTerraformInvocationVars()).To(HaveKeyWithValue("tier", "db-f1-micro"))
