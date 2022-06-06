@@ -13,8 +13,8 @@ terraform_binaries:
   version: 1.1.4
   source: https://github.com/hashicorp/terraform/archive/v1.1.4.zip
 - name: terraform-provider-google
-  version: 4.23.0
-  source: https://github.com/terraform-providers/terraform-provider-google/archive/v4.23.0.zip
+  version: 4.24.0
+  source: https://github.com/terraform-providers/terraform-provider-google/archive/v4.24.0.zip
 - name: terraform-provider-local
   version: 2.2.3
   source: https://github.com/terraform-providers/terraform-provider-local/archive/v2.2.3.zip
@@ -22,8 +22,8 @@ terraform_binaries:
   version: 1.9.0
   source: https://github.com/terraform-providers/terraform-provider-mysql/archive/v1.9.0.zip
 - name: terraform-provider-random
-  version: 3.2.0
-  source: https://github.com/terraform-providers/terraform-provider-random/archive/v3.2.0.zip
+  version: 3.3.0
+  source: https://github.com/terraform-providers/terraform-provider-random/archive/v3.3.0.zip
 - name: terraform-provider-csbpg
   version: 1.0.0
   provider: cloud-service-broker/csbpg
