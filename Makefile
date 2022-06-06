@@ -111,14 +111,14 @@ run-examples: ## run examples against CSB on localhost (run "make run" to start 
 	$(RUN_CSB) client run-examples --service-name="$(service_name)" --example-name="$(example_name)" -j $(PARALLEL_JOB_COUNT)
 
 .PHONY: test ## run the tests
-test: latest-csb lint provider-tests run-integration-tests
+test: lint provider-tests run-integration-tests
 
 .PHONY: run-integration-tests
 run-integration-tests: latest-csb ## run integration tests for this brokerpak
 	cd ./integration-tests && go run github.com/onsi/ginkgo/v2/ginkgo -r .
 
 .PHONY: provider-tests
-provider-tests:
+provider-tests: latest-csb
 	cd providers/terraform-provider-csbpg; $(MAKE) test
 
 .PHONY: info
