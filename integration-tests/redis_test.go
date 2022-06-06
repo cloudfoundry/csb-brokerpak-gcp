@@ -156,6 +156,7 @@ var _ = Describe("Redis", func() {
 		var instanceID string
 
 		BeforeEach(func() {
+			mockTerraform.SetTFState([]testframework.TFStateValue{})
 			instanceID, _ = broker.Provision(redisServiceName, customRedisPlan["name"].(string), nil)
 
 			Expect(mockTerraform.FirstTerraformInvocationVars()).To(
