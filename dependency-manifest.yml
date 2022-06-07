@@ -30,6 +30,6 @@ dependencies:
       source: https://github.com/terraform-providers/terraform-provider-mysql/archive/v1.9.0.zip
       source_sha256: 8cd135baba86b5568f7685152201b3f73300aa1fe455c6873da05bff1418b707
     - name: terraform-provider-random
-      version: 3.3.0
-      source: https://github.com/terraform-providers/terraform-provider-random/archive/v3.3.0.zip
-      source_sha256: d3faf548fb70b4b5a7aaa5eed112e2086d509e063943d858cfc4f79227407ca0
+      version: 3.3.1
+      source: https://github.com/terraform-providers/terraform-provider-random/archive/v3.3.1.zip
+      source_sha256: be045bd306b45cb4372f794709921b95d3d745625152512ea4eb96877499e978
