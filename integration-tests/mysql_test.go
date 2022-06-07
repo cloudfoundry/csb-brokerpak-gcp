@@ -26,7 +26,7 @@ var customMySQLPlan = map[string]any{
 
 var _ = Describe("Mysql", func() {
 	BeforeEach(func() {
-		Expect(mockTerraform.SetTFState([]testframework.TFStateValue{})).To(Succeed())
+		Expect(mockTerraform.SetTFState([]testframework.TFStateValue{})).NotTo(HaveOccurred())
 	})
 
 	AfterEach(func() {
