@@ -35,8 +35,12 @@ var postgresPlans = []map[string]any{
 }
 
 var _ = Describe("postgres", func() {
+	BeforeEach(func() {
+		Expect(mockTerraform.SetTFState([]testframework.TFStateValue{})).To(Succeed())
+	})
+
 	AfterEach(func() {
-		Expect(mockTerraform.Reset()).NotTo(HaveOccurred())
+		Expect(mockTerraform.Reset()).To(Succeed())
 	})
 
 	It("publishes postgres in the catalog", func() {
@@ -61,11 +65,12 @@ var _ = Describe("postgres", func() {
 		var instanceGUID string
 
 		BeforeEach(func() {
-			mockTerraform.SetTFState([]testframework.TFStateValue{})
-			instanceGUID, _ = broker.Provision("csb-google-postgres", postgresNoOverridesPlan["name"].(string), map[string]any{"tier": "db-f1-micro"})
+			var err error
+			instanceGUID, err = broker.Provision("csb-google-postgres", postgresNoOverridesPlan["name"].(string), map[string]any{"tier": "db-f1-micro"})
 
+			Expect(err).NotTo(HaveOccurred())
 			Expect(mockTerraform.FirstTerraformInvocationVars()).To(HaveKeyWithValue("tier", "db-f1-micro"))
-			mockTerraform.Reset()
+			Expect(mockTerraform.Reset()).To(Succeed())
 		})
 
 		DescribeTable(
@@ -102,16 +107,18 @@ var _ = Describe("postgres", func() {
 
 	Context("versions of postgres", func() {
 		It("defaults to postgres postgresql_13", func() {
-			broker.Provision("csb-google-postgres", postgresNoOverridesPlan["name"].(string), map[string]any{"tier": "db-f1-micro"})
+			_, err := broker.Provision("csb-google-postgres", postgresNoOverridesPlan["name"].(string), map[string]any{"tier": "db-f1-micro"})
 
+			Expect(err).NotTo(HaveOccurred())
 			Expect(mockTerraform.FirstTerraformInvocationVars()).To(HaveKeyWithValue("database_version", "POSTGRES_13"))
 		})
 
 		DescribeTable(
 			"supports custom postgres versions",
 			func(version any) {
-				broker.Provision("csb-google-postgres", postgresNoOverridesPlan["name"].(string), map[string]any{"tier": "db-f1-micro", "postgres_version": version})
+				_, err := broker.Provision("csb-google-postgres", postgresNoOverridesPlan["name"].(string), map[string]any{"tier": "db-f1-micro", "postgres_version": version})
 
+				Expect(err).NotTo(HaveOccurred())
 				Expect(mockTerraform.FirstTerraformInvocationVars()).To(HaveKeyWithValue("database_version", version))
 			},
 			Entry("11", "POSTGRES_11"),
@@ -136,8 +143,9 @@ var _ = Describe("postgres", func() {
 
 	Context("no properties overridden from the plan", func() {
 		It("provision instance with defaults", func() {
-			broker.Provision("csb-google-postgres", postgresNoOverridesPlan["name"].(string), map[string]any{"tier": "db-f1-micro"})
+			_, err := broker.Provision("csb-google-postgres", postgresNoOverridesPlan["name"].(string), map[string]any{"tier": "db-f1-micro"})
 
+			Expect(err).NotTo(HaveOccurred())
 			Expect(mockTerraform.FirstTerraformInvocationVars()).To(
 				SatisfyAll(
 					HaveKeyWithValue("db_name", "csb-db"),
@@ -170,8 +178,9 @@ var _ = Describe("postgres", func() {
 				"authorized_networks_cidrs": []string{"params_authorized_network_cidr1", "params_authorized_network_cidr2"},
 				"require_ssl":               false,
 			}
-			broker.Provision("csb-google-postgres", postgresNoOverridesPlan["name"].(string), parameters)
+			_, err := broker.Provision("csb-google-postgres", postgresNoOverridesPlan["name"].(string), parameters)
 
+			Expect(err).NotTo(HaveOccurred())
 			Expect(mockTerraform.FirstTerraformInvocationVars()).To(
 				SatisfyAll(
 					HaveKeyWithValue("db_name", parameters["db_name"]),
@@ -195,8 +204,9 @@ var _ = Describe("postgres", func() {
 
 	Context("properties have been overridden from the plan", func() {
 		It("should use properties from the plan", func() {
-			broker.Provision("csb-google-postgres", postgresAllOverridesPlan["name"].(string), nil)
+			_, err := broker.Provision("csb-google-postgres", postgresAllOverridesPlan["name"].(string), nil)
 
+			Expect(err).NotTo(HaveOccurred())
 			Expect(mockTerraform.FirstTerraformInvocationVars()).To(
 				SatisfyAll(
 					HaveKeyWithValue("db_name", postgresAllOverridesPlan["db_name"]),
@@ -220,7 +230,7 @@ var _ = Describe("postgres", func() {
 				fakeClientCert = "REAL_SSL_CLIENT_CERT"
 				fakeClientKey  = "REAL_SSL_CLIENT_KEY"
 			)
-			mockTerraform.ReturnTFState([]testframework.TFStateValue{
+			err := mockTerraform.SetTFState([]testframework.TFStateValue{
 				{Name: "hostname", Type: "string", Value: "create.hostname.gcp.test"},
 				{Name: "username", Type: "string", Value: "create.test.username"},
 				{Name: "password", Type: "string", Value: "create.test.password"},
@@ -230,16 +240,18 @@ var _ = Describe("postgres", func() {
 				{Name: "sslcert", Type: "string", Value: fakeClientCert},
 				{Name: "sslkey", Type: "string", Value: fakeClientKey},
 			})
+			Expect(err).NotTo(HaveOccurred())
 
 			instanceID, err := broker.Provision("csb-google-postgres", postgresAllOverridesPlan["name"].(string), nil)
 			Expect(err).NotTo(HaveOccurred())
 
-			mockTerraform.ReturnTFState([]testframework.TFStateValue{
+			err = mockTerraform.SetTFState([]testframework.TFStateValue{
 				{Name: "username", Type: "string", Value: "bind.test.username"},
 				{Name: "password", Type: "string", Value: "bind.test.password"},
 				{Name: "uri", Type: "string", Value: "bind.test.uri"},
 				{Name: "jdbcUrl", Type: "string", Value: "bind.test.jdbcUrl"},
 			})
+			Expect(err).NotTo(HaveOccurred())
 			bindResult, err := broker.Bind("csb-google-postgres", postgresAllOverridesPlan["name"].(string), instanceID, nil)
 			Expect(err).NotTo(HaveOccurred())
 
@@ -270,7 +282,8 @@ var _ = Describe("postgres", func() {
 
 	Describe("backup", func() {
 		It("enables backup by default", func() {
-			broker.Provision("csb-google-postgres", postgresNoOverridesPlan["name"].(string), map[string]any{"tier": "db-f1-micro"})
+			_, err := broker.Provision("csb-google-postgres", postgresNoOverridesPlan["name"].(string), map[string]any{"tier": "db-f1-micro"})
+			Expect(err).NotTo(HaveOccurred())
 
 			invocations, err := mockTerraform.ApplyInvocations()
 			Expect(err).NotTo(HaveOccurred())
@@ -284,7 +297,7 @@ var _ = Describe("postgres", func() {
 		})
 
 		It("allows backup to be configured", func() {
-			broker.Provision("csb-google-postgres", postgresNoOverridesPlan["name"].(string), map[string]any{
+			_, err := broker.Provision("csb-google-postgres", postgresNoOverridesPlan["name"].(string), map[string]any{
 				"tier":                                  "db-f1-micro",
 				"backups_retain_number":                 0,
 				"backups_location":                      "eu",
@@ -292,6 +305,7 @@ var _ = Describe("postgres", func() {
 				"backups_point_in_time_log_retain_days": 0,
 			})
 
+			Expect(err).NotTo(HaveOccurred())
 			invocations, err := mockTerraform.ApplyInvocations()
 			Expect(err).NotTo(HaveOccurred())
 			Expect(invocations).To(HaveLen(1))

@@ -25,8 +25,12 @@ var customMySQLPlan = map[string]any{
 }
 
 var _ = Describe("Mysql", func() {
+	BeforeEach(func() {
+		Expect(mockTerraform.SetTFState([]testframework.TFStateValue{})).NotTo(HaveOccurred())
+	})
+
 	AfterEach(func() {
-		Expect(mockTerraform.Reset()).NotTo(HaveOccurred())
+		Expect(mockTerraform.Reset()).To(Succeed())
 	})
 
 	It("should publish mysql in the catalog", func() {
@@ -51,8 +55,9 @@ var _ = Describe("Mysql", func() {
 
 	Describe("provisioning", func() {
 		It("should provision small plan", func() {
-			instanceID, _ := broker.Provision("csb-google-mysql", "small", nil)
+			instanceID, err := broker.Provision("csb-google-mysql", "small", nil)
 
+			Expect(err).NotTo(HaveOccurred())
 			Expect(mockTerraform.FirstTerraformInvocationVars()).To(
 				SatisfyAll(
 					HaveKeyWithValue("db_name", "csb-db"),
@@ -71,7 +76,7 @@ var _ = Describe("Mysql", func() {
 		})
 
 		It("should allow setting properties do not defined in the plan", func() {
-			broker.Provision("csb-google-mysql", "small", map[string]any{
+			_, err := broker.Provision("csb-google-mysql", "small", map[string]any{
 				"credentials":           "fake-credentials",
 				"project":               "fake-project",
 				"instance_name":         "fakeinstancename",
@@ -81,6 +86,7 @@ var _ = Describe("Mysql", func() {
 				"authorized_network_id": "fake-authorized_network_id",
 			})
 
+			Expect(err).NotTo(HaveOccurred())
 			Expect(mockTerraform.FirstTerraformInvocationVars()).To(
 				SatisfyAll(
 					HaveKeyWithValue("credentials", "fake-credentials"),
@@ -163,13 +169,14 @@ var _ = Describe("Mysql", func() {
 		var instanceID string
 
 		BeforeEach(func() {
-			mockTerraform.SetTFState([]testframework.TFStateValue{})
-			instanceID, _ = broker.Provision("csb-google-mysql", customMySQLPlan["name"].(string), nil)
+			var err error
+			instanceID, err = broker.Provision("csb-google-mysql", customMySQLPlan["name"].(string), nil)
 
+			Expect(err).NotTo(HaveOccurred())
 			Expect(mockTerraform.FirstTerraformInvocationVars()).To(
 				HaveKeyWithValue("instance_name", "csb-mysql-"+instanceID),
 			)
-			_ = mockTerraform.Reset()
+			Expect(mockTerraform.Reset()).To(Succeed())
 		})
 
 		DescribeTable("should allow updating properties not flagged as `prohibit_update` and not specified in the plan",

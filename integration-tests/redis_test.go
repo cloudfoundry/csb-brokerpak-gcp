@@ -30,8 +30,12 @@ var customRedisPlan = map[string]any{
 var _ = Describe("Redis", func() {
 	const redisServiceName = "csb-google-redis"
 
+	BeforeEach(func() {
+		Expect(mockTerraform.SetTFState([]testframework.TFStateValue{})).To(Succeed())
+	})
+
 	AfterEach(func() {
-		Expect(mockTerraform.Reset()).NotTo(HaveOccurred())
+		Expect(mockTerraform.Reset()).To(Succeed())
 	})
 
 	It("should publish redis in the catalog", func() {
@@ -55,8 +59,9 @@ var _ = Describe("Redis", func() {
 
 	Describe("provisioning", func() {
 		It("should provision basic plan", func() {
-			instanceID, _ := broker.Provision(redisServiceName, "basic", nil)
+			instanceID, err := broker.Provision(redisServiceName, "basic", nil)
 
+			Expect(err).NotTo(HaveOccurred())
 			Expect(mockTerraform.FirstTerraformInvocationVars()).To(
 				SatisfyAll(
 					HaveKeyWithValue("service_tier", "BASIC"),
@@ -75,7 +80,7 @@ var _ = Describe("Redis", func() {
 		})
 
 		It("should allow setting properties do not defined in the plan", func() {
-			broker.Provision(redisServiceName, "basic", map[string]any{
+			_, err := broker.Provision(redisServiceName, "basic", map[string]any{
 				"memory_size_gb":        float64(10),
 				"instance_id":           "fake-instance-id",
 				"display_name":          "fake-display-name",
@@ -87,6 +92,7 @@ var _ = Describe("Redis", func() {
 				"reserved_ip_range":     "192.168.0.0/29",
 			})
 
+			Expect(err).NotTo(HaveOccurred())
 			Expect(mockTerraform.FirstTerraformInvocationVars()).To(
 				SatisfyAll(
 					HaveKeyWithValue("memory_size_gb", float64(10)),
@@ -156,9 +162,10 @@ var _ = Describe("Redis", func() {
 		var instanceID string
 
 		BeforeEach(func() {
-			mockTerraform.SetTFState([]testframework.TFStateValue{})
-			instanceID, _ = broker.Provision(redisServiceName, customRedisPlan["name"].(string), nil)
+			var err error
+			instanceID, err = broker.Provision(redisServiceName, customRedisPlan["name"].(string), nil)
 
+			Expect(err).NotTo(HaveOccurred())
 			Expect(mockTerraform.FirstTerraformInvocationVars()).To(
 				SatisfyAll(
 					HaveKeyWithValue("instance_id", ContainSubstring("pcf-sb-")),
@@ -166,7 +173,7 @@ var _ = Describe("Redis", func() {
 					HaveKeyWithValue("service_tier", "TIER_UNSPECIFIED"),
 				),
 			)
-			_ = mockTerraform.Reset()
+			Expect(mockTerraform.Reset()).To(Succeed())
 		})
 
 		DescribeTable("should allow updating properties not flagged as `prohibit_update` and not specified in the plan",
