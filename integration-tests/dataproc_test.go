@@ -6,8 +6,8 @@ import (
 	. "github.com/onsi/gomega"
 )
 
-var _ = FDescribe("BigQuery", func() {
-	const bigQueryServiceName = "csb-google-bigquery"
+var _ = Describe("Dataproc", func() {
+	const serviceName = "csb-google-dataproc"
 
 	BeforeEach(func() {
 		Expect(mockTerraform.SetTFState([]testframework.TFStateValue{})).To(Succeed())
@@ -19,7 +19,7 @@ var _ = FDescribe("BigQuery", func() {
 
 	Describe("provisioning", func() {
 		It("should check region constraints", func() {
-			_, err := broker.Provision(bigQueryServiceName, "standard", map[string]any{"region": "-Asia-northeast1"})
+			_, err := broker.Provision(serviceName, "standard", map[string]any{"region": "-Asia-northeast1"})
 			Expect(err).To(MatchError(ContainSubstring("region: Does not match pattern '^[a-z][a-z0-9-]+$'")))
 		})
 	})
@@ -29,14 +29,14 @@ var _ = FDescribe("BigQuery", func() {
 
 		BeforeEach(func() {
 			var err error
-			instanceID, err = broker.Provision(bigQueryServiceName, "standard", nil)
+			instanceID, err = broker.Provision(serviceName, "standard", nil)
 
 			Expect(err).NotTo(HaveOccurred())
 			Expect(mockTerraform.Reset()).To(Succeed())
 		})
 
 		It("should allow updating region because it is not flagged as `prohibit_update` and not specified in the plan", func() {
-			err := broker.Update(instanceID, bigQueryServiceName, "standard", map[string]any{"region": "asia-southeast1"})
+			err := broker.Update(instanceID, serviceName, "standard", map[string]any{"region": "asia-southeast1"})
 
 			Expect(err).NotTo(HaveOccurred())
 		})
