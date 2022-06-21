@@ -159,8 +159,8 @@ var _ = Describe("Mysql", func() {
 			),
 			Entry(
 				"invalid region",
-				map[string]any{"region": "invalid-region"},
-				"region must be one of the following:",
+				map[string]any{"region": "-Asia-northeast1"},
+				"region: Does not match pattern '^[a-z][a-z0-9-]+$'",
 			),
 		)
 	})

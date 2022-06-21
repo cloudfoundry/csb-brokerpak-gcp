@@ -4,7 +4,7 @@ id: ebb35d15-8c7a-4c4e-8aa8-d8d751a9d8d3
 description: Beta - Dataproc is a fully-managed service for running Apache Spark and Apache Hadoop clusters in a simpler, more cost-efficient way.
 display_name: Google Cloud Dataproc (Beta)
 image_url: https://cloud.google.com/_static/images/cloud/products/logos/svg/dataproc.svg
-documentation_url: https://cloud.google.com/dataproc/docs/overview
+documentation_url: https://cloud.google.com/dataproc/docs
 support_url: https://cloud.google.com/dataproc/docs/support/getting-support
 tags: [gcp, dataproc, beta]
 plans:
@@ -53,28 +53,11 @@ provision:
     type: string
     details: 'The region in which the cluster and associated nodes will be created in.'
     default: 'us-central1'
-    enum:
-      asia-east1: asia-east1
-      asia-east2: asia-east2
-      asia-northeast1: asia-northeast1
-      asia-northeast2: asia-northeast2
-      asia-northeast3: asia-northeast3
-      asia-south1: asia-south1
-      asia-southeast1: asia-southeast1
-      australia-southeast1: australia-southeast1
-      europe-north1: europe-north1
-      europe-west1: europe-west1
-      europe-west2: europe-west2
-      europe-west3: europe-west3
-      europe-west4: europe-west4
-      europe-west6: europe-west6
-      northamerica-northeast1: northamerica-northeast1
-      southamerica-east1: southamerica-east1
-      us-central1: us-central1
-      us-east1: us-east1
-      us-east4: us-east4
-      us-west1: us-west1
-      us-west2: us-west2
+    constraints:
+      examples:
+        - us-central1
+        - asia-northeast1
+      pattern: ^[a-z][a-z0-9-]+$
   - field_name: credentials
     type: string
     details: GCP credentials
