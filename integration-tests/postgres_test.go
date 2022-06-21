@@ -273,9 +273,9 @@ var _ = Describe("postgres", func() {
 	Context("property validation", func() {
 		Describe("region", func() {
 			It("should validate the region", func() {
-				_, err := broker.Provision("csb-google-postgres", postgresNoOverridesPlan["name"].(string), map[string]any{"region": "non-existent-region"})
+				_, err := broker.Provision("csb-google-postgres", postgresNoOverridesPlan["name"].(string), map[string]any{"region": "-Asia-northeast1"})
 
-				Expect(err).To(MatchError(ContainSubstring("region must be one of the following:")))
+				Expect(err).To(MatchError(ContainSubstring("region: Does not match pattern '^[a-z][a-z0-9-]+$'")))
 			})
 		})
 	})
