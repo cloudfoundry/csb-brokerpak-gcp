@@ -71,6 +71,7 @@ provision:
           - us-central1
           - asia-northeast1
         pattern: ^[a-z][a-z0-9-]+$
+      prohibit_update: true
     - field_name: credentials
       type: string
       details: GCP credentials
