@@ -54,6 +54,7 @@ provision:
         - us-central1
         - asia-northeast1
       pattern: ^[a-z][a-z0-9-]+$
+    prohibit_update: true
   # - field_name: authorized_network
   #   type: string
   #   details: The name of the Google Compute Engine network to which the instance is connected. If left unspecified, the network named 'default' will be used.
