@@ -325,7 +325,7 @@ var _ = Describe("postgres", func() {
 			},
 			Entry("min backups_retain_number", "backups_retain_number", -1, "backups_retain_number: Must be greater than or equal to 0"),
 			Entry("max backups_retain_number", "backups_retain_number", 1001, "backups_retain_number: Must be less than or equal to 1000"),
-			Entry("invalid backups_location", "backups_location", "moon", `backups_location must be one of the following:`),
+			Entry("invalid backups_location", "backups_location", "--moon", "backups_location: Does not match pattern '^[a-z][a-z0-9-]+$'"),
 			Entry("invalid backups_start_time", "backups_start_time", "34:91", `backups_start_time: Does not match pattern`),
 			Entry("min backups_point_in_time_log_retain_days", "backups_point_in_time_log_retain_days", -1, "backups_point_in_time_log_retain_days: Must be greater than or equal to 0"),
 			Entry("max backups_point_in_time_log_retain_days", "backups_point_in_time_log_retain_days", 8, "backups_point_in_time_log_retain_days: Must be less than or equal to 7"),
