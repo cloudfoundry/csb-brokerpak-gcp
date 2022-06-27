@@ -45,11 +45,16 @@ var _ = Describe("UpgradeRedisTest", Label("redis"), func() {
 			appOne.PUT(value1, key1)
 
 			By("getting the value using the second app")
-			got := appTwo.GET(key1)
-			Expect(got).To(Equal(value1))
+			Expect(appTwo.GET(key1)).To(Equal(value1))
 
 			By("pushing the development version of the broker")
 			serviceBroker.UpdateBroker(developmentBuildDir)
+
+			By("upgrading service instance")
+			serviceInstance.Upgrade()
+
+			By("getting the value using the second app")
+			Expect(appTwo.GET(key1)).To(Equal(value1))
 
 			By("deleting bindings created before the upgrade")
 			bindingOne.Unbind()
@@ -66,7 +71,6 @@ var _ = Describe("UpgradeRedisTest", Label("redis"), func() {
 
 			By("getting the value using the second app")
 			Expect(appTwo.GET(key1)).To(Equal(value1))
-
 		})
 	})
 })
