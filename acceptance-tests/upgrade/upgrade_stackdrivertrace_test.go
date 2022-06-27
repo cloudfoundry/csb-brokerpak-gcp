@@ -1,7 +1,6 @@
 package upgrade_test
 
 import (
-	trace "cloud.google.com/go/trace/apiv1"
 	"context"
 	"csbbrokerpakgcp/acceptance-tests/helpers/apps"
 	"csbbrokerpakgcp/acceptance-tests/helpers/brokers"
@@ -10,9 +9,11 @@ import (
 	"csbbrokerpakgcp/acceptance-tests/helpers/services"
 	"encoding/json"
 	"fmt"
+	"time"
+
+	trace "cloud.google.com/go/trace/apiv1"
 	"google.golang.org/api/option"
 	cloudtracepb "google.golang.org/genproto/googleapis/devtools/cloudtrace/v1"
-	"time"
 
 	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
@@ -89,4 +90,3 @@ var _ = Describe("UpgradeStackdrivertraceTest", Label("stackdrivertrace"), func(
 		})
 	})
 })
-
