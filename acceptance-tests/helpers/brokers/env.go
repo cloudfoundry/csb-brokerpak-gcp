@@ -40,6 +40,7 @@ func (b Broker) env() []apps.EnvVar {
 		apps.EnvVar{Name: "ENCRYPTION_ENABLED", Value: true},
 		apps.EnvVar{Name: "ENCRYPTION_PASSWORDS", Value: b.secrets},
 		apps.EnvVar{Name: "BROKERPAK_UPDATES_ENABLED", Value: true},
+		apps.EnvVar{Name: "TERRAFORM_UPGRADES_ENABLED", Value: true},
 		apps.EnvVar{Name: "GSB_SERVICE_CSB_GOOGLE_POSTGRES_PLANS", Value: `[{"name":"small","id":"5b45de36-cb90-11ec-a755-77f8be95a49d","description":"PostgreSQL with default version, shared CPU, minimum 0.6GB ram, 10GB storage","display_name":"small","tier":"db-f1-micro","storage_gb":10},{"name":"medium","id":"a3359fa6-cb90-11ec-bcb6-cb68544eda78","description":"PostgreSQL with default version, shared CPU, minimum 1.7GB ram, 20GB storage","display_name":"medium","tier":"db-g1-small","storage_gb":20},{"name":"large","id":"cd95c5b4-cb90-11ec-a5da-df87b7fb7426","description":"PostgreSQL with default version, minimum 8 cores, minimum 8GB ram, 50GB storage","display_name":"large","tier":"db-custom-8-8192","storage_gb":50}]`},
 	)
 

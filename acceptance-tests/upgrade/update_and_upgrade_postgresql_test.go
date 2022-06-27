@@ -57,6 +57,13 @@ var _ = Describe("UpgradePostgreSQLTest", Label("postgresql"), func() {
 			By("pushing the development version of the broker")
 			serviceBroker.UpdateBroker(developmentBuildDir)
 
+			By("upgrading service instance")
+			serviceInstance.Upgrade()
+
+			By("checking previously written data still accessible")
+			got = appTwo.GET("%s/%s", schema, keyOne)
+			Expect(got).To(Equal(valueOne))
+
 			By("updating the instance plan")
 			serviceInstance.Update("-p", "medium")
 
