@@ -9,7 +9,6 @@ import (
 
 	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
-	"github.com/pborman/uuid"
 )
 
 var _ = Describe("UpgradeRedisTest", Label("redis"), func() {
@@ -29,7 +28,7 @@ var _ = Describe("UpgradeRedisTest", Label("redis"), func() {
 				"csb-google-redis",
 				"basic",
 				services.WithBroker(serviceBroker),
-				services.WithParameters(map[string]interface{}{"instance_id": fmt.Sprintf("test-%s", uuid.NewUUID())}),
+				services.WithParameters(map[string]interface{}{"instance_id": fmt.Sprintf("test-%s", random.Name(random.WithMaxLength(20)))}),
 			)
 			defer serviceInstance.Delete()
 
