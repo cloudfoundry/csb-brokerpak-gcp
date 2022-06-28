@@ -5,9 +5,11 @@ import (
 	"csbbrokerpakgcp/acceptance-tests/helpers/brokers"
 	"csbbrokerpakgcp/acceptance-tests/helpers/random"
 	"csbbrokerpakgcp/acceptance-tests/helpers/services"
+	"fmt"
 
 	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
+	"github.com/pborman/uuid"
 )
 
 var _ = Describe("UpgradeRedisTest", Label("redis"), func() {
@@ -22,10 +24,12 @@ var _ = Describe("UpgradeRedisTest", Label("redis"), func() {
 			defer serviceBroker.Delete()
 
 			By("creating a service")
+
 			serviceInstance := services.CreateInstance(
 				"csb-google-redis",
 				"basic",
 				services.WithBroker(serviceBroker),
+				services.WithParameters(map[string]interface{}{"instance_id": fmt.Sprintf("test-%s", uuid.NewUUID())}),
 			)
 			defer serviceInstance.Delete()
 
@@ -52,6 +56,12 @@ var _ = Describe("UpgradeRedisTest", Label("redis"), func() {
 
 			By("upgrading service instance")
 			serviceInstance.Upgrade()
+
+			By("getting the value using the second app")
+			Expect(appTwo.GET(key1)).To(Equal(value1))
+
+			By("updating the instance plan")
+			serviceInstance.Update("-c", `{"memory_size_gb":6}`)
 
 			By("getting the value using the second app")
 			Expect(appTwo.GET(key1)).To(Equal(value1))
