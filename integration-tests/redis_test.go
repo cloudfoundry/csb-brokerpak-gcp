@@ -72,8 +72,8 @@ var _ = Describe("Redis", func() {
 					HaveKeyWithValue("authorized_network", "default"),
 					HaveKeyWithValue("authorized_network_id", ""),
 					HaveKeyWithValue("reserved_ip_range", ""),
-					HaveKeyWithValue("display_name", ContainSubstring("pcf-sb-")),
-					HaveKeyWithValue("instance_id", ContainSubstring("pcf-sb-")),
+					HaveKeyWithValue("display_name", ContainSubstring("csb-")),
+					HaveKeyWithValue("instance_id", ContainSubstring("csb-")),
 					HaveKeyWithValue("labels", HaveKeyWithValue("pcf-instance-id", instanceID)),
 				),
 			)
@@ -131,9 +131,9 @@ var _ = Describe("Redis", func() {
 				"memory_size_gb: Must be greater than or equal to 1",
 			),
 			Entry(
-				"instance_id maximum length is 30 characters",
-				map[string]any{"instance_id": stringOfLen(31)},
-				"instance_id: String length must be less than or equal to 30",
+				"instance_id maximum length is 40 characters",
+				map[string]any{"instance_id": stringOfLen(41)},
+				"instance_id: String length must be less than or equal to 40",
 			),
 			Entry(
 				"instance_id minimum length is 6 characters",
@@ -168,7 +168,7 @@ var _ = Describe("Redis", func() {
 			Expect(err).NotTo(HaveOccurred())
 			Expect(mockTerraform.FirstTerraformInvocationVars()).To(
 				SatisfyAll(
-					HaveKeyWithValue("instance_id", ContainSubstring("pcf-sb-")),
+					HaveKeyWithValue("instance_id", ContainSubstring("csb-")),
 					HaveKeyWithValue("labels", HaveKeyWithValue("pcf-instance-id", instanceID)),
 					HaveKeyWithValue("service_tier", "TIER_UNSPECIFIED"),
 				),

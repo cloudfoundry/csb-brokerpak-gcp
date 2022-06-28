@@ -58,7 +58,7 @@ provision:
     default: csb-${request.instance_id}
     constraints:
       maxLength: 40
-      minLength: 1
+      minLength: 6
       pattern: ^[a-z][a-z0-9-]+$
   - field_name: display_name
     type: string
