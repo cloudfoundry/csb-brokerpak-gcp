@@ -13,5 +13,5 @@
 - Adds lifecycle.prevent_destroy to all data services to provide extra layer of protection against data loss.
 - Adds prohibit_update property to avoid updating region in BigQuery and Storage services because it can result in the
   recreation of the service instance and lost data.
-- Redis and Dataproc names in the GCP console now rely on the instance request ID. It was previously relying on a
+- Redis and Dataproc names in the GCP console now rely on the request instance ID. It was previously relying on a
   timestamp that was causing updates to destroy the instance.

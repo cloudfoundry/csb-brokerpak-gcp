@@ -59,6 +59,12 @@ var _ = Describe("UpgradeRedisTest", Label("redis"), func() {
 			By("getting the value using the second app")
 			Expect(appTwo.GET(key1)).To(Equal(value1))
 
+			By("updating the instance plan")
+			serviceInstance.Update("-c", `{"memory_size_gb":6}`)
+
+			By("getting the value using the second app")
+			Expect(appTwo.GET(key1)).To(Equal(value1))
+
 			By("deleting bindings created before the upgrade")
 			bindingOne.Unbind()
 			bindingTwo.Unbind()
