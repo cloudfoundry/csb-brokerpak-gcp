@@ -5,6 +5,7 @@ import (
 	"csbbrokerpakgcp/acceptance-tests/helpers/brokers"
 	"csbbrokerpakgcp/acceptance-tests/helpers/random"
 	"csbbrokerpakgcp/acceptance-tests/helpers/services"
+	"fmt"
 
 	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
@@ -22,10 +23,12 @@ var _ = Describe("UpgradeRedisTest", Label("redis"), func() {
 			defer serviceBroker.Delete()
 
 			By("creating a service")
+
 			serviceInstance := services.CreateInstance(
 				"csb-google-redis",
 				"basic",
 				services.WithBroker(serviceBroker),
+				services.WithParameters(map[string]interface{}{"instance_id": fmt.Sprintf("csb-redis-%s", serviceBroker.Name)}),
 			)
 			defer serviceInstance.Delete()
 

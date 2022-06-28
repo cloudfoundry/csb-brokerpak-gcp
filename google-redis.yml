@@ -55,7 +55,7 @@ provision:
   - field_name: instance_id
     type: string
     details: Permanent identifier for your instance
-    default: pcf-sb-${counter.next()}-${time.nano()}
+    default: csb-redis-${request.instance_id}
     constraints:
       maxLength: 30
       minLength: 6
