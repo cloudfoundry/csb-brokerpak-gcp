@@ -55,9 +55,9 @@ provision:
   - field_name: instance_id
     type: string
     details: Permanent identifier for your instance
-    default: pcf-sb-${counter.next()}-${time.nano()}
+    default: csb-${request.instance_id}
     constraints:
-      maxLength: 30
+      maxLength: 40
       minLength: 6
       pattern: ^[a-z][a-z0-9-]+$
   - field_name: display_name

@@ -44,7 +44,7 @@ provision:
   - field_name: name
     type: string
     details: The name of the cluster.
-    default: pcf-sb-${counter.next()}-${time.nano()}
+    default: csb-dataproc-${request.instance_id}
     constraints:
       maxLength: 222
       minLength: 3

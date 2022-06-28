@@ -56,8 +56,8 @@ var _ = Describe("UpgradeSpannerTest", Label("spanner"), func() {
 			By("checking previously written data still accessible")
 			Expect(appOne.GET(key)).To(Equal(value))
 
-			By("updating the instance plan")
-			serviceInstance.Update("-p", "medium")
+			By("updating the instance config")
+			serviceInstance.Update("-c", `{"config":"us-west1"}`)
 
 			By("checking previously written data still accessible")
 			Expect(appOne.GET(key)).To(Equal(value))

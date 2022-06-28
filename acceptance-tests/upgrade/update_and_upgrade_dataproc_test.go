@@ -6,6 +6,7 @@ import (
 	"csbbrokerpakgcp/acceptance-tests/helpers/matchers"
 	"csbbrokerpakgcp/acceptance-tests/helpers/random"
 	"csbbrokerpakgcp/acceptance-tests/helpers/services"
+	"fmt"
 
 	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
@@ -23,7 +24,12 @@ var _ = Describe("UpgradeDataprocTest", Label("dataproc"), func() {
 			defer serviceBroker.Delete()
 
 			By("creating a service instance")
-			serviceInstance := services.CreateInstance("csb-google-dataproc", "standard", services.WithBroker(serviceBroker))
+			serviceInstance := services.CreateInstance(
+				"csb-google-dataproc",
+				"standard",
+				services.WithBroker(serviceBroker),
+				services.WithParameters(map[string]interface{}{"name": fmt.Sprintf("csb-dataproc-%s", serviceBroker.Name)}),
+			)
 			defer serviceInstance.Delete()
 
 			By("pushing the unstarted app")
