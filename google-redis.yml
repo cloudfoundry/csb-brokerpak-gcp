@@ -55,10 +55,10 @@ provision:
   - field_name: instance_id
     type: string
     details: Permanent identifier for your instance
-    default: csb-redis-${request.instance_id}
+    default: csb-${request.instance_id}
     constraints:
-      maxLength: 30
-      minLength: 6
+      maxLength: 40
+      minLength: 1
       pattern: ^[a-z][a-z0-9-]+$
   - field_name: display_name
     type: string
