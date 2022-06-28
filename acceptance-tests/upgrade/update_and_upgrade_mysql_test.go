@@ -23,7 +23,7 @@ var _ = Describe("UpgradeMYSQLTest", Label("mysql"), func() {
 			defer serviceBroker.Delete()
 
 			By("creating a service instance")
-			serviceInstance := services.CreateInstance("csb-google-mysql", "small")
+			serviceInstance := services.CreateInstance("csb-google-mysql", "small", services.WithBroker(serviceBroker))
 			defer serviceInstance.Delete()
 
 			By("pushing the unstarted app twice")

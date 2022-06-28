@@ -31,7 +31,7 @@ var _ = Describe("UpgradeStackdrivertraceTest", Label("stackdrivertrace"), func(
 			defer serviceBroker.Delete()
 
 			By("creating a service instance")
-			serviceInstance := services.CreateInstance("csb-google-stackdriver-trace", "default")
+			serviceInstance := services.CreateInstance("csb-google-stackdriver-trace", "default", services.WithBroker(serviceBroker))
 			defer serviceInstance.Delete()
 
 			By("pushing the unstarted app")

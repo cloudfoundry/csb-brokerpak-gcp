@@ -23,7 +23,7 @@ var _ = Describe("UpgradeSpannerTest", Label("spanner"), func() {
 			defer serviceBroker.Delete()
 
 			By("creating a service instance")
-			serviceInstance := services.CreateInstance("csb-google-spanner", "small")
+			serviceInstance := services.CreateInstance("csb-google-spanner", "small", services.WithBroker(serviceBroker))
 			defer serviceInstance.Delete()
 
 			By("pushing the unstarted app")
