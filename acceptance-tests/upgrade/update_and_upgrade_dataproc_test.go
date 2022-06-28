@@ -23,7 +23,7 @@ var _ = Describe("UpgradeDataprocTest", Label("dataproc"), func() {
 			defer serviceBroker.Delete()
 
 			By("creating a service instance")
-			serviceInstance := services.CreateInstance("csb-google-dataproc", "standard")
+			serviceInstance := services.CreateInstance("csb-google-dataproc", "standard", services.WithBroker(serviceBroker))
 			defer serviceInstance.Delete()
 
 			By("pushing the unstarted app")
