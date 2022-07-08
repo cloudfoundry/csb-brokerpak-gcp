@@ -9,11 +9,11 @@ platforms:
 # - os: darwin
 #   arch: amd64
 terraform_upgrade_path:
-  - version: 1.2.3
+  - version: 1.2.4
 terraform_binaries:
 - name: terraform
-  version: 1.2.3
-  source: https://github.com/hashicorp/terraform/archive/v1.2.3.zip
+  version: 1.2.4
+  source: https://github.com/hashicorp/terraform/archive/v1.2.4.zip
   default: true
 - name: terraform
   version: 1.1.4
