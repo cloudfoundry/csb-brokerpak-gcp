@@ -14,9 +14,9 @@
 
 dependencies:
     - name: terraform
-      version: 1.2.3
-      source: https://github.com/hashicorp/terraform/archive/v1.2.3.zip
-      source_sha256: 7229856d08b2c52c919ad712166a105ae6250f709f1f5c58574c8dd40b9515ae
+      version: 1.2.4
+      source: https://github.com/hashicorp/terraform/archive/v1.2.4.zip
+      source_sha256: ce7864b506e101f7eab274b0ddf928305f09b40eab33356f84ac4520b2e4ee83
     - name: terraform
       version: 1.1.4
       source: https://github.com/hashicorp/terraform/archive/v1.1.4.zip
