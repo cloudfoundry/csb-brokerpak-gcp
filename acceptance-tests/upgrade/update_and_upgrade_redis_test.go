@@ -28,7 +28,7 @@ var _ = Describe("UpgradeRedisTest", Label("redis"), func() {
 				"csb-google-redis",
 				"basic",
 				services.WithBroker(serviceBroker),
-				services.WithParameters(map[string]interface{}{"instance_id": fmt.Sprintf("test-%s", random.Name(random.WithMaxLength(20)))}),
+				services.WithParameters(map[string]any{"instance_id": fmt.Sprintf("test-%s", random.Name(random.WithMaxLength(20)))}),
 			)
 			defer serviceInstance.Delete()
 
