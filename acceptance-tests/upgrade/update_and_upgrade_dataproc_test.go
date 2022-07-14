@@ -28,7 +28,7 @@ var _ = Describe("UpgradeDataprocTest", Label("dataproc"), func() {
 				"csb-google-dataproc",
 				"standard",
 				services.WithBroker(serviceBroker),
-				services.WithParameters(map[string]interface{}{"name": fmt.Sprintf("csb-dataproc-%s", serviceBroker.Name)}),
+				services.WithParameters(map[string]any{"name": fmt.Sprintf("csb-dataproc-%s", serviceBroker.Name)}),
 			)
 			defer serviceInstance.Delete()
 

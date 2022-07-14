@@ -45,7 +45,7 @@ func connect(creds credentials.SpannerCredentials) (*spanner.Client, error) {
 		SQL: `SELECT count(*) As tableCount
 	                                FROM INFORMATION_SCHEMA.TABLES
                                     WHERE TABLE_NAME = @tableName`,
-		Params: map[string]interface{}{
+		Params: map[string]any{
 			"tableName": tableName,
 		}}
 
@@ -100,7 +100,7 @@ func aliveness(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusNoContent)
 }
 
-func fail(w http.ResponseWriter, code int, format string, a ...interface{}) {
+func fail(w http.ResponseWriter, code int, format string, a ...any) {
 	msg := fmt.Sprintf(format, a...)
 	log.Println(msg)
 	http.Error(w, msg, code)
