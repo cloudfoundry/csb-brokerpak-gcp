@@ -105,7 +105,7 @@ func providerConfigure(ctx context.Context, d *schema.ResourceData) (any, diag.D
 	}
 
 	if value, ok := d.GetOk(clientCertKey); ok {
-		if spec, ok := value.([]interface{})[0].(map[string]interface{}); ok {
+		if spec, ok := value.([]any)[0].(map[string]any); ok {
 			factory.sslClientCert = &clientCertificateConfig{
 				Certificate: spec["cert"].(string),
 				Key:         spec["key"].(string),

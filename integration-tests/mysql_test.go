@@ -101,7 +101,7 @@ var _ = Describe("Mysql", func() {
 		})
 
 		It("should not allow changing of plan defined properties", func() {
-			_, err := broker.Provision("csb-google-mysql", "small", map[string]interface{}{"cores": 5})
+			_, err := broker.Provision("csb-google-mysql", "small", map[string]any{"cores": 5})
 
 			Expect(err).To(MatchError(ContainSubstring("plan defined properties cannot be changed: cores")))
 		})
