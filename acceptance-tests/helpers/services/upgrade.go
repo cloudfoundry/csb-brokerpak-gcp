@@ -10,7 +10,10 @@ import (
 )
 
 func (s *ServiceInstance) Upgrade() {
-	Expect(s.UpgradeAvailable()).To(BeTrue(), "service instance does not have an upgrade available")
+	if !s.UpgradeAvailable() {
+		fmt.Printf("no upgrade available for service instance\n")
+		return
+	}
 
 	var command []string
 	switch cf.Version() {
