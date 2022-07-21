@@ -13,8 +13,6 @@ if [[ -z ${APP_NAME} ]]; then
   APP_NAME=cloud-service-broker
 fi
 
-cf push --no-start -f "${MANIFEST}" --var app=${APP_NAME}
-
 if [[ -z ${SECURITY_USER_NAME} ]]; then
   echo "Missing SECURITY_USER_NAME variable"
   exit 1
@@ -25,84 +23,69 @@ if [[ -z ${SECURITY_USER_PASSWORD} ]]; then
   exit 1
 fi
 
-cf set-env "${APP_NAME}" SECURITY_USER_PASSWORD "${SECURITY_USER_PASSWORD}"
-cf set-env "${APP_NAME}" SECURITY_USER_NAME "${SECURITY_USER_NAME}"
-cf set-env "${APP_NAME}" BROKERPAK_UPDATES_ENABLED true
-cf set-env "${APP_NAME}" TERRAFORM_UPGRADES_ENABLED true
-cf set-env "${APP_NAME}" GSB_COMPATIBILITY_ENABLE_BETA_SERVICES "${GSB_COMPATIBILITY_ENABLE_BETA_SERVICES:-true}"
+cfmf="/tmp/cf-manifest.$$.yml"
+touch "$cfmf"
+trap "rm -f $cfmf" EXIT
+chmod 600 "$cfmf"
+cat "$MANIFEST" >$cfmf
+
+echo "  env:" >>$cfmf
+echo "    SECURITY_USER_PASSWORD: ${SECURITY_USER_PASSWORD}" >>$cfmf
+echo "    SECURITY_USER_NAME: ${SECURITY_USER_NAME}" >>$cfmf
+echo "    TERRAFORM_UPGRADES_ENABLED: ${TERRAFORM_UPGRADES_ENABLED:-true}" >>$cfmf
+echo "    BROKERPAK_UPDATES_ENABLED: ${BROKERPAK_UPDATES_ENABLED:-true}" >>$cfmf
+echo "    GSB_COMPATIBILITY_ENABLE_BETA_SERVICES: ${GSB_COMPATIBILITY_ENABLE_BETA_SERVICES:-true}" >>$cfmf
 
 if [[ ${GSB_PROVISION_DEFAULTS} ]]; then
-  cf set-env "${APP_NAME}" GSB_PROVISION_DEFAULTS "${GSB_PROVISION_DEFAULTS}"
+  echo "    GSB_PROVISION_DEFAULTS: $(echo "$GSB_PROVISION_DEFAULTS" | jq @json)" >>$cfmf
 fi
 
 if [[ ${GOOGLE_CREDENTIALS} ]]; then
-  cf set-env "${APP_NAME}" GOOGLE_CREDENTIALS "${GOOGLE_CREDENTIALS}"
+  echo "    GOOGLE_CREDENTIALS: $(echo "$GOOGLE_CREDENTIALS" | jq @json)" >>$cfmf
 fi
 
 if [[ ${GOOGLE_PROJECT} ]]; then
-  cf set-env "${APP_NAME}" GOOGLE_PROJECT "${GOOGLE_PROJECT}"
-fi
-
-if [[ ${ARM_SUBSCRIPTION_ID} ]]; then
-  cf set-env "${APP_NAME}" ARM_SUBSCRIPTION_ID "${ARM_SUBSCRIPTION_ID}"
-fi
-
-if [[ ${ARM_TENANT_ID} ]]; then
-  cf set-env "${APP_NAME}" ARM_TENANT_ID "${ARM_TENANT_ID}"
-fi
-
-if [[ ${ARM_CLIENT_ID} ]]; then
-  cf set-env "${APP_NAME}" ARM_CLIENT_ID "${ARM_CLIENT_ID}"
-fi
-
-if [[ ${ARM_CLIENT_SECRET} ]]; then
-  cf set-env "${APP_NAME}" ARM_CLIENT_SECRET "${ARM_CLIENT_SECRET}"
-fi
-
-if [[ ${AWS_ACCESS_KEY_ID} ]]; then
-  cf set-env "${APP_NAME}" AWS_ACCESS_KEY_ID "${AWS_ACCESS_KEY_ID}"
-fi
-
-if [[ ${AWS_SECRET_ACCESS_KEY} ]]; then
-  cf set-env "${APP_NAME}" AWS_SECRET_ACCESS_KEY "${AWS_SECRET_ACCESS_KEY}"
+  echo "    GOOGLE_PROJECT: ${GOOGLE_PROJECT}" >>$cfmf
 fi
 
 if [[ ${GSB_BROKERPAK_BUILTIN_PATH} ]]; then
-  cf set-env "${APP_NAME}" GSB_BROKERPAK_BUILTIN_PATH "${GSB_BROKERPAK_BUILTIN_PATH}"
+  echo "    GSB_BROKERPAK_BUILTIN_PATH: ${GSB_BROKERPAK_BUILTIN_PATH}" >>$cfmf
 fi
 
 if [[ ${CH_CRED_HUB_URL} ]]; then
-  cf set-env "${APP_NAME}" CH_CRED_HUB_URL "${CH_CRED_HUB_URL}"
+  echo "    CH_CRED_HUB_URL: ${CH_CRED_HUB_URL}" >>$cfmf
 fi
 
 if [[ ${CH_UAA_URL} ]]; then
-  cf set-env "${APP_NAME}" CH_UAA_URL "${CH_UAA_URL}"
+  echo "    CH_UAA_URL: ${CH_UAA_URL}" >>$cfmf
 fi
 
 if [[ ${CH_UAA_CLIENT_NAME} ]]; then
-  cf set-env "${APP_NAME}" CH_UAA_CLIENT_NAME "${CH_UAA_CLIENT_NAME}"
+  echo "    CH_UAA_CLIENT_NAME: ${CH_UAA_CLIENT_NAME}" >>$cfmf
 fi
 
 if [[ ${CH_UAA_CLIENT_SECRET} ]]; then
-  cf set-env "${APP_NAME}" CH_UAA_CLIENT_SECRET "${CH_UAA_CLIENT_SECRET}"
+  echo "    CH_UAA_CLIENT_SECRET: ${CH_UAA_CLIENT_SECRET}" >>$cfmf
 fi
 
 if [[ ${CH_SKIP_SSL_VALIDATION} ]]; then
-  cf set-env "${APP_NAME}" CH_SKIP_SSL_VALIDATION "${CH_SKIP_SSL_VALIDATION}"
+  echo "    CH_SKIP_SSL_VALIDATION: ${CH_SKIP_SSL_VALIDATION}" >>$cfmf
 fi
 
 if [[ ${DB_TLS} ]]; then
-  cf set-env "${APP_NAME}" DB_TLS "${DB_TLS}"
+  echo "    DB_TLS: ${DB_TLS}" >>$cfmf
 fi
 
 if [[ ${GSB_DEBUG} ]]; then
-  cf set-env "${APP_NAME}" GSB_DEBUG "${GSB_DEBUG}"
+  echo "    GSB_DEBUG: ${GSB_DEBUG}" >>$cfmf
 fi
 
 if [[ -z "$GSB_SERVICE_CSB_GOOGLE_POSTGRES_PLANS" ]]; then
   GSB_SERVICE_CSB_GOOGLE_POSTGRES_PLANS='[{"name":"small","id":"5b45de36-cb90-11ec-a755-77f8be95a49d","description":"PostgreSQL with default version, shared CPU, minimum 0.6GB ram, 10GB storage","display_name":"small","tier":"db-f1-micro","storage_gb":10},{"name":"medium","id":"a3359fa6-cb90-11ec-bcb6-cb68544eda78","description":"PostgreSQL with default version, shared CPU, minimum 1.7GB ram, 20GB storage","display_name":"medium","tier":"db-g1-small","storage_gb":20},{"name":"large","id":"cd95c5b4-cb90-11ec-a5da-df87b7fb7426","description":"PostgreSQL with default version, minimum 8 cores, minimum 8GB ram, 50GB storage","display_name":"large","tier":"db-n1-standard-8","storage_gb":50}]'
 fi
-cf set-env "${APP_NAME}" GSB_SERVICE_CSB_GOOGLE_POSTGRES_PLANS "${GSB_SERVICE_CSB_GOOGLE_POSTGRES_PLANS}"
+echo "    GSB_SERVICE_CSB_GOOGLE_POSTGRES_PLANS: $(echo "$GSB_SERVICE_CSB_GOOGLE_POSTGRES_PLANS" | jq @json)" >>$cfmf
+
+cf push --no-start -f "${cfmf}" --var app=${APP_NAME}
 
 if [[ -z ${MSYQL_INSTANCE} ]]; then
   MSYQL_INSTANCE=csb-sql
