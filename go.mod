@@ -15,6 +15,7 @@ require (
 	golang.org/x/tools v0.1.11-0.20220513221640-090b14e8501f
 	google.golang.org/api v0.87.0
 	google.golang.org/genproto v0.0.0-20220624142145-8cd45d7dbd1f
+	gopkg.in/yaml.v3 v3.0.1
 	honnef.co/go/tools v0.3.2
 )
 
@@ -129,7 +130,6 @@ require (
 	google.golang.org/protobuf v1.28.0 // indirect
 	gopkg.in/ini.v1 v1.66.4 // indirect
 	gopkg.in/yaml.v2 v2.4.0 // indirect
-	gopkg.in/yaml.v3 v3.0.1 // indirect
 	gorm.io/driver/mysql v1.3.4 // indirect
 	gorm.io/driver/sqlite v1.3.6 // indirect
 	gorm.io/gorm v1.23.8 // indirect
