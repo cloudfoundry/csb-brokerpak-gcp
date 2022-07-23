@@ -4,7 +4,7 @@ go 1.18
 
 require (
 	cloud.google.com/go/dataproc v1.5.0
-	cloud.google.com/go/storage v1.23.0
+	cloud.google.com/go/storage v1.24.0
 	github.com/cloudfoundry-community/go-cfenv v1.18.0
 	github.com/gorilla/mux v1.8.0
 	github.com/mitchellh/mapstructure v1.5.0
@@ -22,7 +22,6 @@ require (
 	github.com/google/uuid v1.3.0 // indirect
 	github.com/googleapis/enterprise-certificate-proxy v0.1.0 // indirect
 	github.com/googleapis/gax-go/v2 v2.4.0 // indirect
-	github.com/googleapis/go-type-adapters v1.0.0 // indirect
 	go.opencensus.io v0.23.0 // indirect
 	golang.org/x/net v0.0.0-20220624214902-1bab6f366d9e // indirect
 	golang.org/x/oauth2 v0.0.0-20220622183110-fd043fe589d2 // indirect
