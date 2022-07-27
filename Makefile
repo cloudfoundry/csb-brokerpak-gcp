@@ -87,7 +87,7 @@ endif
 .PHONY: build
 build: deps-go-binary $(IAAS)-services-*.brokerpak ## build brokerpak
 
-$(IAAS)-services-*.brokerpak: *.yml terraform/*/*/*.tf ./providers/terraform-provider-csbpg/cloudfoundry.org/cloud-service-broker/csbpg | $(PAK_CACHE)
+$(IAAS)-services-*.brokerpak: *.yml terraform/*/*/*.tf | $(PAK_CACHE)
 	$(RUN_CSB) pak build
 
 .PHONY: run
@@ -111,15 +111,11 @@ run-examples: ## run examples against CSB on localhost (run "make run" to start 
 	$(RUN_CSB) client run-examples --service-name="$(service_name)" --example-name="$(example_name)" -j $(PARALLEL_JOB_COUNT)
 
 .PHONY: test ## run the tests
-test: latest-csb lint provider-tests run-integration-tests
+test: latest-csb lint run-integration-tests
 
 .PHONY: run-integration-tests
 run-integration-tests: latest-csb ## run integration tests for this brokerpak
 	cd ./integration-tests && go run github.com/onsi/ginkgo/v2/ginkgo -r .
-
-.PHONY: provider-tests
-provider-tests: latest-csb
-	cd providers/terraform-provider-csbpg; $(MAKE) test
 
 .PHONY: info
 info: build ## use the CSB to parse the buildpak and print out contents and versions
@@ -166,7 +162,6 @@ clean: ## clean up build artifacts
 	- rm -f ./cloud-service-broker
 	- rm -f ./brokerpak-user-docs.md
 	- rm -rf $(PAK_CACHE)
-	- cd providers/terraform-provider-csbpg; $(MAKE) clean
 
 $(PAK_CACHE):
 	@echo "Folder $(PAK_CACHE) does not exist. Creating it..."
@@ -207,6 +202,3 @@ staticcheck: ## Runs staticcheck
 format: ## format the source
 	${GOFMT} -s -e -l -w .
 	${GO} run golang.org/x/tools/cmd/goimports -l -w .
-
-./providers/terraform-provider-csbpg/cloudfoundry.org/cloud-service-broker/csbpg:
-	cd providers/terraform-provider-csbpg; $(MAKE) build

@@ -33,7 +33,8 @@ terraform_binaries:
 - name: terraform-provider-csbpg
   version: 1.0.0
   provider: cloud-service-broker/csbpg
-  url_template: ./providers/${name}/cloudfoundry.org/cloud-service-broker/csbpg/${version}/${os}_${arch}/terraform-provider-csbpg_v${version}
+  source: https://github.com/cloudfoundry/terraform-provider-csbpg/archive/v1.0.0.zip
+  url_template: https://github.com/cloudfoundry/${name}/releases/download/v${version}/${name}_${version}_${os}_${arch}.zip
 env_config_mapping:
   GOOGLE_CREDENTIALS: gcp.credentials
   GOOGLE_PROJECT: gcp.project
