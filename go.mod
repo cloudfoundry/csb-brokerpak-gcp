@@ -10,7 +10,7 @@ require (
 	github.com/onsi/ginkgo/v2 v2.1.4
 	github.com/onsi/gomega v1.20.0
 	golang.org/x/tools v0.1.11-0.20220513221640-090b14e8501f
-	google.golang.org/api v0.88.0
+	google.golang.org/api v0.90.0
 	google.golang.org/genproto v0.0.0-20220624142145-8cd45d7dbd1f
 	gopkg.in/yaml.v3 v3.0.1
 	honnef.co/go/tools v0.3.2
