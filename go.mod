@@ -13,7 +13,7 @@ require (
 	google.golang.org/api v0.90.0
 	google.golang.org/genproto v0.0.0-20220624142145-8cd45d7dbd1f
 	gopkg.in/yaml.v3 v3.0.1
-	honnef.co/go/tools v0.3.2
+	honnef.co/go/tools v0.3.3
 )
 
 require (
