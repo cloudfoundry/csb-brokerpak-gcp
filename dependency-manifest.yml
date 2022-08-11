@@ -22,9 +22,9 @@ dependencies:
       source: https://github.com/hashicorp/terraform/archive/v1.1.4.zip
       source_sha256: 3e4329183962d15f81ca07d872643ad36cb59b8c8c66826e406d43c4e078788e
     - name: terraform-provider-csbpg
-      version: 1.0.0
-      source: https://github.com/cloudfoundry/terraform-provider-csbpg/archive/v1.0.0.zip
-      source_sha256: 946c8b13e848d8fd1048fbf09b28c357da33ef69340e45049be09aecb6ece1ce
+      version: 1.0.1
+      source: https://github.com/cloudfoundry/terraform-provider-csbpg/archive/v1.0.1.zip
+      source_sha256: 884dd3ef0d85c29f070646b4f53c275e3e00088942668a2661c42ef20ce41f04
     - name: terraform-provider-google
       version: 4.31.0
       source: https://github.com/terraform-providers/terraform-provider-google/archive/v4.31.0.zip
