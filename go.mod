@@ -4,7 +4,7 @@ go 1.19
 
 require (
 	cloud.google.com/go/trace v1.2.0
-	code.cloudfoundry.org/jsonry v1.1.3
+	code.cloudfoundry.org/jsonry v1.1.4
 	github.com/Pallinder/go-randomdata v1.2.0
 	github.com/cloudfoundry/cloud-service-broker v0.11.0
 	github.com/onsi/ginkgo/v2 v2.1.4
@@ -13,7 +13,7 @@ require (
 	google.golang.org/api v0.92.0
 	google.golang.org/genproto v0.0.0-20220624142145-8cd45d7dbd1f
 	gopkg.in/yaml.v3 v3.0.1
-	honnef.co/go/tools v0.3.3
+	honnef.co/go/tools v0.4.0-0.dev
 )
 
 require (
