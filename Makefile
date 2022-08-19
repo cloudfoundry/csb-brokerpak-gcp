@@ -91,7 +91,8 @@ $(IAAS)-services-*.brokerpak: *.yml terraform/*/*/*.tf | $(PAK_CACHE)
 	$(RUN_CSB) pak build
 
 .PHONY: run
-run: build google_credentials google_project ## start CSB in a docker container
+run: google_credentials google_project ## start CSB
+	$(RUN_CSB) pak build --target current
 	$(RUN_CSB) serve
 
 .PHONY: docs
