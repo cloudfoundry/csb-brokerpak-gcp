@@ -8,7 +8,7 @@ require (
 	github.com/Pallinder/go-randomdata v1.2.0
 	github.com/cloudfoundry/cloud-service-broker v0.11.0
 	github.com/onsi/ginkgo/v2 v2.1.4
-	github.com/onsi/gomega v1.20.0
+	github.com/onsi/gomega v1.20.1
 	golang.org/x/tools v0.1.11-0.20220513221640-090b14e8501f
 	google.golang.org/api v0.93.0
 	google.golang.org/genproto v0.0.0-20220624142145-8cd45d7dbd1f
