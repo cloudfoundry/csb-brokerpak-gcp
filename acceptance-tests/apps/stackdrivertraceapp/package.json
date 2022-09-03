@@ -13,7 +13,7 @@
   "author": "VMware, Inc",
   "license": "Apache-2.0",
   "dependencies": {
-    "@google-cloud/trace-agent": "^7.1.0",
+    "@google-cloud/trace-agent": "^7.1.1",
     "express": "^4.18.1",
     "helmet": "^6.0.0",
     "vcap_services": "^0.7.1"
