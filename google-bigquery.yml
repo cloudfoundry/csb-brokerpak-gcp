@@ -17,7 +17,7 @@ name: csb-google-bigquery
 id: 3d4b5b0c-931d-11ea-a02b-cb6a223f4ab2
 description: Beta - A fast, economical and fully managed data warehouse for large-scale data analytics.
 display_name: Google Big Query (Beta)
-image_url: https://cloud.google.com/_static/images/cloud/products/logos/svg/bigquery.svg
+image_url: file://service-images/csb.png
 documentation_url: https://cloud.google.com/bigquery/docs/
 support_url: https://cloud.google.com/support/
 tags: [gcp, bigquery, beta]
