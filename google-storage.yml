@@ -17,7 +17,7 @@ name: csb-google-storage-bucket
 id: b247fcde-8a63-11ea-b945-cb26f061f70f
 description: Beta - Google Cloud Storage that uses the Terraform back-end and grants service accounts IAM permissions directly on the bucket.
 display_name: Google Cloud Storage (Beta)
-image_url: https://cloud.google.com/_static/images/cloud/products/logos/svg/storage.svg
+image_url: file://service-images/csb.png
 documentation_url: https://cloud.google.com/storage/docs/overview
 support_url: https://cloud.google.com/support/
 tags: [gcp, storage, beta]

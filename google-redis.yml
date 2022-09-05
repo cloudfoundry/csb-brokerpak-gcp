@@ -18,7 +18,7 @@ id: 0e86ad78-99b3-48b6-a986-b594e7995fd6
 description: Beta - Cloud Memorystore for Redis is a fully managed Redis service for the
   Google Cloud Platform.
 display_name: Google Cloud Memorystore for Redis (Beta)
-image_url: https://cloud.google.com/_static/images/cloud/products/logos/svg/cache.svg
+image_url: file://service-images/csb.png
 documentation_url: https://cloud.google.com/memorystore/docs/redis/
 support_url: https://cloud.google.com/support/
 tags: [gcp, redis, beta]

@@ -17,7 +17,7 @@ name: csb-google-spanner
 id: 528667ba-8e4e-11ea-954d-47e3237b9109
 description: Beta - Fully managed, scalable, relational database service for regional and global application data.
 display_name: Google Cloud Spanner (Beta)
-image_url: https://cloud.google.com/_static/images/cloud/products/logos/svg/spanner.svg
+image_url: file://service-images/csb.png
 documentation_url: https://cloud.google.com/spanner/docs
 support_url: https://cloud.google.com/support/
 tags: [gcp, spanner, beta]
