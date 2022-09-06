@@ -22,9 +22,9 @@ dependencies:
       source: https://github.com/hashicorp/terraform/archive/v1.1.4.zip
       source_sha256: 3e4329183962d15f81ca07d872643ad36cb59b8c8c66826e406d43c4e078788e
     - name: terraform-provider-google
-      version: 4.34.0
-      source: https://github.com/terraform-providers/terraform-provider-google/archive/v4.34.0.zip
-      source_sha256: f6da135c27a5b41f13b45d271711c9c24372b142863cac2fb1f382be53fc75f0
+      version: 4.35.0
+      source: https://github.com/terraform-providers/terraform-provider-google/archive/v4.35.0.zip
+      source_sha256: c6e43549d8de8db04cdec2cd60e565faf74e46f850006e4f7e2a21dfa43ed56e
     - name: terraform-provider-local
       version: 2.2.3
       source: https://github.com/terraform-providers/terraform-provider-local/archive/v2.2.3.zip
