@@ -110,3 +110,5 @@ require (
 	gorm.io/driver/sqlite v1.3.6 // indirect
 	gorm.io/gorm v1.23.8 // indirect
 )
+
+replace github.com/cloudfoundry/cloud-service-broker => /Users/ksemenov/workspace/csb/csb-brokerpak-gcp/../cloud-service-broker
