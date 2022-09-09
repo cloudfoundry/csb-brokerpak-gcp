@@ -37,6 +37,7 @@ var _ = Describe("Postgres service instance migration", func() {
 
 		targetServiceInstance := services.CreateInstance("csb-google-postgres", "default",
 			services.WithParameters(map[string]any{"postgres_version": "POSTGRES_11", "db_name": legacyBinding.DatabaseName}))
+		defer targetServiceInstance.Delete()
 
 	})
 })
