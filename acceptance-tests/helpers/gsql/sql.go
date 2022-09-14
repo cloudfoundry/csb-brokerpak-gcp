@@ -77,6 +77,7 @@ func DeleteBackup(instanceId, backupId string) {
 		"--instance",
 		instanceId,
 		"--async",
+		"--quiet",
 	)
 }
 func getOperationStatus(operationId string) string {

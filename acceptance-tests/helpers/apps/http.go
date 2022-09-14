@@ -38,7 +38,7 @@ func (a *App) PUT(data, format string, s ...any) {
 }
 
 func (a *App) DELETETestTable() {
-	url := a.urlf("public.test")
+	url := a.urlf("/")
 	fmt.Fprintf(GinkgoWriter, "HTTP DELETE: %s\n", url)
 	request, err := http.NewRequest(http.MethodDelete, url, nil)
 	Expect(err).NotTo(HaveOccurred())

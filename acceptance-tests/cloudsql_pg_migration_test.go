@@ -2,6 +2,7 @@ package acceptance_test
 
 import (
 	"crypto/tls"
+	"encoding/json"
 	"fmt"
 	"io"
 	"net/http"
@@ -22,19 +23,20 @@ import (
 
 const (
 	legacyBrokerName               = "gcp-service-broker"
-	grantBindingUserGroupStatement = `create function temp_fn__grant_role(username pg_catalog.name) returns void as
+	grantBindingUserGroupStatement = `do language plpgsql
 $$
-begin
-    raise notice 'granting binding_user_group to %', username;
-    execute format('grant binding_user_group to %I', username);
-end;
-$$ language plpgsql;
-select temp_fn__grant_role(usename)
-from pg_catalog.pg_user
-where usename not like 'cloud%'
-  and usename != 'postgres'
-  and usename not like 'sb%';
-drop function temp_fn__grant_role;
+    declare
+        r record;
+    begin
+        for r in select usename
+                 from pg_catalog.pg_user
+                 where usename not similar to '(cloud|postgres)%'
+            loop
+                raise notice 'granting role binding_user_group to %', r.usename;
+                execute format('grant binding_user_group to %I', r.usename);
+            end loop;
+    end;
+$$
 `
 	legacyDbTier = "db-f1-micro"
 )
@@ -42,10 +44,22 @@ drop function temp_fn__grant_role;
 var _ = Describe("Postgres service instance migration", func() {
 
 	FIt("retains data", func() {
+		By("asynchronously starting the target service instance creation")
+		databaseName := random.Name(random.WithPrefix("migrate-database"))
+		targetServiceInstance := services.CreateInstance(
+			"csb-google-postgres",
+			"default",
+			services.WithParameters(map[string]any{
+				"postgres_version": "POSTGRES_11",
+				"db_name":          databaseName,
+				"public_ip":        false,
+			}),
+			services.WithAsync(),
+		)
+
 		By("creating the original service instance")
 		sourceServiceOffering := "google-cloudsql-postgres-vpc"
 		sourceServicePlan := "default"
-
 		sourceServiceInstance := services.CreateInstance(
 			sourceServiceOffering,
 			sourceServicePlan,
@@ -53,6 +67,7 @@ var _ = Describe("Postgres service instance migration", func() {
 			services.WithParameters(map[string]string{
 				"tier":            legacyDbTier,
 				"private_network": os.Getenv("GCP_PAS_NETWORK"),
+				"database_name":   databaseName,
 			}),
 		)
 		defer sourceServiceInstance.Delete()
@@ -68,29 +83,15 @@ var _ = Describe("Postgres service instance migration", func() {
 		By("creating a schema and adding some data in the source database")
 		schema := random.Name(random.WithMaxLength(8))
 		sourceApp.PUT("", schema)
-		defer sourceApp.DELETE("/")
+		defer sourceApp.DELETE(schema)
 
 		key := random.Hexadecimal()
 		value := random.Hexadecimal()
 		sourceApp.PUT(value, "%s/%s", schema, key)
 
-		By("creating a new service instance with the same version and database name as the original instance")
-		credentials := sourceInstanceBinding.Credential()
-		legacyBinding, err := legacybindings.ExtractPostgresBinding(credentials)
-		Expect(err).NotTo(HaveOccurred())
-
-		currentIPAddress := getCurrentIPAddress()
-		targetServiceInstance := services.CreateInstance("csb-google-postgres", "default",
-			services.WithParameters(map[string]any{
-				"postgres_version":          "POSTGRES_11",
-				"db_name":                   legacyBinding.DatabaseName,
-				"authorized_networks_cidrs": []string{fmt.Sprintf("%s/32", currentIPAddress)},
-				"public_ip":                 true,
-			}))
+		By("waiting for the new service creation to succeed")
+		services.WaitForInstanceCreation(targetServiceInstance.Name)
 		defer targetServiceInstance.Delete()
-
-		backupId := gsql.CreateBackup(legacyBinding.InstanceName)
-		defer gsql.DeleteBackup(legacyBinding.InstanceName, backupId)
 
 		By("creating a service key for the new service instance")
 		serviceKey := targetServiceInstance.CreateServiceKey()
@@ -100,14 +101,31 @@ var _ = Describe("Postgres service instance migration", func() {
 			SSLKey      []byte `json:"sslkey"`
 			SSLCert     []byte `json:"sslcert"`
 			SSLRootCert []byte `json:"sslrootcert"`
+			Username    string `json:"username"`
+			Password    string `json:"password"`
 		}
 		serviceKey.Get(&serviceKeyData)
+
+		By("creating a backup for the legacy service instance")
+		credentials := sourceInstanceBinding.Credential()
+		legacyBinding, err := legacybindings.ExtractPostgresBinding(credentials)
+		Expect(err).NotTo(HaveOccurred())
+
+		backupId := gsql.CreateBackup(legacyBinding.InstanceName)
+		defer gsql.DeleteBackup(legacyBinding.InstanceName, backupId)
 
 		By("restoring the backup onto the new service instance")
 		gsql.RestoreBackup(fmt.Sprintf("csb-postgres-%v", targetServiceInstance.GUID()), legacyBinding.InstanceName, backupId)
 
 		By("restoring the tf postgres user via updating the target service instance")
-		targetServiceInstance.Update("backups_start_time", "12:34")
+		currentIPAddress := getCurrentIPAddress()
+		params := map[string]any{
+			"authorized_networks_cidrs": []string{fmt.Sprintf("%s/32", currentIPAddress)},
+			"public_ip":                 true,
+		}
+		encodedParams, err := json.Marshal(params)
+		Expect(err).NotTo(HaveOccurred())
+		targetServiceInstance.Update("-c", string(encodedParams))
 
 		// We're unable to delete the service key before the tf postgres user is restored
 		defer serviceKey.Delete()
@@ -129,6 +147,7 @@ var _ = Describe("Postgres service instance migration", func() {
 
 		statements := []string{
 			"CREATE ROLE binding_user_group WITH NOLOGIN",
+			fmt.Sprintf("CREATE ROLE %s WITH PASSWORD %s", pq.QuoteIdentifier(serviceKeyData.Username), pq.QuoteLiteral(serviceKeyData.Password)),
 			fmt.Sprintf("GRANT ALL PRIVILEGES ON DATABASE %s TO binding_user_group", pq.QuoteIdentifier(legacyBinding.DatabaseName)),
 			grantBindingUserGroupStatement,
 			"GRANT binding_user_group TO CURRENT_USER",
@@ -148,6 +167,18 @@ var _ = Describe("Postgres service instance migration", func() {
 		By("reading the data")
 		got := targetApp.GET("%s/%s", schema, key)
 		Expect(got).To(Equal(value))
+
+		By("creating a new schema")
+		newSchema := random.Name(random.WithPrefix(schema))
+		newValue := random.Name(random.WithPrefix(value))
+		targetApp.PUT("", newSchema)
+
+		By("writing a value")
+		targetApp.PUT(newValue, newSchema, key)
+
+		By("reading the value back")
+		gotNewValue := targetApp.GET("%s/%s", newSchema, key)
+		Expect(gotNewValue).To(Equal(newValue))
 	})
 })
 
