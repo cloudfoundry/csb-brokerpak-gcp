@@ -2,6 +2,7 @@ package credentials
 
 import (
 	"fmt"
+	"net/url"
 	"os"
 
 	"github.com/cloudfoundry-community/go-cfenv"
@@ -21,18 +22,25 @@ func Read() (string, error) {
 	if err != nil {
 		return "", fmt.Errorf("error reading app env: %w", err)
 	}
-	svs, err := app.Services.WithTag("postgresql")
+	svc, err := app.Services.WithTag("postgresql")
+	legacySvc, legacyErr := app.Services.WithTag("postgres")
+
+	if legacyErr == nil {
+		return legacyRead(legacySvc[0].Credentials["uri"].(string))
+	}
+
 	if err != nil {
 		return "", fmt.Errorf("error reading PostgreSQL service details")
 	}
 
 	var c config
-	if err := mapstructure.Decode(svs[0].Credentials, &c); err != nil {
-		return "", fmt.Errorf("failed to decode credentials: %+v: %w", svs[0].Credentials, err)
+
+	if err := mapstructure.Decode(svc[0].Credentials, &c); err != nil {
+		return "", fmt.Errorf("failed to decode credentials: %+v: %w", svc[0].Credentials, err)
 	}
 
 	if c.URI == "" {
-		return "", fmt.Errorf("missing URI: %+v", svs[0].Credentials)
+		return "", fmt.Errorf("missing URI: %+v", svc[0].Credentials)
 	}
 
 	switch c.TLS {
@@ -41,6 +49,36 @@ func Read() (string, error) {
 	default:
 		return c.URI, nil
 	}
+}
+
+func legacyRead(URI string) (string, error) {
+	URL, err := url.Parse(URI)
+	if err != nil {
+		return "", fmt.Errorf("unable to parse db connection url %s: %s", URI, err.Error())
+	}
+
+	query := URL.Query()
+
+	sslcert, err := writeTmp("sslcert", query.Get("sslcert"))
+	if err != nil {
+		return "", fmt.Errorf("unable to extract TLS certificate from connection uri: %s", err.Error())
+	}
+	query.Set("sslcert", sslcert)
+
+	sslrootcert, err := writeTmp("sslrootcert", query.Get("sslrootcert"))
+	if err != nil {
+		return "", fmt.Errorf("unable to extract TLS CA certificate from connection uri: %s", err.Error())
+	}
+	query.Set("sslrootcert", sslrootcert)
+
+	sslkey, err := writeTmp("sslkey", query.Get("sslkey"))
+	if err != nil {
+		return "", fmt.Errorf("unable to extract TLS CA certificate from connection uri: %s", err.Error())
+	}
+	query.Set("sslkey", sslkey)
+	URL.RawQuery = query.Encode()
+
+	return URL.String(), nil
 }
 
 func tlsURI(c config) (string, error) {

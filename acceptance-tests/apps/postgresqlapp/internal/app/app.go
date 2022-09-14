@@ -22,6 +22,7 @@ func App(uri string) *mux.Router {
 	if err != nil {
 		log.Fatal(err)
 	}
+	log.Printf("Connection succeeded")
 
 	r := mux.NewRouter()
 	r.HandleFunc("/", aliveness).Methods(http.MethodHead, http.MethodGet)
@@ -29,8 +30,24 @@ func App(uri string) *mux.Router {
 	r.HandleFunc("/{schema}", handleDropSchema(db)).Methods(http.MethodDelete)
 	r.HandleFunc("/{schema}/{key}", handleSet(db)).Methods(http.MethodPut)
 	r.HandleFunc("/{schema}/{key}", handleGet(db)).Methods(http.MethodGet)
+	r.HandleFunc("/", handleDeleteTestTable(db)).Methods(http.MethodDelete)
 
 	return r
+}
+
+func handleDeleteTestTable(db *sql.DB) func(http.ResponseWriter, *http.Request) {
+	return func(w http.ResponseWriter, r *http.Request) {
+		log.Println("Handling public.test table deletion.")
+
+		_, err := db.Exec(`DROP TABLE public.test`)
+		if err != nil {
+			fail(w, http.StatusBadRequest, "Error dropping table public.test", err)
+			return
+		}
+
+		w.WriteHeader(http.StatusNoContent)
+		log.Printf("table public.test dropped")
+	}
 }
 
 func aliveness(w http.ResponseWriter, r *http.Request) {

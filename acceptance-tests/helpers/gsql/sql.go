@@ -1,10 +1,12 @@
 package gsql
 
 import (
-	"csbbrokerpakgcp/acceptance-tests/helpers/gcloud"
 	"encoding/json"
+	"time"
 
-	"github.com/onsi/gomega"
+	. "github.com/onsi/gomega"
+
+	"csbbrokerpakgcp/acceptance-tests/helpers/gcloud"
 )
 
 func CreateBackup(instanceId string) string {
@@ -18,19 +20,22 @@ func CreateBackup(instanceId string) string {
 		"--instance",
 		instanceId,
 		"--async",
+		"--format",
+		"json",
 	)
 
-	json.Unmarshal(backupCreateBytes, &response)
+	err := json.Unmarshal(backupCreateBytes, &response)
+	Expect(err).NotTo(HaveOccurred())
 	operationId, ok := response["name"].(string)
-	gomega.Expect(ok).To(gomega.BeTrue())
+	Expect(ok).To(BeTrue())
+	Eventually(func() string { return getOperationStatus(operationId) }).
+		WithTimeout(5 * time.Minute).Should(Equal("DONE"))
 
-	gomega.Eventually(getOperationStatus(operationId)).Should(gomega.Equal("DONE"))
+	Expect(response["backupContext"]).To(BeAssignableToTypeOf(map[string]any{}))
+	backupContext := response["backupContext"].(map[string]any)
 
-	backupContext, ok := response["backupContext"].(map[string]string)
-	gomega.Expect(ok).To(gomega.BeTrue())
-
-	backupId, ok := backupContext["backupId"]
-	gomega.Expect(ok).To(gomega.BeTrue())
+	Expect(backupContext["backupId"]).To(BeAssignableToTypeOf("string"))
+	backupId := backupContext["backupId"].(string)
 
 	return backupId
 
@@ -52,16 +57,28 @@ func RestoreBackup(sourceInstance, targetInstance, backupId string) {
 		"json",
 	)
 
-	response := map[string]string{}
+	response := map[string]any{}
 
-	json.Unmarshal(backupRestoreBytes, &response)
-	operationId, ok := response["name"]
-	gomega.Expect(ok).To(gomega.BeTrue())
+	err := json.Unmarshal(backupRestoreBytes, &response)
+	Expect(err).NotTo(HaveOccurred())
+	Expect(response["name"]).To(BeAssignableToTypeOf("string"))
+	operationId := response["name"].(string)
 
-	gomega.Eventually(getOperationStatus(operationId)).Should(gomega.Equal("DONE"))
+	Eventually(func() string { return getOperationStatus(operationId) }).
+		WithTimeout(5 * time.Minute).Should(Equal("DONE"))
 
 }
-
+func DeleteBackup(instanceId, backupId string) {
+	gcloud.GCP(
+		"sql",
+		"backups",
+		"delete",
+		backupId,
+		"--instance",
+		instanceId,
+		"--async",
+	)
+}
 func getOperationStatus(operationId string) string {
 
 	statusBytes := gcloud.GCP(
@@ -72,11 +89,12 @@ func getOperationStatus(operationId string) string {
 		"--format",
 		"json",
 	)
-	response := map[string]string{}
+	response := map[string]any{}
 
-	json.Unmarshal(statusBytes, &response)
+	err := json.Unmarshal(statusBytes, &response)
+	Expect(err).NotTo(HaveOccurred())
 	val, ok := response["status"]
-	gomega.Expect(ok).To(gomega.BeTrue())
-
-	return val
+	Expect(ok).To(BeTrue())
+	Expect(val).To(BeAssignableToTypeOf(""))
+	return val.(string)
 }
