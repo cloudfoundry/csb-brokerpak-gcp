@@ -94,16 +94,18 @@ var _ = Describe("Postgres service instance migration", func() {
 		defer targetServiceInstance.Delete()
 
 		By("creating a service key for the new service instance")
+
+		// We won't be able to create the service key after the restore
 		serviceKey := targetServiceInstance.CreateServiceKey()
 
-		var serviceKeyData struct {
+		serviceKeyData := struct {
 			Hostname    string `json:"hostname"`
-			SSLKey      []byte `json:"sslkey"`
-			SSLCert     []byte `json:"sslcert"`
-			SSLRootCert []byte `json:"sslrootcert"`
+			SSLKey      string `json:"sslkey"`
+			SSLCert     string `json:"sslcert"`
+			SSLRootCert string `json:"sslrootcert"`
 			Username    string `json:"username"`
 			Password    string `json:"password"`
-		}
+		}{}
 		serviceKey.Get(&serviceKeyData)
 
 		By("creating a backup for the legacy service instance")
@@ -115,7 +117,8 @@ var _ = Describe("Postgres service instance migration", func() {
 		defer gsql.DeleteBackup(legacyBinding.InstanceName, backupId)
 
 		By("restoring the backup onto the new service instance")
-		gsql.RestoreBackup(fmt.Sprintf("csb-postgres-%v", targetServiceInstance.GUID()), legacyBinding.InstanceName, backupId)
+		targetInstanceIaaSName := fmt.Sprintf("csb-postgres-%v", targetServiceInstance.GUID())
+		gsql.RestoreBackup(legacyBinding.InstanceName, targetInstanceIaaSName, backupId)
 
 		By("restoring the tf postgres user via updating the target service instance")
 		currentIPAddress := getCurrentIPAddress()
@@ -130,21 +133,27 @@ var _ = Describe("Postgres service instance migration", func() {
 		// We're unable to delete the service key before the tf postgres user is restored
 		defer serviceKey.Delete()
 
-		By("executing SQL against the new service instance")
-		certChain := append(serviceKeyData.SSLCert, '\n')
-		certChain = append(certChain, serviceKeyData.SSLRootCert...)
-		cert, err := tls.X509KeyPair(certChain, serviceKeyData.SSLKey)
+		By(fmt.Sprintf("Setting up TLS: %#v", serviceKeyData))
+		certChain := append([]byte(serviceKeyData.SSLCert), '\n')
+		certChain = append(certChain, []byte(serviceKeyData.SSLRootCert)...)
+		cert, err := tls.X509KeyPair(certChain, []byte(serviceKeyData.SSLKey))
 		Expect(err).NotTo(HaveOccurred())
 
-		cfg := &tls.Config{Certificates: []tls.Certificate{cert}}
+		By("fetching the public IP address of the target instance")
+		publicIp, err := gsql.GetPrimaryAddress(targetInstanceIaaSName)
+		Expect(err).NotTo(HaveOccurred())
+
+		By("establishing a connection to the target instance")
+		cfg := &tls.Config{Certificates: []tls.Certificate{cert}, MinVersion: tls.VersionTLS12}
 		db := pg.Connect(&pg.Options{
-			Addr:      serviceKeyData.Hostname,
+			Addr:      publicIp,
 			User:      legacyBinding.Username,
 			Password:  legacyBinding.Password,
 			Database:  legacyBinding.DatabaseName,
 			TLSConfig: cfg,
 		})
 
+		By("executing SQL against the target instance to restore the binding functionality")
 		statements := []string{
 			"CREATE ROLE binding_user_group WITH NOLOGIN",
 			fmt.Sprintf("CREATE ROLE %s WITH PASSWORD %s", pq.QuoteIdentifier(serviceKeyData.Username), pq.QuoteLiteral(serviceKeyData.Password)),
@@ -157,6 +166,9 @@ var _ = Describe("Postgres service instance migration", func() {
 			_, err := db.Exec(stmt)
 			Expect(err).NotTo(HaveOccurred())
 		}
+
+		By("disabling the public IP for CF app connectivity")
+		targetServiceInstance.Update("-c", `{"public_ip": false}`)
 
 		By("binding an app to the target service instance")
 		targetApp := apps.Push(apps.WithApp(apps.PostgreSQL))
@@ -189,5 +201,6 @@ func getCurrentIPAddress() string {
 		_ = Body.Close()
 	}(resp.Body)
 	body, err := io.ReadAll(resp.Body)
+	Expect(err).NotTo(HaveOccurred())
 	return string(body)
 }

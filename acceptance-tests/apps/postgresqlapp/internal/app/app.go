@@ -50,7 +50,7 @@ func handleDeleteTestTable(db *sql.DB) func(http.ResponseWriter, *http.Request) 
 	}
 }
 
-func aliveness(w http.ResponseWriter, r *http.Request) {
+func aliveness(w http.ResponseWriter, _ *http.Request) {
 	log.Printf("Handled aliveness test.")
 	w.WriteHeader(http.StatusNoContent)
 }

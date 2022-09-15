@@ -2,6 +2,7 @@ package gsql
 
 import (
 	"encoding/json"
+	"fmt"
 	"time"
 
 	. "github.com/onsi/gomega"
@@ -29,7 +30,9 @@ func CreateBackup(instanceId string) string {
 	operationId, ok := response["name"].(string)
 	Expect(ok).To(BeTrue())
 	Eventually(func() string { return getOperationStatus(operationId) }).
-		WithTimeout(5 * time.Minute).Should(Equal("DONE"))
+		WithTimeout(5 * time.Minute).
+		WithPolling(10 * time.Second).
+		Should(Equal("DONE"))
 
 	Expect(response["backupContext"]).To(BeAssignableToTypeOf(map[string]any{}))
 	backupContext := response["backupContext"].(map[string]any)
@@ -39,6 +42,35 @@ func CreateBackup(instanceId string) string {
 
 	return backupId
 
+}
+
+func GetPrimaryAddress(instance string) (string, error) {
+	instanceDescriptionBytes := gcloud.GCP(
+		"sql",
+		"instances",
+		"describe",
+		instance,
+		"--format",
+		"json",
+	)
+	description := struct {
+		IpAddresses []struct {
+			IpAddress string `json:"ipAddress"`
+			Type      string `json:"type"`
+		} `json:"ipAddresses"`
+	}{}
+	err := json.Unmarshal(instanceDescriptionBytes, &description)
+	if err != nil {
+		return "", err
+	}
+
+	for _, addr := range description.IpAddresses {
+		if addr.Type == "PRIMARY" {
+			return addr.IpAddress, nil
+		}
+	}
+
+	return "", fmt.Errorf("primary address not present in %#v", description)
 }
 func RestoreBackup(sourceInstance, targetInstance, backupId string) {
 
@@ -65,7 +97,9 @@ func RestoreBackup(sourceInstance, targetInstance, backupId string) {
 	operationId := response["name"].(string)
 
 	Eventually(func() string { return getOperationStatus(operationId) }).
-		WithTimeout(5 * time.Minute).Should(Equal("DONE"))
+		WithPolling(30 * time.Second).
+		WithTimeout(30 * time.Minute).
+		Should(Equal("DONE"))
 
 }
 func DeleteBackup(instanceId, backupId string) {
