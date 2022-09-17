@@ -10,7 +10,7 @@ require (
 	github.com/onsi/ginkgo/v2 v2.1.6
 	github.com/onsi/gomega v1.20.2
 	golang.org/x/tools v0.1.12
-	google.golang.org/api v0.95.0
+	google.golang.org/api v0.96.0
 	google.golang.org/genproto v0.0.0-20220829175752-36a9c930ecbf
 	gopkg.in/yaml.v3 v3.0.1
 	honnef.co/go/tools v0.4.0-0.dev
@@ -96,7 +96,7 @@ require (
 	golang.org/x/crypto v0.0.0-20220525230936-793ad666bf5e // indirect
 	golang.org/x/exp/typeparams v0.0.0-20220218215828-6cf2b201936e // indirect
 	golang.org/x/mod v0.6.0-dev.0.20220419223038-86c51ed26bb4 // indirect
-	golang.org/x/net v0.0.0-20220826154423-83b083e8dc8b // indirect
+	golang.org/x/net v0.0.0-20220909164309-bea034e7d591 // indirect
 	golang.org/x/oauth2 v0.0.0-20220822191816-0ebed06d0094 // indirect
 	golang.org/x/sys v0.0.0-20220829200755-d48e67d00261 // indirect
 	golang.org/x/text v0.3.7 // indirect
