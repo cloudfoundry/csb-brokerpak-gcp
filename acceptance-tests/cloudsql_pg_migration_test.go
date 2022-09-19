@@ -1,15 +1,9 @@
 package acceptance_test
 
 import (
-	"crypto/tls"
-	"encoding/json"
 	"fmt"
-	"io"
-	"net/http"
 	"os"
 
-	"github.com/go-pg/pg/v10"
-	"github.com/lib/pq"
 	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
 
@@ -22,23 +16,8 @@ import (
 )
 
 const (
-	legacyBrokerName               = "gcp-service-broker"
-	grantBindingUserGroupStatement = `do language plpgsql
-$$
-    declare
-        r record;
-    begin
-        for r in select usename
-                 from pg_catalog.pg_user
-                 where usename not similar to '(cloud|postgres)%'
-            loop
-                raise notice 'granting role binding_user_group to %', r.usename;
-                execute format('grant binding_user_group to %I', r.usename);
-            end loop;
-    end;
-$$
-`
-	legacyDbTier = "db-f1-micro"
+	legacyBrokerName = "gcp-service-broker"
+	legacyDBTier     = "db-f1-micro"
 )
 
 var _ = Describe("Postgres service instance migration", func() {
@@ -65,7 +44,7 @@ var _ = Describe("Postgres service instance migration", func() {
 			sourceServicePlan,
 			services.WithBroker(&brokers.Broker{Name: legacyBrokerName}),
 			services.WithParameters(map[string]string{
-				"tier":            legacyDbTier,
+				"tier":            legacyDBTier,
 				"private_network": os.Getenv("GCP_PAS_NETWORK"),
 				"database_name":   databaseName,
 			}),
@@ -93,87 +72,25 @@ var _ = Describe("Postgres service instance migration", func() {
 		services.WaitForInstanceCreation(targetServiceInstance.Name)
 		defer targetServiceInstance.Delete()
 
-		By("creating a service key for the new service instance")
-
-		// We won't be able to create the service key after the restore
-		serviceKey := targetServiceInstance.CreateServiceKey()
-
-		serviceKeyData := struct {
-			Hostname    string `json:"hostname"`
-			SSLKey      string `json:"sslkey"`
-			SSLCert     string `json:"sslcert"`
-			SSLRootCert string `json:"sslrootcert"`
-			Username    string `json:"username"`
-			Password    string `json:"password"`
-		}{}
-		serviceKey.Get(&serviceKeyData)
-
 		By("creating a backup for the legacy service instance")
 		credentials := sourceInstanceBinding.Credential()
 		legacyBinding, err := legacybindings.ExtractPostgresBinding(credentials)
 		Expect(err).NotTo(HaveOccurred())
 
-		backupId := gsql.CreateBackup(legacyBinding.InstanceName)
-		defer gsql.DeleteBackup(legacyBinding.InstanceName, backupId)
+		By("creating a backup bucket")
+		bucketName := "bucket-" + databaseName
+		gsql.CreateBackupBucket(bucketName)
+		defer gsql.DeleteBucket(bucketName)
+
+		backupURI := gsql.CreateBackup(legacyBinding.InstanceName, databaseName, bucketName)
 
 		By("restoring the backup onto the new service instance")
 		targetInstanceIaaSName := fmt.Sprintf("csb-postgres-%v", targetServiceInstance.GUID())
-		gsql.RestoreBackup(legacyBinding.InstanceName, targetInstanceIaaSName, backupId)
+		gsql.RestoreBackup(backupURI, targetInstanceIaaSName, databaseName)
 
-		By("restoring the tf postgres user via updating the target service instance")
-		currentIPAddress := getCurrentIPAddress()
-		params := map[string]any{
-			"authorized_networks_cidrs": []string{fmt.Sprintf("%s/32", currentIPAddress)},
-			"public_ip":                 true,
-		}
-		encodedParams, err := json.Marshal(params)
-		Expect(err).NotTo(HaveOccurred())
-		targetServiceInstance.Update("-c", string(encodedParams))
-
-		// We're unable to delete the service key before the tf postgres user is restored
-		defer serviceKey.Delete()
-
-		By(fmt.Sprintf("Setting up TLS: %#v", serviceKeyData))
-		certChain := append([]byte(serviceKeyData.SSLCert), '\n')
-		certChain = append(certChain, []byte(serviceKeyData.SSLRootCert)...)
-		cert, err := tls.X509KeyPair(certChain, []byte(serviceKeyData.SSLKey))
-		Expect(err).NotTo(HaveOccurred())
-
-		By("fetching the public IP address of the target instance")
-		publicIp, err := gsql.GetPrimaryAddress(targetInstanceIaaSName)
-		Expect(err).NotTo(HaveOccurred())
-
-		By("establishing a connection to the target instance")
-		cfg := &tls.Config{Certificates: []tls.Certificate{cert}, MinVersion: tls.VersionTLS12}
-		db := pg.Connect(&pg.Options{
-			Addr:      publicIp,
-			User:      legacyBinding.Username,
-			Password:  legacyBinding.Password,
-			Database:  legacyBinding.DatabaseName,
-			TLSConfig: cfg,
-		})
-
-		By("executing SQL against the target instance to restore the binding functionality")
-		statements := []string{
-			"CREATE ROLE binding_user_group WITH NOLOGIN",
-			fmt.Sprintf("CREATE ROLE %s WITH PASSWORD %s", pq.QuoteIdentifier(serviceKeyData.Username), pq.QuoteLiteral(serviceKeyData.Password)),
-			fmt.Sprintf("GRANT ALL PRIVILEGES ON DATABASE %s TO binding_user_group", pq.QuoteIdentifier(legacyBinding.DatabaseName)),
-			grantBindingUserGroupStatement,
-			"GRANT binding_user_group TO CURRENT_USER",
-			"REASSIGN OWNED BY CURRENT_USER TO binding_user_group",
-		}
-		for _, stmt := range statements {
-			_, err := db.Exec(stmt)
-			Expect(err).NotTo(HaveOccurred())
-		}
-
-		By("disabling the public IP for CF app connectivity")
-		targetServiceInstance.Update("-c", `{"public_ip": false}`)
-
-		By("binding an app to the target service instance")
 		targetApp := apps.Push(apps.WithApp(apps.PostgreSQL))
 		defer targetApp.Delete()
-		_ = targetServiceInstance.Bind(targetApp)
+		targetBinding := targetServiceInstance.Bind(targetApp)
 		targetApp.Start()
 
 		By("reading the data")
@@ -181,26 +98,22 @@ var _ = Describe("Postgres service instance migration", func() {
 		Expect(got).To(Equal(value))
 
 		By("creating a new schema")
-		newSchema := random.Name(random.WithPrefix(schema))
-		newValue := random.Name(random.WithPrefix(value))
+		newSchema := random.Name(random.WithMaxLength(8))
+		newValue := random.Hexadecimal()
 		targetApp.PUT("", newSchema)
 
 		By("writing a value")
-		targetApp.PUT(newValue, newSchema, key)
+		newKey := random.Hexadecimal()
+		targetApp.PUT(newValue, "%s/%s", newSchema, newKey)
 
 		By("reading the value back")
-		gotNewValue := targetApp.GET("%s/%s", newSchema, key)
+		gotNewValue := targetApp.GET("%s/%s", newSchema, newKey)
 		Expect(gotNewValue).To(Equal(newValue))
+
+		By("modifying the table structure")
+		targetApp.PUT("", "schemas/public/test")
+
+		By("unbinding the new user")
+		targetBinding.Unbind()
 	})
 })
-
-func getCurrentIPAddress() string {
-	resp, err := http.Get("https://ifconfig.me/")
-	Expect(err).NotTo(HaveOccurred())
-	defer func(Body io.ReadCloser) {
-		_ = Body.Close()
-	}(resp.Body)
-	body, err := io.ReadAll(resp.Body)
-	Expect(err).NotTo(HaveOccurred())
-	return string(body)
-}

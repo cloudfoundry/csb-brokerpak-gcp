@@ -23,9 +23,11 @@ func Read() (string, error) {
 		return "", fmt.Errorf("error reading app env: %w", err)
 	}
 	svc, err := app.Services.WithTag("postgresql")
+
 	legacySvc, legacyErr := app.Services.WithTag("postgres")
 
-	if legacyErr == nil {
+	if legacyErr == nil && svc == nil {
+		fmt.Println("Using legacy binding")
 		return legacyRead(legacySvc[0].Credentials["uri"].(string))
 	}
 
@@ -33,6 +35,7 @@ func Read() (string, error) {
 		return "", fmt.Errorf("error reading PostgreSQL service details")
 	}
 
+	fmt.Println("Using csb binding")
 	var c config
 
 	if err := mapstructure.Decode(svc[0].Credentials, &c); err != nil {

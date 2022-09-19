@@ -1,135 +1,103 @@
+// Package gsql helper functions to create and restore backups
 package gsql
 
 import (
 	"encoding/json"
 	"fmt"
-	"time"
 
 	. "github.com/onsi/gomega"
 
 	"csbbrokerpakgcp/acceptance-tests/helpers/gcloud"
 )
 
-func CreateBackup(instanceId string) string {
+// CreateBackupBucket creates storage buckets for google sql import export procedure
+func CreateBackupBucket(bucketName string) {
+	gcloud.GSUtil(
+		"mb",
+		fmt.Sprintf("gs://%s", bucketName),
+	)
+
+}
+func DeleteBucket(bucketName string) {
+
+	gcloud.GSUtil(
+		"rm",
+		"-r",
+		fmt.Sprintf("gs://%s/*", bucketName),
+	)
+	gcloud.GSUtil(
+		"rb",
+		fmt.Sprintf("gs://%s", bucketName),
+	)
+}
+
+func getInstanceServiceAccountName(instanceID string) string {
 
 	response := map[string]any{}
 
-	backupCreateBytes := gcloud.GCP(
-		"sql",
-		"backups",
-		"create",
-		"--instance",
-		instanceId,
-		"--async",
-		"--format",
-		"json",
-	)
-
-	err := json.Unmarshal(backupCreateBytes, &response)
-	Expect(err).NotTo(HaveOccurred())
-	operationId, ok := response["name"].(string)
-	Expect(ok).To(BeTrue())
-	Eventually(func() string { return getOperationStatus(operationId) }).
-		WithTimeout(5 * time.Minute).
-		WithPolling(10 * time.Second).
-		Should(Equal("DONE"))
-
-	Expect(response["backupContext"]).To(BeAssignableToTypeOf(map[string]any{}))
-	backupContext := response["backupContext"].(map[string]any)
-
-	Expect(backupContext["backupId"]).To(BeAssignableToTypeOf("string"))
-	backupId := backupContext["backupId"].(string)
-
-	return backupId
-
-}
-
-func GetPrimaryAddress(instance string) (string, error) {
-	instanceDescriptionBytes := gcloud.GCP(
+	instanceDataBytes := gcloud.GCP(
 		"sql",
 		"instances",
 		"describe",
-		instance,
-		"--format",
-		"json",
-	)
-	description := struct {
-		IpAddresses []struct {
-			IpAddress string `json:"ipAddress"`
-			Type      string `json:"type"`
-		} `json:"ipAddresses"`
-	}{}
-	err := json.Unmarshal(instanceDescriptionBytes, &description)
-	if err != nil {
-		return "", err
-	}
-
-	for _, addr := range description.IpAddresses {
-		if addr.Type == "PRIMARY" {
-			return addr.IpAddress, nil
-		}
-	}
-
-	return "", fmt.Errorf("primary address not present in %#v", description)
-}
-func RestoreBackup(sourceInstance, targetInstance, backupId string) {
-
-	backupRestoreBytes := gcloud.GCP(
-		"sql",
-		"backups",
-		"restore",
-		backupId,
-		"--restore-instance",
-		targetInstance,
-		"--backup-instance",
-		sourceInstance,
-		"--quiet",
-		"--async",
+		instanceID,
 		"--format",
 		"json",
 	)
 
-	response := map[string]any{}
+	err := json.Unmarshal(instanceDataBytes, &response)
+	Expect(err).ToNot(HaveOccurred())
 
-	err := json.Unmarshal(backupRestoreBytes, &response)
-	Expect(err).NotTo(HaveOccurred())
-	Expect(response["name"]).To(BeAssignableToTypeOf("string"))
-	operationId := response["name"].(string)
+	instanceServiceAccountName, ok := response["serviceAccountEmailAddress"].(string)
+	Expect(ok).To(BeTrue())
 
-	Eventually(func() string { return getOperationStatus(operationId) }).
-		WithPolling(30 * time.Second).
-		WithTimeout(30 * time.Minute).
-		Should(Equal("DONE"))
+	return instanceServiceAccountName
 
+	// CreateBackup creates an export based backup into a target bucket
 }
-func DeleteBackup(instanceId, backupId string) {
+func CreateBackup(instanceID, targetDBName, targetBucketName string) string {
+
+	instanceServiceAccountName := getInstanceServiceAccountName(instanceID)
+	gcloud.GSUtil(
+		"acl",
+		"ch",
+		"-u",
+		fmt.Sprintf("%s:W", instanceServiceAccountName),
+		fmt.Sprintf("gs://%s", targetBucketName),
+	)
+	dumpURI := fmt.Sprintf("gs://%s/%s.sql", targetBucketName, instanceID)
 	gcloud.GCP(
 		"sql",
-		"backups",
-		"delete",
-		backupId,
-		"--instance",
-		instanceId,
-		"--async",
+		"export",
+		"sql",
+		instanceID,
+		dumpURI,
+		"-d",
+		targetDBName,
+	)
+
+	return dumpURI
+
+}
+
+func RestoreBackup(dumpURI, instanceID, databaseName string) {
+
+	instanceServiceAccountName := getInstanceServiceAccountName(instanceID)
+	gcloud.GSUtil(
+		"acl",
+		"ch",
+		"-u",
+		fmt.Sprintf("%s:R", instanceServiceAccountName),
+		dumpURI,
+	)
+
+	gcloud.GCP(
+		"sql",
+		"import",
+		"sql",
+		"-d",
+		databaseName,
+		instanceID,
+		dumpURI,
 		"--quiet",
 	)
-}
-func getOperationStatus(operationId string) string {
-
-	statusBytes := gcloud.GCP(
-		"sql",
-		"operations",
-		"describe",
-		operationId,
-		"--format",
-		"json",
-	)
-	response := map[string]any{}
-
-	err := json.Unmarshal(statusBytes, &response)
-	Expect(err).NotTo(HaveOccurred())
-	val, ok := response["status"]
-	Expect(ok).To(BeTrue())
-	Expect(val).To(BeAssignableToTypeOf(""))
-	return val.(string)
 }
