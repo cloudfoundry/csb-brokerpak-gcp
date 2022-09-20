@@ -50,7 +50,7 @@ $$
         rec record;
     begin
         for rec in
-            select usename into rec from pg_catalog.pg_user where usename not like 'cloud%' and usename != 'postgres'
+            select usename from pg_catalog.pg_user where usename not like 'cloud%' and usename not in ( 'postgres', 'binding_user_group')
             loop
                 execute format('grant "binding_user_group" to %I', rec.usename);
             end loop;
@@ -67,16 +67,17 @@ $$
 
 var _ = Describe("Postgres service instance migration", func() {
 
-	FIt("retains data", func() {
+	It("retains data", func() {
 		By("asynchronously starting the target service instance creation")
 		databaseName := random.Name(random.WithPrefix("migrate-database"))
 		targetServiceInstance := services.CreateInstance(
 			"csb-google-postgres",
 			"default",
 			services.WithParameters(map[string]any{
-				"postgres_version": "POSTGRES_11",
-				"db_name":          databaseName,
-				"public_ip":        false,
+				"postgres_version":      "POSTGRES_11",
+				"db_name":               databaseName,
+				"public_ip":             false,
+				"backups_retain_number": 0,
 			}),
 			services.WithAsync(),
 		)
@@ -88,10 +89,11 @@ var _ = Describe("Postgres service instance migration", func() {
 			sourceServiceOffering,
 			sourceServicePlan,
 			services.WithBroker(&brokers.Broker{Name: legacyBrokerName}),
-			services.WithParameters(map[string]string{
+			services.WithParameters(map[string]any{
 				"tier":            legacyDBTier,
 				"private_network": os.Getenv("GCP_PAS_NETWORK"),
 				"database_name":   databaseName,
+				"backups_enabled": "false",
 			}),
 		)
 		defer sourceServiceInstance.Delete()
@@ -128,14 +130,20 @@ var _ = Describe("Postgres service instance migration", func() {
 		defer gsql.DeleteBucket(bucketName)
 
 		By("creating extensions in the source db")
-		gsql.PerformAdminSQL(createExtensionSQL, sourceServiceInstance.Name, legacyBinding.DatabaseName, bucketName)
+		gsql.PerformAdminSQL(createExtensionSQL, legacyBinding.InstanceName, legacyBinding.DatabaseName, bucketName)
 
 		By("performing the backup")
 		backupURI := gsql.CreateBackup(legacyBinding.InstanceName, databaseName, bucketName)
 
-		By("restoring the backup onto the new service instance")
+		By("preparing the restore in the target instance")
 		targetInstanceIaaSName := fmt.Sprintf("csb-postgres-%v", targetServiceInstance.GUID())
+		gsql.PerformAdminSQL(createBindingUserGroupSQL, targetInstanceIaaSName, databaseName, bucketName)
+
+		By("restoring the backup onto the new service instance")
 		gsql.RestoreBackup(backupURI, targetInstanceIaaSName, databaseName)
+
+		By("cleaning up after the restore")
+		gsql.PerformAdminSQL(disableBindingUserGroupLoginSQL, targetInstanceIaaSName, databaseName, bucketName)
 
 		targetApp := apps.Push(apps.WithApp(apps.PostgreSQL))
 		defer targetApp.Delete()

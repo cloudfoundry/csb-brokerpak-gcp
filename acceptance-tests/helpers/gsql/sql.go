@@ -104,9 +104,9 @@ func PerformSQL(queryString, instanceName, dbName, bucketName, userName string) 
 
 	serviceAccountName := getInstanceServiceAccountName(instanceName)
 	enableBucketWrite(serviceAccountName, bucketName)
-	enableFileRead(serviceAccountName, fileURI)
 
 	UploadTextFile(fileURI, queryString)
+
 	args := []string{
 		"sql",
 		"import",
@@ -115,10 +115,15 @@ func PerformSQL(queryString, instanceName, dbName, bucketName, userName string) 
 		fileURI,
 		"-d",
 		dbName,
+		"--quiet",
 	}
+
+	enableFileRead(serviceAccountName, fileURI)
+
 	if userName != "" {
 		args = append(args, "--user", userName)
 	}
+
 	gcloud.GCP(args...)
 }
 
@@ -145,5 +150,7 @@ func RestoreBackup(dumpURI, instanceID, databaseName string) {
 		instanceID,
 		dumpURI,
 		"--quiet",
+		"--user",
+		"binding_user_group",
 	)
 }
