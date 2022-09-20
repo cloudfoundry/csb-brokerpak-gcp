@@ -1,3 +1,4 @@
+// Package legacybindings handle bindings from the legacy GCP broker
 package legacybindings
 
 import (
