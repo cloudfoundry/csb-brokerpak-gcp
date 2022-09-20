@@ -1,4 +1,4 @@
-// Package environment manages environment variables
+// Package gcloud is responsible for handling GCP tooling invocation
 package gcloud
 
 import (

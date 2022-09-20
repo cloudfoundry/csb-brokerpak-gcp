@@ -18,19 +18,19 @@ func (s *ServiceKey) Get(receiver any) {
 	nonGUID := regexp.MustCompile(`[^a-zA-Z0-9-]`)
 	keyGUID = nonGUID.ReplaceAllString(keyGUID, "")
 	keyURL := fmt.Sprintf("/v3/service_credential_bindings/%s/details", keyGUID)
-	keyJson, _ := cf.Run("curl", keyURL)
+	keyJSON, _ := cf.Run("curl", keyURL)
 	if errStr != "" {
 		deprecatedKeyURL := fmt.Sprintf("/v2/service_keys/%s", keyGUID)
-		keyJson, errStr = cf.Run("curl", deprecatedKeyURL)
+		keyJSON, errStr = cf.Run("curl", deprecatedKeyURL)
 		Expect(errStr).To(BeEmpty(), "unable to fetch the service key", s)
 		keyEntity := struct {
 			Entity map[string]any `json:"entity"`
 		}{}
-		Expect(json.Unmarshal([]byte(keyJson), &keyEntity)).NotTo(HaveOccurred())
-		keyJsonBytes, err := json.Marshal(keyEntity.Entity)
+		Expect(json.Unmarshal([]byte(keyJSON), &keyEntity)).NotTo(HaveOccurred())
+		keyJSONBytes, err := json.Marshal(keyEntity.Entity)
 		Expect(err).NotTo(HaveOccurred())
-		keyJson = string(keyJsonBytes)
+		keyJSON = string(keyJSONBytes)
 	}
 
-	Expect(json.Unmarshal([]byte(keyJson), receiver)).NotTo(HaveOccurred())
+	Expect(json.Unmarshal([]byte(keyJSON), receiver)).NotTo(HaveOccurred())
 }
