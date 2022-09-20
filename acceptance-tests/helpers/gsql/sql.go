@@ -2,8 +2,10 @@
 package gsql
 
 import (
+	"crypto/sha256"
 	"encoding/json"
 	"fmt"
+	"os"
 
 	. "github.com/onsi/gomega"
 
@@ -54,17 +56,10 @@ func getInstanceServiceAccountName(instanceID string) string {
 
 	// CreateBackup creates an export based backup into a target bucket
 }
-func CreateBackup(instanceID, targetDBName, targetBucketName string) string {
+func CreateBackup(instanceID, dbName, bucketName string) string {
 
-	instanceServiceAccountName := getInstanceServiceAccountName(instanceID)
-	gcloud.GSUtil(
-		"acl",
-		"ch",
-		"-u",
-		fmt.Sprintf("%s:W", instanceServiceAccountName),
-		fmt.Sprintf("gs://%s", targetBucketName),
-	)
-	dumpURI := fmt.Sprintf("gs://%s/%s.sql", targetBucketName, instanceID)
+	enableBucketWrite(getInstanceServiceAccountName(instanceID), bucketName)
+	dumpURI := fmt.Sprintf("gs://%s/%s.sql", bucketName, instanceID)
 	gcloud.GCP(
 		"sql",
 		"export",
@@ -72,23 +67,74 @@ func CreateBackup(instanceID, targetDBName, targetBucketName string) string {
 		instanceID,
 		dumpURI,
 		"-d",
-		targetDBName,
+		dbName,
 	)
 
 	return dumpURI
 
 }
 
-func RestoreBackup(dumpURI, instanceID, databaseName string) {
-
-	instanceServiceAccountName := getInstanceServiceAccountName(instanceID)
+func enableBucketWrite(serviceAccountEmail, bucketName string) {
 	gcloud.GSUtil(
 		"acl",
 		"ch",
 		"-u",
-		fmt.Sprintf("%s:R", instanceServiceAccountName),
-		dumpURI,
+		fmt.Sprintf("%s:W", serviceAccountEmail),
+		fmt.Sprintf("gs://%s", bucketName),
 	)
+}
+
+func enableFileRead(serviceAccountEmail, fileURI string) {
+	gcloud.GSUtil(
+		"acl",
+		"ch",
+		"-u",
+		fmt.Sprintf("%s:R", serviceAccountEmail),
+		fileURI,
+	)
+}
+
+func PerformAdminSQL(queryString, instanceName, dbName, bucketName string) {
+	PerformSQL(queryString, instanceName, dbName, bucketName, "")
+}
+
+func PerformSQL(queryString, instanceName, dbName, bucketName, userName string) {
+	fileName := fmt.Sprintf("%s-%x.sql", instanceName, sha256.Sum256([]byte(queryString)))
+	fileURI := fmt.Sprintf("gs://%s/%s", bucketName, fileName)
+
+	serviceAccountName := getInstanceServiceAccountName(instanceName)
+	enableBucketWrite(serviceAccountName, bucketName)
+	enableFileRead(serviceAccountName, fileURI)
+
+	UploadTextFile(fileURI, queryString)
+	args := []string{
+		"sql",
+		"import",
+		"sql",
+		instanceName,
+		fileURI,
+		"-d",
+		dbName,
+	}
+	if userName != "" {
+		args = append(args, "--user", userName)
+	}
+	gcloud.GCP(args...)
+}
+
+func UploadTextFile(fileURL, contents string) {
+	tempFile, err := os.CreateTemp("", "bucket-file")
+	Expect(err).NotTo(HaveOccurred())
+	defer os.Remove(tempFile.Name())
+	_, err = tempFile.WriteString(contents)
+	Expect(err).NotTo(HaveOccurred())
+	gcloud.GSUtil("cp", tempFile.Name(), fileURL)
+}
+
+func RestoreBackup(dumpURI, instanceID, databaseName string) {
+
+	instanceServiceAccountName := getInstanceServiceAccountName(instanceID)
+	enableFileRead(instanceServiceAccountName, dumpURI)
 
 	gcloud.GCP(
 		"sql",
