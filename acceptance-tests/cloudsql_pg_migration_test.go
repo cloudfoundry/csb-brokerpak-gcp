@@ -67,7 +67,7 @@ $$
 
 var _ = Describe("Postgres service instance migration", func() {
 
-	It("retains data", func() {
+	It("allows access and reorganisation of migrated data structures", func() {
 		By("asynchronously starting the target service instance creation")
 		databaseName := random.Name(random.WithPrefix("migrate-database"))
 		targetServiceInstance := services.CreateInstance(
@@ -82,7 +82,7 @@ var _ = Describe("Postgres service instance migration", func() {
 			services.WithAsync(),
 		)
 
-		By("creating the original service instance")
+		By("creating the source service instance")
 		sourceServiceOffering := "google-cloudsql-postgres-vpc"
 		sourceServicePlan := "default"
 		sourceServiceInstance := services.CreateInstance(
@@ -115,11 +115,11 @@ var _ = Describe("Postgres service instance migration", func() {
 		value := random.Hexadecimal()
 		sourceApp.PUT(value, "%s/%s", schema, key)
 
-		By("waiting for the new service creation to succeed")
+		By("waiting for the target service creation to succeed")
 		services.WaitForInstanceCreation(targetServiceInstance.Name)
 		defer targetServiceInstance.Delete()
 
-		By("extracting a service key for the legacy service instance")
+		By("extracting a service key for the source service instance")
 		credentials := sourceInstanceBinding.Credential()
 		legacyBinding, err := legacybindings.ExtractPostgresBinding(credentials)
 		Expect(err).NotTo(HaveOccurred())
@@ -135,21 +135,23 @@ var _ = Describe("Postgres service instance migration", func() {
 		By("performing the backup")
 		backupURI := gsql.CreateBackup(legacyBinding.InstanceName, databaseName, bucketName)
 
-		By("preparing the restore in the target instance")
+		By("preparing the restore in the target service instance")
 		targetInstanceIaaSName := fmt.Sprintf("csb-postgres-%v", targetServiceInstance.GUID())
 		gsql.PerformAdminSQL(createBindingUserGroupSQL, targetInstanceIaaSName, databaseName, bucketName)
 
-		By("restoring the backup onto the new service instance")
+		By("restoring the backup onto the target service instance")
 		gsql.RestoreBackup(backupURI, targetInstanceIaaSName, databaseName)
 
 		By("cleaning up after the restore")
 		gsql.PerformAdminSQL(disableBindingUserGroupLoginSQL, targetInstanceIaaSName, databaseName, bucketName)
 
+		By("binding an app to the target service instance")
 		targetApp := apps.Push(apps.WithApp(apps.PostgreSQL))
 		defer targetApp.Delete()
 		targetBinding := targetServiceInstance.Bind(targetApp)
 		targetApp.Start()
 
+		By("performing the following actions against the target database:")
 		By("reading the data")
 		got := targetApp.GET("%s/%s", schema, key)
 		Expect(got).To(Equal(value))

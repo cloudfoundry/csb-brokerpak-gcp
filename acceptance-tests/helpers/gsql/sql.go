@@ -20,6 +20,8 @@ func CreateBackupBucket(bucketName string) {
 	)
 
 }
+
+// DeleteBucket deletes a bucket, along with all its contents
 func DeleteBucket(bucketName string) {
 
 	gcloud.GSUtil(
@@ -54,8 +56,9 @@ func getInstanceServiceAccountName(instanceID string) string {
 
 	return instanceServiceAccountName
 
-	// CreateBackup creates an export based backup into a target bucket
 }
+
+// CreateBackup creates an export based backup into a target bucket
 func CreateBackup(instanceID, dbName, bucketName string) string {
 
 	enableBucketWrite(getInstanceServiceAccountName(instanceID), bucketName)
@@ -94,10 +97,16 @@ func enableFileRead(serviceAccountEmail, fileURI string) {
 	)
 }
 
+// PerformAdminSQL executes SQL against a database in a CloudSQL instance, with platform admin privileges
+//
+//	further info: https://cloud.google.com/sql/docs/mysql/import-export/import-export-sql#gcloud_1
 func PerformAdminSQL(queryString, instanceName, dbName, bucketName string) {
 	PerformSQL(queryString, instanceName, dbName, bucketName, "")
 }
 
+// PerformSQL executes SQL against a database in a CloudSQL instance
+//
+//	further info: https://cloud.google.com/sql/docs/mysql/import-export/import-export-sql#gcloud_1
 func PerformSQL(queryString, instanceName, dbName, bucketName, userName string) {
 	fileName := fmt.Sprintf("%s-%x.sql", instanceName, sha256.Sum256([]byte(queryString)))
 	fileURI := fmt.Sprintf("gs://%s/%s", bucketName, fileName)
@@ -127,6 +136,7 @@ func PerformSQL(queryString, instanceName, dbName, bucketName, userName string) 
 	gcloud.GCP(args...)
 }
 
+// UploadTextFile uploads a text file to a given GCS bucket
 func UploadTextFile(fileURL, contents string) {
 	tempFile, err := os.CreateTemp("", "bucket-file")
 	Expect(err).NotTo(HaveOccurred())
@@ -136,8 +146,8 @@ func UploadTextFile(fileURL, contents string) {
 	gcloud.GSUtil("cp", tempFile.Name(), fileURL)
 }
 
+// RestoreBackup restores a CloudSQL database backup from a SQL file in a bucket
 func RestoreBackup(dumpURI, instanceID, databaseName string) {
-
 	instanceServiceAccountName := getInstanceServiceAccountName(instanceID)
 	enableFileRead(instanceServiceAccountName, dumpURI)
 
