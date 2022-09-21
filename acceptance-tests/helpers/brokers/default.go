@@ -1,12 +1,13 @@
 package brokers
 
 import (
-	"csbbrokerpakgcp/acceptance-tests/helpers/cf"
 	"fmt"
 	"os"
 
 	"code.cloudfoundry.org/jsonry"
 	. "github.com/onsi/gomega"
+
+	"csbbrokerpakgcp/acceptance-tests/helpers/cf"
 )
 
 var defaultBrokerName string
@@ -24,7 +25,7 @@ func DefaultBrokerName() string {
 
 	username := os.Getenv("USER")
 	for _, n := range receiver.Names {
-		if n == "broker-cf-test" {
+		if n == "broker-cf-test" || n == "cloud-service-broker-gcp" {
 			defaultBrokerName = n
 			return n
 		}

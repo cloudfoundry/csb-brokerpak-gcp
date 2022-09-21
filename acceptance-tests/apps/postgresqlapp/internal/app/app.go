@@ -22,6 +22,7 @@ func App(uri string) *mux.Router {
 	if err != nil {
 		log.Fatal(err)
 	}
+	log.Printf("Connection succeeded")
 
 	r := mux.NewRouter()
 	r.HandleFunc("/", aliveness).Methods(http.MethodHead, http.MethodGet)
@@ -29,11 +30,13 @@ func App(uri string) *mux.Router {
 	r.HandleFunc("/{schema}", handleDropSchema(db)).Methods(http.MethodDelete)
 	r.HandleFunc("/{schema}/{key}", handleSet(db)).Methods(http.MethodPut)
 	r.HandleFunc("/{schema}/{key}", handleGet(db)).Methods(http.MethodGet)
+	r.HandleFunc("/schemas/{schema}/{table}", handleAlterTable(db)).Methods(http.MethodPut)
+	r.HandleFunc("/", handleDeleteTestTable(db)).Methods(http.MethodDelete)
 
 	return r
 }
 
-func aliveness(w http.ResponseWriter, r *http.Request) {
+func aliveness(w http.ResponseWriter, _ *http.Request) {
 	log.Printf("Handled aliveness test.")
 	w.WriteHeader(http.StatusNoContent)
 }

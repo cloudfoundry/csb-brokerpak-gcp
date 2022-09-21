@@ -37,6 +37,17 @@ func (a *App) PUT(data, format string, s ...any) {
 	Expect(response).To(HaveHTTPStatus(http.StatusCreated, http.StatusOK))
 }
 
+func (a *App) DELETETestTable() {
+	url := a.urlf("/")
+	fmt.Fprintf(GinkgoWriter, "HTTP DELETE: %s\n", url)
+	request, err := http.NewRequest(http.MethodDelete, url, nil)
+	Expect(err).NotTo(HaveOccurred())
+
+	response, err := http.DefaultClient.Do(request)
+	Expect(err).NotTo(HaveOccurred())
+	Expect(response).To(HaveHTTPStatus(http.StatusGone, http.StatusNoContent))
+}
+
 func (a *App) DELETE(format string, s ...any) {
 	url := a.urlf(format, s...)
 	fmt.Fprintf(GinkgoWriter, "HTTP DELETE: %s\n", url)

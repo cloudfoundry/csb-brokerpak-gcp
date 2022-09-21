@@ -2,11 +2,12 @@
 package services
 
 import (
+	"encoding/json"
+	"time"
+
 	"csbbrokerpakgcp/acceptance-tests/helpers/brokers"
 	"csbbrokerpakgcp/acceptance-tests/helpers/cf"
 	"csbbrokerpakgcp/acceptance-tests/helpers/random"
-	"encoding/json"
-	"time"
 
 	. "github.com/onsi/gomega"
 	. "github.com/onsi/gomega/gexec"
@@ -21,6 +22,7 @@ type config struct {
 	name              string
 	serviceBrokerName func() string
 	parameters        string
+	async             bool
 }
 
 type Option func(*config)
@@ -38,6 +40,12 @@ func CreateInstance(offering, plan string, opts ...Option) *ServiceInstance {
 
 	if cfg.parameters != "" {
 		args = append(args, "-c", cfg.parameters)
+	}
+
+	if cfg.async {
+		session := cf.Start(args...)
+		Eventually(session, 5*time.Minute).Should(Exit(0))
+		return &ServiceInstance{Name: cfg.name}
 	}
 
 	switch cf.Version() {
@@ -62,8 +70,11 @@ func createInstanceWithWait(name string, args []string) {
 func createInstanceWithPoll(name string, args []string) {
 	session := cf.Start(args...)
 	Eventually(session, 5*time.Minute).Should(Exit(0))
+	WaitForInstanceCreation(name)
+}
 
-	Eventually(func() string {
+func WaitForInstanceCreation(name string) bool {
+	return Eventually(func() string {
 		out, _ := cf.Run("service", name)
 		Expect(out).NotTo(MatchRegexp(`status:\s+create failed`))
 		return out
@@ -106,6 +117,12 @@ func WithOptions(opts ...Option) Option {
 		for _, o := range opts {
 			o(c)
 		}
+	}
+}
+
+func WithAsync() Option {
+	return func(c *config) {
+		c.async = true
 	}
 }
 
