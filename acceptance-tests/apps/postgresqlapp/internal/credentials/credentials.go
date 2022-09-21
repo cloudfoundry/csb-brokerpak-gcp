@@ -76,7 +76,7 @@ func legacyRead(URI string) (string, error) {
 
 	sslkey, err := writeTmp("sslkey", query.Get("sslkey"))
 	if err != nil {
-		return "", fmt.Errorf("unable to extract TLS CA certificate from connection uri: %s", err.Error())
+		return "", fmt.Errorf("unable to extract TLS key from connection uri: %s", err.Error())
 	}
 	query.Set("sslkey", sslkey)
 	URL.RawQuery = query.Encode()

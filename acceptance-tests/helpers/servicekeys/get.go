@@ -18,7 +18,7 @@ func (s *ServiceKey) Get(receiver any) {
 	nonGUID := regexp.MustCompile(`[^a-zA-Z0-9-]`)
 	keyGUID = nonGUID.ReplaceAllString(keyGUID, "")
 	keyURL := fmt.Sprintf("/v3/service_credential_bindings/%s/details", keyGUID)
-	keyJSON, _ := cf.Run("curl", keyURL)
+	keyJSON, errStr := cf.Run("curl", keyURL)
 	if errStr != "" {
 		deprecatedKeyURL := fmt.Sprintf("/v2/service_keys/%s", keyGUID)
 		keyJSON, errStr = cf.Run("curl", deprecatedKeyURL)

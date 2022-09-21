@@ -23,7 +23,10 @@ func main() {
 	log.Printf("Listening on port: %s", port)
 	http.Handle("/", app.App(uri))
 	log.Printf("Handlers init completed")
-	log.Panic(http.ListenAndServe(port, nil))
+	err = http.ListenAndServe(port, nil)
+	if err != nil {
+		log.Panic(err)
+	}
 }
 
 func port() string {
