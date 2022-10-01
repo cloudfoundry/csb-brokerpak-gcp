@@ -6,7 +6,7 @@ require (
 	cloud.google.com/go/spanner v1.39.0
 	github.com/cloudfoundry-community/go-cfenv v1.18.0
 	github.com/gorilla/mux v1.8.0
-	google.golang.org/api v0.97.0
+	google.golang.org/api v0.98.0
 )
 
 require (
