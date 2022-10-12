@@ -179,15 +179,21 @@ local-csb: ## point to a local CSB repo
 	$(GO) mod tidy
 
 .PHONY: lint
-lint: checkformat checkimports vet staticcheck ## Checks format, imports and vet
+lint: checkgoformat checkgoimports checktfformat vet staticcheck ## checks format, imports and vet
 
-checkformat: ## Checks that the code is formatted correctly
+checktfformat: ## checks that Terraform HCL is formatted correctly
+	@@if [ "$$(terraform fmt -recursive --check)" ]; then \
+		echo "terraform fmt check failed: run 'make format'"; \
+		exit 1; \
+	fi
+
+checkgoformat: ## checks that the Go code is formatted correctly
 	@@if [ -n "$$(${GOFMT} -s -e -l -d .)" ]; then       \
 		echo "gofmt check failed: run 'make format'"; \
 		exit 1;                                       \
 	fi
 
-checkimports: ## Checks that imports are formatted correctly
+checkgoimports: ## checks that Go imports are formatted correctly
 	@@if [ -n "$$(${GO} run golang.org/x/tools/cmd/goimports -l -d .)" ]; then \
 		echo "goimports check failed: run 'make format'";                      \
 		exit 1;                                                                \
@@ -203,3 +209,4 @@ staticcheck: ## Runs staticcheck
 format: ## format the source
 	${GOFMT} -s -e -l -w .
 	${GO} run golang.org/x/tools/cmd/goimports -l -w .
+	terraform fmt --recursive
