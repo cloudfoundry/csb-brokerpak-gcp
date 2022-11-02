@@ -49,7 +49,7 @@ plans:
     mysql_version: "MYSQL_5_7"
     storage_gb: 20
 provision:
-  plan_inputs:
+  plan_inputs: []
   user_inputs:
   - field_name: cores
     required: true

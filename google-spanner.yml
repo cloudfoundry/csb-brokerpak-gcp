@@ -49,7 +49,6 @@ provision:
     required: true
     type: integer
     details: Minimum number of cores for service instance.
-    default: 1
     constraints:
       maximum: 64
       minimum: 1
@@ -57,7 +56,6 @@ provision:
     required: true
     type: number
     details: Size of storage volume for service instance.
-    default: 10
     constraints:
       maximum: 4096
       minimum: 10
