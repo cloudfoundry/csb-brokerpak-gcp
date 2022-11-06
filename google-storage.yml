@@ -36,50 +36,50 @@ plans:
     acl: publicRead
 provision:
   plan_inputs:
-    - field_name: acl
-      type: string
-      details: Storage bucket ACL (see https://cloud.google.com/storage/docs/access-control/lists#predefined-acl)
-      enum:
-        private: private
-        publicRead: publicRead
-        publicReadWrite: publicReadWrite
-        bucketOwnerRead: bucketOwnerRead
-        bucketOwnerFullControl: bucketOwnerFullControl
-        projectPrivate: projectPrivate
-        authenticatedRead: authenticatedRead
+  - field_name: acl
+    type: string
+    details: Storage bucket ACL (see https://cloud.google.com/storage/docs/access-control/lists#predefined-acl)
+    enum:
+      private: private
+      publicRead: publicRead
+      publicReadWrite: publicReadWrite
+      bucketOwnerRead: bucketOwnerRead
+      bucketOwnerFullControl: bucketOwnerFullControl
+      projectPrivate: projectPrivate
+      authenticatedRead: authenticatedRead
   user_inputs:
-    - field_name: name
-      type: string
-      details: Name of bucket
-      default: csb-${request.instance_id}
-    - field_name: storage_class
-      type: string
-      details: The Storage Class of the new bucket.
-      default: STANDARD
-      enum:
-        STANDARD : STANDARD
-        MULTI_REGIONAL: MULTI_REGIONAL
-        REGIONAL : REGIONAL
-        NEARLINE : NEARLINE
-        COLDLINE : COLDLINE
-    - field_name: region
-      type: string
-      details: The region where the buckets are created.
-      default: us-central1
-      constraints:
-        examples:
-          - us-central1
-          - asia-northeast1
-        pattern: ^[a-z][a-z0-9-]+$
-      prohibit_update: true
-    - field_name: credentials
-      type: string
-      details: GCP credentials
-      default: ${config("gcp.credentials")}
-    - field_name: project
-      type: string
-      details: GCP project
-      default: ${config("gcp.project")}
+  - field_name: name
+    type: string
+    details: Name of bucket
+    default: csb-${request.instance_id}
+  - field_name: storage_class
+    type: string
+    details: The Storage Class of the new bucket.
+    default: STANDARD
+    enum:
+      STANDARD : STANDARD
+      MULTI_REGIONAL: MULTI_REGIONAL
+      REGIONAL : REGIONAL
+      NEARLINE : NEARLINE
+      COLDLINE : COLDLINE
+  - field_name: region
+    type: string
+    details: The region where the buckets are created.
+    default: us-central1
+    constraints:
+      examples:
+        - us-central1
+        - asia-northeast1
+      pattern: ^[a-z][a-z0-9-]+$
+    prohibit_update: true
+  - field_name: credentials
+    type: string
+    details: GCP credentials
+    default: ${config("gcp.credentials")}
+  - field_name: project
+    type: string
+    details: GCP project
+    default: ${config("gcp.project")}
   computed_inputs:
   - name: labels
     default: ${json.marshal(request.default_labels)}
