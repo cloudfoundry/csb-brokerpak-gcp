@@ -23,7 +23,7 @@ support_url: https://cloud.google.com/support/
 tags: [gcp, postgresql, postgres]
 plan_updateable: true
 provision:
-  plan_inputs:
+  plan_inputs: []
   user_inputs:
   - field_name: tier
     required: true
