@@ -2,7 +2,6 @@ package app
 
 import (
 	"context"
-	"dataprocapp/credentials"
 	"fmt"
 	"io"
 	"log"
@@ -10,10 +9,12 @@ import (
 	"regexp"
 
 	dataproc "cloud.google.com/go/dataproc/apiv1"
+	"cloud.google.com/go/dataproc/apiv1/dataprocpb"
 	"cloud.google.com/go/storage"
 	"github.com/gorilla/mux"
 	"google.golang.org/api/option"
-	dataprocpb "google.golang.org/genproto/googleapis/cloud/dataproc/v1"
+
+	"dataprocapp/credentials"
 )
 
 func handleRunJob(jobClient dataproc.JobControllerClient, creds credentials.DataprocCredentials) func(w http.ResponseWriter, r *http.Request) {
