@@ -3,12 +3,11 @@ package app
 import (
 	"context"
 	"io"
+	"log"
+	"net/http"
 
 	"cloud.google.com/go/storage"
 	"github.com/gorilla/mux"
-
-	"log"
-	"net/http"
 )
 
 func handleDownload(client *storage.Client, bucketName string) func(w http.ResponseWriter, r *http.Request) {
