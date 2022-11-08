@@ -5,12 +5,12 @@ import (
 	"fmt"
 	"log"
 	"net/http"
-	"storageapp/internal/credentials"
-
-	"google.golang.org/api/option"
 
 	"cloud.google.com/go/storage"
 	"github.com/gorilla/mux"
+	"google.golang.org/api/option"
+
+	"storageapp/internal/credentials"
 )
 
 func App(creds credentials.StorageCredentials) *mux.Router {

@@ -2,13 +2,14 @@ package app
 
 import (
 	"context"
-	"dataprocapp/credentials"
 	"log"
 	"net/http"
 
 	dataproc "cloud.google.com/go/dataproc/apiv1"
+	"cloud.google.com/go/dataproc/apiv1/dataprocpb"
 	"github.com/gorilla/mux"
-	dataprocpb "google.golang.org/genproto/googleapis/cloud/dataproc/v1"
+
+	"dataprocapp/credentials"
 )
 
 func handleDeleteJob(jobClient dataproc.JobControllerClient, creds credentials.DataprocCredentials) func(w http.ResponseWriter, r *http.Request) {
