@@ -58,7 +58,7 @@ provision:
     default: 2
     constraints:
       maximum: 64
-      minimum: 1
+      minimum: 2
       multipleOf: 2
   - field_name: storage_gb
     required: true

@@ -118,9 +118,9 @@ var _ = Describe("Mysql", func() {
 				"cores: Must be a multiple of 2; cores: Must be less than or equal to 64",
 			),
 			Entry(
-				"cores minimum value is 1",
-				map[string]any{"cores": 0},
-				"cores: Must be greater than or equal to 1",
+				"cores minimum value is 2",
+				map[string]any{"cores": 1},
+				"cores: Must be greater than or equal to 2",
 			),
 			Entry(
 				"cores multiple of 2",
