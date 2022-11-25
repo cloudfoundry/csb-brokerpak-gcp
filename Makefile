@@ -162,7 +162,6 @@ clean: ## clean up build artifacts
 	- rm -f $(IAAS)-services-*.brokerpak
 	- rm -f ./cloud-service-broker
 	- rm -f ./brokerpak-user-docs.md
-	- rm -rf $(PAK_CACHE)
 
 $(PAK_CACHE):
 	@echo "Folder $(PAK_CACHE) does not exist. Creating it..."
@@ -210,3 +209,4 @@ format: ## format the source
 	${GOFMT} -s -e -l -w .
 	${GO} run golang.org/x/tools/cmd/goimports -l -w .
 	terraform fmt --recursive
+
