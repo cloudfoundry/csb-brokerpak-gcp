@@ -9,22 +9,26 @@ import (
 	. "github.com/onsi/gomega/gstruct"
 )
 
+const (
+	mySQLServiceName    = "csb-google-mysql"
+	customMySQLPlanName = "custom-plan"
+)
+
 var customMySQLPlans = []map[string]any{
 	customMySQLPlan,
 }
 
 var customMySQLPlan = map[string]any{
-	"name":          "custom-plan",
+	"name":          customMySQLPlanName,
 	"id":            "9daa07f1-78e8-4bda-9efe-91576102c30d",
 	"description":   "custom plan defined by customer",
 	"mysql_version": "MYSQL_5_7",
-	"require_ssl":   false,
 	"metadata": map[string]any{
 		"displayName": "custom plan defined by customer (beta)",
 	},
 }
 
-var _ = Describe("Mysql", func() {
+var _ = Describe("Mysql", Label("MySQL"), func() {
 	BeforeEach(func() {
 		Expect(mockTerraform.SetTFState([]testframework.TFStateValue{})).NotTo(HaveOccurred())
 	})
@@ -37,7 +41,7 @@ var _ = Describe("Mysql", func() {
 		catalog, err := broker.Catalog()
 		Expect(err).NotTo(HaveOccurred())
 
-		service := testframework.FindService(catalog, "csb-google-mysql")
+		service := testframework.FindService(catalog, mySQLServiceName)
 		Expect(service.ID).NotTo(BeNil())
 		Expect(service.Name).NotTo(BeNil())
 		Expect(service.Tags).To(ConsistOf("gcp", "mysql", "beta"))
@@ -54,8 +58,8 @@ var _ = Describe("Mysql", func() {
 	})
 
 	Describe("provisioning", func() {
-		It("should provision small plan", func() {
-			instanceID, err := broker.Provision("csb-google-mysql", "small", nil)
+		It("should provision a plan", func() {
+			instanceID, err := broker.Provision(mySQLServiceName, customMySQLPlanName, map[string]any{"tier": "db-n1-standard-1"})
 
 			Expect(err).NotTo(HaveOccurred())
 			Expect(mockTerraform.FirstTerraformInvocationVars()).To(
@@ -63,20 +67,20 @@ var _ = Describe("Mysql", func() {
 					HaveKeyWithValue("db_name", "csb-db"),
 					HaveKeyWithValue("authorized_network", "default"),
 					HaveKeyWithValue("authorized_network_id", ""),
-					HaveKeyWithValue("cores", float64(2)),
 					HaveKeyWithValue("credentials", "broker-gcp-creds"),
 					HaveKeyWithValue("database_version", "MYSQL_5_7"),
 					HaveKeyWithValue("db_name", "csb-db"),
 					HaveKeyWithValue("instance_name", "csb-mysql-"+instanceID),
 					HaveKeyWithValue("project", "broker-gcp-project"),
 					HaveKeyWithValue("region", "us-central1"),
-					HaveKeyWithValue("storage_gb", float64(10)),
+					HaveKeyWithValue("storage_gb", BeNumerically("==", 10)),
+					HaveKeyWithValue("tier", "db-n1-standard-1"),
 				),
 			)
 		})
 
 		It("should allow setting properties do not defined in the plan", func() {
-			_, err := broker.Provision("csb-google-mysql", "small", map[string]any{
+			_, err := broker.Provision(mySQLServiceName, customMySQLPlanName, map[string]any{
 				"credentials":           "fake-credentials",
 				"project":               "fake-project",
 				"instance_name":         "fakeinstancename",
@@ -84,6 +88,7 @@ var _ = Describe("Mysql", func() {
 				"region":                "asia-northeast1",
 				"authorized_network":    "fake-authorized_network",
 				"authorized_network_id": "fake-authorized_network_id",
+				"tier":                  "fake-tier",
 			})
 
 			Expect(err).NotTo(HaveOccurred())
@@ -96,37 +101,23 @@ var _ = Describe("Mysql", func() {
 					HaveKeyWithValue("region", "asia-northeast1"),
 					HaveKeyWithValue("authorized_network", "fake-authorized_network"),
 					HaveKeyWithValue("authorized_network_id", "fake-authorized_network_id"),
+					HaveKeyWithValue("tier", "fake-tier"),
 				),
 			)
 		})
 
 		It("should not allow changing of plan defined properties", func() {
-			_, err := broker.Provision("csb-google-mysql", "small", map[string]any{"cores": 5})
+			_, err := broker.Provision(mySQLServiceName, "small", map[string]any{"storage_gb": 44})
 
-			Expect(err).To(MatchError(ContainSubstring("plan defined properties cannot be changed: cores")))
+			Expect(err).To(MatchError(ContainSubstring("plan defined properties cannot be changed: storage_gb")))
 		})
 
 		DescribeTable("property constraints",
 			func(params map[string]any, expectedErrorMsg string) {
-				_, err := broker.Provision("csb-google-mysql", customMySQLPlan["name"].(string), params)
+				_, err := broker.Provision(mySQLServiceName, customMySQLPlanName, params)
 
 				Expect(err).To(MatchError(ContainSubstring(expectedErrorMsg)))
 			},
-			Entry(
-				"cores maximum value is 64",
-				map[string]any{"cores": 65},
-				"cores: Must be a multiple of 2; cores: Must be less than or equal to 64",
-			),
-			Entry(
-				"cores minimum value is 2",
-				map[string]any{"cores": 1},
-				"cores: Must be greater than or equal to 2",
-			),
-			Entry(
-				"cores multiple of 2",
-				map[string]any{"cores": 3},
-				"cores: Must be a multiple of 2",
-			),
 			Entry(
 				"storage capacity maximum value is 4096",
 				map[string]any{"storage_gb": 4097},
@@ -170,35 +161,34 @@ var _ = Describe("Mysql", func() {
 
 		BeforeEach(func() {
 			var err error
-			instanceID, err = broker.Provision("csb-google-mysql", customMySQLPlan["name"].(string), nil)
+			instanceID, err = broker.Provision(mySQLServiceName, customMySQLPlanName, map[string]any{"tier": "db-n1-standard-1"})
 
 			Expect(err).NotTo(HaveOccurred())
-			Expect(mockTerraform.FirstTerraformInvocationVars()).To(
-				HaveKeyWithValue("instance_name", "csb-mysql-"+instanceID),
-			)
-			Expect(mockTerraform.Reset()).To(Succeed())
 		})
 
 		DescribeTable("should allow updating properties not flagged as `prohibit_update` and not specified in the plan",
 			func(params map[string]any) {
-				err := broker.Update(instanceID, "csb-google-mysql", customMySQLPlan["name"].(string), params)
+				err := broker.Update(instanceID, mySQLServiceName, customMySQLPlanName, params)
 
 				Expect(err).NotTo(HaveOccurred())
 			},
 			Entry("update credentials", map[string]any{"credentials": "other-credentials"}),
 			Entry("update project", map[string]any{"project": "another-project"}),
+			Entry("update tier", map[string]any{"tier": "db-n1-standard-16"}),
 		)
 
 		DescribeTable("should prevent updating properties flagged as `prohibit_update` because it can result in the recreation of the service instance and lost data",
 			func(params map[string]any) {
-				err := broker.Update(instanceID, "csb-google-mysql", customMySQLPlan["name"].(string), params)
+				err := broker.Update(instanceID, mySQLServiceName, customMySQLPlanName, params)
 
 				Expect(err).To(MatchError(
 					ContainSubstring(
 						"attempt to update parameter that may result in service instance re-creation and data loss",
 					),
 				))
-				Expect(mockTerraform.ApplyInvocations()).To(HaveLen(0))
+
+				const initialProvisionInvocation = 1
+				Expect(mockTerraform.ApplyInvocations()).To(HaveLen(initialProvisionInvocation))
 			},
 			Entry("update instance_name", map[string]any{"instance_name": "another-instance-name"}),
 			Entry("update db_name", map[string]any{"db_name": "another-db-name"}),
@@ -209,7 +199,7 @@ var _ = Describe("Mysql", func() {
 
 		DescribeTable("should not allow updating properties that are specified in the plan",
 			func(key string, value any) {
-				err := broker.Update(instanceID, "csb-google-mysql", customMySQLPlan["name"].(string), map[string]any{key: value})
+				err := broker.Update(instanceID, mySQLServiceName, customMySQLPlanName, map[string]any{key: value})
 
 				Expect(err).To(
 					MatchError(
@@ -219,13 +209,12 @@ var _ = Describe("Mysql", func() {
 					),
 				)
 			},
-			Entry("update require_ssl", "require_ssl", true),
 			Entry("update mysql_version", "mysql_version", "MYSQL_5_7"),
 		)
 
 		DescribeTable("should not allow updating additional properties",
 			func(key string, value any) {
-				err := broker.Update(instanceID, "csb-google-mysql", customMySQLPlan["name"].(string), map[string]any{key: value})
+				err := broker.Update(instanceID, mySQLServiceName, customMySQLPlanName, map[string]any{key: value})
 
 				Expect(err).To(
 					MatchError(
