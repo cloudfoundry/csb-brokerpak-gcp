@@ -1,4 +1,3 @@
-variable "cores" { type = number }
 variable "authorized_network" { type = string }
 variable "authorized_network_id" { type = string }
 variable "instance_name" { type = string }
@@ -11,4 +10,4 @@ variable "database_version" { type = string }
 
 variable "credentials" { type = string }
 variable "project" { type = string }
-#variable use_tls { type = bool }
+variable "tier" { type = string }

@@ -18,7 +18,7 @@ var _ = Describe("mysql", Label("mysql-terraform"), Ordered, func() {
 	)
 
 	defaultVars := map[string]any{
-		"cores":                 2,
+		"tier":                  "db-n1-standard-2",
 		"storage_gb":            10,
 		"credentials":           googleCredentials,
 		"project":               googleProject,
