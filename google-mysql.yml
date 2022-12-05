@@ -55,6 +55,11 @@ provision:
     required: true
     type: string
     details: GCP DB machine type (see machine type information https://cloud.google.com/sql/docs/mysql/instance-settings)
+    constraints:
+      examples:
+        - db-n1-standard-2
+        - db-n1-standard-16
+      pattern: ^[a-z][a-z0-9-]+$
   - field_name: storage_gb
     required: true
     type: number

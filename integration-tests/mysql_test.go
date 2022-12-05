@@ -153,6 +153,11 @@ var _ = Describe("Mysql", Label("MySQL"), func() {
 				map[string]any{"region": "-Asia-northeast1"},
 				"region: Does not match pattern '^[a-z][a-z0-9-]+$'",
 			),
+			Entry(
+				"tier invalid characters",
+				map[string]any{"tier": ".aaaaa"},
+				"tier: Does not match pattern '^[a-z][a-z0-9-]+$'",
+			),
 		)
 	})
 
