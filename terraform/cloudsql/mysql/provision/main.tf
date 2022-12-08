@@ -1,6 +1,6 @@
 resource "google_sql_database_instance" "instance" {
   name             = var.instance_name
-  database_version = var.database_version
+  database_version = var.mysql_version
   region           = var.region
 
   settings {
@@ -11,7 +11,6 @@ resource "google_sql_database_instance" "instance" {
     ip_configuration {
       ipv4_enabled    = false
       private_network = local.authorized_network_id
-      #require_ssl = var.use_tls
     }
   }
 

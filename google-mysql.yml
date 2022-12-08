@@ -60,6 +60,10 @@ provision:
         - db-n1-standard-2
         - db-n1-standard-16
       pattern: ^[a-z][a-z0-9-]+$
+  - field_name: mysql_version
+    required: true
+    type: string
+    details: The version for the MySQL instance. Can be any supported version by the provider.
   - field_name: storage_gb
     required: true
     type: number
@@ -117,10 +121,6 @@ provision:
     default: ${json.marshal(request.default_labels)}
     overwrite: true
     type: object
-  - name: database_version
-    default: ${mysql_version}
-    overwrite: true
-    type: string
   template_refs:
     provider: terraform/cloudsql/mysql/provision/provider.tf
     versions: terraform/cloudsql/mysql/provision/versions.tf

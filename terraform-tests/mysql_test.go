@@ -27,7 +27,7 @@ var _ = Describe("mysql", Label("mysql-terraform"), Ordered, func() {
 		"region":                "us-central1",
 		"authorized_network":    "default",
 		"authorized_network_id": "",
-		"database_version":      "8.0",
+		"mysql_version":         "8.0",
 		"labels":                map[string]string{"label1": "value1"},
 	}
 
