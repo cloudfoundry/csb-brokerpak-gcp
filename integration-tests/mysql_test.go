@@ -74,6 +74,7 @@ var _ = Describe("Mysql", Label("MySQL"), func() {
 					HaveKeyWithValue("project", "broker-gcp-project"),
 					HaveKeyWithValue("region", "us-central1"),
 					HaveKeyWithValue("storage_gb", BeNumerically("==", 10)),
+
 					HaveKeyWithValue("tier", "db-n1-standard-1"),
 				),
 			)
@@ -118,11 +119,6 @@ var _ = Describe("Mysql", Label("MySQL"), func() {
 
 				Expect(err).To(MatchError(ContainSubstring(expectedErrorMsg)))
 			},
-			Entry(
-				"storage capacity maximum value is 4096",
-				map[string]any{"storage_gb": 4097},
-				"storage_gb: Must be less than or equal to 4096",
-			),
 			Entry(
 				"storage capacity minimum value is 10",
 				map[string]any{"storage_gb": 9},
@@ -180,6 +176,7 @@ var _ = Describe("Mysql", Label("MySQL"), func() {
 			Entry("update credentials", map[string]any{"credentials": "other-credentials"}),
 			Entry("update project", map[string]any{"project": "another-project"}),
 			Entry("update tier", map[string]any{"tier": "db-n1-standard-16"}),
+			Entry("update storage_gb", map[string]any{"storage_gb": 100}),
 		)
 
 		DescribeTable("should prevent updating properties flagged as `prohibit_update` because it can result in the recreation of the service instance and lost data",
