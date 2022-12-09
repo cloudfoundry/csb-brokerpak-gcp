@@ -75,6 +75,8 @@ var _ = Describe("Mysql", Label("MySQL"), func() {
 					HaveKeyWithValue("region", "us-central1"),
 					HaveKeyWithValue("storage_gb", BeNumerically("==", 10)),
 					HaveKeyWithValue("tier", "db-n1-standard-1"),
+					HaveKeyWithValue("disk_autoresize", true),
+					HaveKeyWithValue("disk_autoresize_limit", BeNumerically("==", 0)),
 				),
 			)
 		})
@@ -89,6 +91,8 @@ var _ = Describe("Mysql", Label("MySQL"), func() {
 				"authorized_network":    "fake-authorized_network",
 				"authorized_network_id": "fake-authorized_network_id",
 				"tier":                  "fake-tier",
+				"disk_autoresize":       true,
+				"disk_autoresize_limit": 400,
 			})
 
 			Expect(err).NotTo(HaveOccurred())
@@ -102,6 +106,8 @@ var _ = Describe("Mysql", Label("MySQL"), func() {
 					HaveKeyWithValue("authorized_network", "fake-authorized_network"),
 					HaveKeyWithValue("authorized_network_id", "fake-authorized_network_id"),
 					HaveKeyWithValue("tier", "fake-tier"),
+					HaveKeyWithValue("disk_autoresize", true),
+					HaveKeyWithValue("disk_autoresize_limit", BeNumerically("==", 400)),
 				),
 			)
 		})
@@ -180,6 +186,8 @@ var _ = Describe("Mysql", Label("MySQL"), func() {
 			Entry("update credentials", map[string]any{"credentials": "other-credentials"}),
 			Entry("update project", map[string]any{"project": "another-project"}),
 			Entry("update tier", map[string]any{"tier": "db-n1-standard-16"}),
+			Entry("update disk_autoresize", map[string]any{"disk_autoresize": true}),
+			Entry("update disk_autoresize_limit", map[string]any{"disk_autoresize_limit": 400}),
 		)
 
 		DescribeTable("should prevent updating properties flagged as `prohibit_update` because it can result in the recreation of the service instance and lost data",

@@ -60,6 +60,19 @@ provision:
         - db-n1-standard-2
         - db-n1-standard-16
       pattern: ^[a-z][a-z0-9-]+$
+  - field_name: disk_autoresize
+    type: boolean
+    details: |
+      Enables auto-resizing of the storage size.
+      If the value of the `disk_autoresize_limit` is other than 0, and you want to disable the functionality,
+      it will be necessary to set the property `disk_autoresize_limit` to zero and set `disk_autoresize` to false.
+    default: true
+  - field_name: disk_autoresize_limit
+    type: number
+    details: |
+      The maximum size in GB to which storage capacity can be automatically increased.
+      The default value is 0, which specifies that there is no limit.
+    default: 0
   - field_name: storage_gb
     required: true
     type: number
