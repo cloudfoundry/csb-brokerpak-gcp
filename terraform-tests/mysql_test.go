@@ -29,6 +29,7 @@ var _ = Describe("mysql", Label("mysql-terraform"), Ordered, func() {
 		"authorized_network_id": "",
 		"mysql_version":         "8.0",
 		"labels":                map[string]string{"label1": "value1"},
+		"deletion_protection":   false,
 	}
 
 	BeforeAll(func() {

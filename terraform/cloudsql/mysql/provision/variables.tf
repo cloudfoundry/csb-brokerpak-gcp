@@ -11,3 +11,4 @@ variable "mysql_version" { type = string }
 variable "credentials" { type = string }
 variable "project" { type = string }
 variable "tier" { type = string }
+variable "deletion_protection" { type = bool }
