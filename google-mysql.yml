@@ -64,8 +64,7 @@ provision:
     type: boolean
     details: |
       Enables auto-resizing of the storage size.
-      If the value of the `disk_autoresize_limit` is other than 0, and you want to disable the functionality,
-      it will be necessary to set the property `disk_autoresize_limit` to zero and set `disk_autoresize` to false.
+      When disabling the storage auto-resizing, the value of the disk_autoresize_limit should also be set to 0.
     default: true
   - field_name: disk_autoresize_limit
     type: number
