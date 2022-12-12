@@ -60,6 +60,10 @@ provision:
         - db-n1-standard-2
         - db-n1-standard-16
       pattern: ^[a-z][a-z0-9-]+$
+  - field_name: mysql_version
+    required: true
+    type: string
+    details: The version for the MySQL instance. Can be any version supported by the provider.
   - field_name: disk_autoresize
     type: boolean
     details: |
@@ -81,7 +85,9 @@ provision:
   - field_name: storage_gb
     required: true
     type: number
-    details: Size of storage volume for service instance.
+    details: |
+      Size of storage volume for service instance.
+      See documentation to understand the limits https://cloud.google.com/sql/docs/mysql/quotas#storage_limits
     default: 10
     constraints:
       minimum: 10
@@ -134,10 +140,6 @@ provision:
     default: ${json.marshal(request.default_labels)}
     overwrite: true
     type: object
-  - name: database_version
-    default: ${mysql_version}
-    overwrite: true
-    type: string
   template_refs:
     provider: terraform/cloudsql/mysql/provision/provider.tf
     versions: terraform/cloudsql/mysql/provision/versions.tf

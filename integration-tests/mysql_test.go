@@ -68,7 +68,7 @@ var _ = Describe("Mysql", Label("MySQL"), func() {
 					HaveKeyWithValue("authorized_network", "default"),
 					HaveKeyWithValue("authorized_network_id", ""),
 					HaveKeyWithValue("credentials", "broker-gcp-creds"),
-					HaveKeyWithValue("database_version", "MYSQL_5_7"),
+					HaveKeyWithValue("mysql_version", "MYSQL_5_7"),
 					HaveKeyWithValue("db_name", "csb-db"),
 					HaveKeyWithValue("instance_name", "csb-mysql-"+instanceID),
 					HaveKeyWithValue("project", "broker-gcp-project"),
