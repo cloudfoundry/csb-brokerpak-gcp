@@ -74,6 +74,7 @@ var _ = Describe("Mysql", Label("MySQL"), func() {
 					HaveKeyWithValue("project", "broker-gcp-project"),
 					HaveKeyWithValue("region", "us-central1"),
 					HaveKeyWithValue("storage_gb", BeNumerically("==", 10)),
+
 					HaveKeyWithValue("tier", "db-n1-standard-1"),
 					HaveKeyWithValue("disk_autoresize", true),
 					HaveKeyWithValue("disk_autoresize_limit", BeNumerically("==", 0)),
@@ -127,11 +128,6 @@ var _ = Describe("Mysql", Label("MySQL"), func() {
 
 				Expect(err).To(MatchError(ContainSubstring(expectedErrorMsg)))
 			},
-			Entry(
-				"storage capacity maximum value is 4096",
-				map[string]any{"storage_gb": 4097},
-				"storage_gb: Must be less than or equal to 4096",
-			),
 			Entry(
 				"storage capacity minimum value is 10",
 				map[string]any{"storage_gb": 9},
@@ -191,6 +187,7 @@ var _ = Describe("Mysql", Label("MySQL"), func() {
 			Entry("update tier", map[string]any{"tier": "db-n1-standard-16"}),
 			Entry("update disk_autoresize", map[string]any{"disk_autoresize": true}),
 			Entry("update disk_autoresize_limit", map[string]any{"disk_autoresize_limit": 400}),
+			Entry("update storage_gb", map[string]any{"storage_gb": 100}),
 			Entry("update deletion_protection", map[string]any{"deletion_protection": true}),
 		)
 

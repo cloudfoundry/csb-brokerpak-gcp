@@ -85,7 +85,6 @@ provision:
     details: Size of storage volume for service instance.
     default: 10
     constraints:
-      maximum: 4096
       minimum: 10
   - field_name: credentials
     type: string
