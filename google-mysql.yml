@@ -73,6 +73,12 @@ provision:
       The maximum size in GB to which storage capacity can be automatically increased.
       The default value is 0, which specifies that there is no limit.
     default: 0
+  - field_name: deletion_protection
+    type: boolean
+    details: |
+      Whether the DB instance should have deletion protection enabled.
+      The database can't be deleted when this value is set to `true`.
+    default: false
   - field_name: storage_gb
     required: true
     type: number
