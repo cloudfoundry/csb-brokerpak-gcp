@@ -5,9 +5,11 @@ resource "google_sql_database_instance" "instance" {
   deletion_protection = var.deletion_protection
 
   settings {
-    tier        = var.tier
-    disk_size   = var.storage_gb
-    user_labels = var.labels
+    tier                  = var.tier
+    disk_size             = var.storage_gb
+    user_labels           = var.labels
+    disk_autoresize       = var.disk_autoresize
+    disk_autoresize_limit = var.disk_autoresize_limit
 
     ip_configuration {
       ipv4_enabled    = false

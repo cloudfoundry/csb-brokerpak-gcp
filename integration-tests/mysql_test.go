@@ -76,6 +76,8 @@ var _ = Describe("Mysql", Label("MySQL"), func() {
 					HaveKeyWithValue("storage_gb", BeNumerically("==", 10)),
 
 					HaveKeyWithValue("tier", "db-n1-standard-1"),
+					HaveKeyWithValue("disk_autoresize", true),
+					HaveKeyWithValue("disk_autoresize_limit", BeNumerically("==", 0)),
 					HaveKeyWithValue("deletion_protection", false),
 				),
 			)
@@ -91,6 +93,8 @@ var _ = Describe("Mysql", Label("MySQL"), func() {
 				"authorized_network":    "fake-authorized_network",
 				"authorized_network_id": "fake-authorized_network_id",
 				"tier":                  "fake-tier",
+				"disk_autoresize":       true,
+				"disk_autoresize_limit": 400,
 				"deletion_protection":   true,
 			})
 
@@ -105,6 +109,8 @@ var _ = Describe("Mysql", Label("MySQL"), func() {
 					HaveKeyWithValue("authorized_network", "fake-authorized_network"),
 					HaveKeyWithValue("authorized_network_id", "fake-authorized_network_id"),
 					HaveKeyWithValue("tier", "fake-tier"),
+					HaveKeyWithValue("disk_autoresize", true),
+					HaveKeyWithValue("disk_autoresize_limit", BeNumerically("==", 400)),
 					HaveKeyWithValue("deletion_protection", BeTrue()),
 				),
 			)
@@ -179,6 +185,8 @@ var _ = Describe("Mysql", Label("MySQL"), func() {
 			Entry("update credentials", map[string]any{"credentials": "other-credentials"}),
 			Entry("update project", map[string]any{"project": "another-project"}),
 			Entry("update tier", map[string]any{"tier": "db-n1-standard-16"}),
+			Entry("update disk_autoresize", map[string]any{"disk_autoresize": true}),
+			Entry("update disk_autoresize_limit", map[string]any{"disk_autoresize_limit": 400}),
 			Entry("update storage_gb", map[string]any{"storage_gb": 100}),
 			Entry("update deletion_protection", map[string]any{"deletion_protection": true}),
 		)

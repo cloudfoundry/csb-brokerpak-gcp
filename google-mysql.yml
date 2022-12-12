@@ -64,6 +64,18 @@ provision:
     required: true
     type: string
     details: The version for the MySQL instance. Can be any supported version by the provider.
+  - field_name: disk_autoresize
+    type: boolean
+    details: |
+      Enables auto-resizing of the storage size.
+      When disabling the storage auto-resizing, the value of the disk_autoresize_limit should also be set to 0.
+    default: true
+  - field_name: disk_autoresize_limit
+    type: number
+    details: |
+      The maximum size in GB to which storage capacity can be automatically increased.
+      The default value is 0, which specifies that there is no limit.
+    default: 0
   - field_name: deletion_protection
     type: boolean
     details: |
