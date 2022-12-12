@@ -75,6 +75,7 @@ var _ = Describe("Mysql", Label("MySQL"), func() {
 					HaveKeyWithValue("region", "us-central1"),
 					HaveKeyWithValue("storage_gb", BeNumerically("==", 10)),
 					HaveKeyWithValue("tier", "db-n1-standard-1"),
+					HaveKeyWithValue("deletion_protection", false),
 				),
 			)
 		})
@@ -89,6 +90,7 @@ var _ = Describe("Mysql", Label("MySQL"), func() {
 				"authorized_network":    "fake-authorized_network",
 				"authorized_network_id": "fake-authorized_network_id",
 				"tier":                  "fake-tier",
+				"deletion_protection":   true,
 			})
 
 			Expect(err).NotTo(HaveOccurred())
@@ -102,6 +104,7 @@ var _ = Describe("Mysql", Label("MySQL"), func() {
 					HaveKeyWithValue("authorized_network", "fake-authorized_network"),
 					HaveKeyWithValue("authorized_network_id", "fake-authorized_network_id"),
 					HaveKeyWithValue("tier", "fake-tier"),
+					HaveKeyWithValue("deletion_protection", BeTrue()),
 				),
 			)
 		})
@@ -180,6 +183,7 @@ var _ = Describe("Mysql", Label("MySQL"), func() {
 			Entry("update credentials", map[string]any{"credentials": "other-credentials"}),
 			Entry("update project", map[string]any{"project": "another-project"}),
 			Entry("update tier", map[string]any{"tier": "db-n1-standard-16"}),
+			Entry("update deletion_protection", map[string]any{"deletion_protection": true}),
 		)
 
 		DescribeTable("should prevent updating properties flagged as `prohibit_update` because it can result in the recreation of the service instance and lost data",
