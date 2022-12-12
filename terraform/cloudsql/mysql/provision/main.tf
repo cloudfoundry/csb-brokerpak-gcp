@@ -1,7 +1,8 @@
 resource "google_sql_database_instance" "instance" {
-  name             = var.instance_name
-  database_version = var.database_version
-  region           = var.region
+  name                = var.instance_name
+  database_version    = var.database_version
+  region              = var.region
+  deletion_protection = var.deletion_protection
 
   settings {
     tier                  = var.tier
@@ -15,8 +16,6 @@ resource "google_sql_database_instance" "instance" {
       private_network = local.authorized_network_id
     }
   }
-
-  deletion_protection = false
 
   lifecycle {
     prevent_destroy = true

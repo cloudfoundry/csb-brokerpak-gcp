@@ -31,6 +31,7 @@ var _ = Describe("mysql", Label("mysql-terraform"), Ordered, func() {
 		"labels":                map[string]string{"label1": "value1"},
 		"disk_autoresize":       true,
 		"disk_autoresize_limit": 0,
+		"deletion_protection":   false,
 	}
 
 	BeforeAll(func() {

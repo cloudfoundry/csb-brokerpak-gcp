@@ -13,3 +13,4 @@ variable "project" { type = string }
 variable "tier" { type = string }
 variable "disk_autoresize" { type = bool }
 variable "disk_autoresize_limit" { type = number }
+variable "deletion_protection" { type = bool }
