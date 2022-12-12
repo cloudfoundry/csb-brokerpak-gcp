@@ -63,7 +63,7 @@ provision:
   - field_name: mysql_version
     required: true
     type: string
-    details: The version for the MySQL instance. Can be any supported version by the provider.
+    details: The version for the MySQL instance. Can be any version supported by the provider.
   - field_name: disk_autoresize
     type: boolean
     details: |
@@ -85,7 +85,9 @@ provision:
   - field_name: storage_gb
     required: true
     type: number
-    details: Size of storage volume for service instance.
+    details: |
+      Size of storage volume for service instance.
+      See documentation to understand the limits https://cloud.google.com/sql/docs/mysql/quotas#storage_limits
     default: 10
     constraints:
       minimum: 10
