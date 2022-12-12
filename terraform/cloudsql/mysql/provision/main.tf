@@ -1,6 +1,6 @@
 resource "google_sql_database_instance" "instance" {
   name                = var.instance_name
-  database_version    = var.database_version
+  database_version    = var.mysql_version
   region              = var.region
   deletion_protection = var.deletion_protection
 
