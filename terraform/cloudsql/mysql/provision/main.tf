@@ -15,6 +15,16 @@ resource "google_sql_database_instance" "instance" {
       ipv4_enabled    = false
       private_network = local.authorized_network_id
     }
+    backup_configuration {
+      enabled = local.backups_enabled
+      start_time = var.backups_start_time
+      backup_retention_settings {
+        retained_backups = var.backups_retain_number
+        retention_unit = "COUNT"
+      }
+      binary_log_enabled = local.transaction_log_backups_enabled
+      transaction_log_retention_days = var.backups_transaction_log_retention_days
+    }
   }
 
   lifecycle {

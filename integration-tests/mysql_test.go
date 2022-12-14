@@ -79,23 +79,31 @@ var _ = Describe("Mysql", Label("MySQL"), func() {
 					HaveKeyWithValue("disk_autoresize", true),
 					HaveKeyWithValue("disk_autoresize_limit", BeNumerically("==", 0)),
 					HaveKeyWithValue("deletion_protection", false),
+					HaveKeyWithValue("backups_start_time", "07:00"),
+					HaveKeyWithValue("backups_location", BeNil()),
+					HaveKeyWithValue("backups_retain_number", BeNumerically("==", 7)),
+					HaveKeyWithValue("backups_transaction_log_retention_days", BeNumerically("==", 0)),
 				),
 			)
 		})
 
-		It("should allow setting properties do not defined in the plan", func() {
+		It("should allow setting properties not defined in the plan", func() {
 			_, err := broker.Provision(mySQLServiceName, customMySQLPlanName, map[string]any{
-				"credentials":           "fake-credentials",
-				"project":               "fake-project",
-				"instance_name":         "fakeinstancename",
-				"db_name":               "fake-db_name",
-				"region":                "asia-northeast1",
-				"authorized_network":    "fake-authorized_network",
-				"authorized_network_id": "fake-authorized_network_id",
-				"tier":                  "fake-tier",
-				"disk_autoresize":       true,
-				"disk_autoresize_limit": 400,
-				"deletion_protection":   true,
+				"credentials":                            "fake-credentials",
+				"project":                                "fake-project",
+				"instance_name":                          "fakeinstancename",
+				"db_name":                                "fake-db_name",
+				"region":                                 "asia-northeast1",
+				"authorized_network":                     "fake-authorized_network",
+				"authorized_network_id":                  "fake-authorized_network_id",
+				"tier":                                   "fake-tier",
+				"disk_autoresize":                        true,
+				"disk_autoresize_limit":                  400,
+				"deletion_protection":                    true,
+				"backups_start_time":                     "12:34",
+				"backups_location":                       "somewhere-over-the-rainbow12",
+				"backups_retain_number":                  5,
+				"backups_transaction_log_retention_days": 6,
 			})
 
 			Expect(err).NotTo(HaveOccurred())
@@ -112,6 +120,10 @@ var _ = Describe("Mysql", Label("MySQL"), func() {
 					HaveKeyWithValue("disk_autoresize", true),
 					HaveKeyWithValue("disk_autoresize_limit", BeNumerically("==", 400)),
 					HaveKeyWithValue("deletion_protection", BeTrue()),
+					HaveKeyWithValue("backups_start_time", BeEquivalentTo("12:34")),
+					HaveKeyWithValue("backups_location", Equal("somewhere-over-the-rainbow12")),
+					HaveKeyWithValue("backups_retain_number", BeNumerically("==", 5)),
+					HaveKeyWithValue("backups_transaction_log_retention_days", BeNumerically("==", 6)),
 				),
 			)
 		})
@@ -146,7 +158,7 @@ var _ = Describe("Mysql", Label("MySQL"), func() {
 			Entry(
 				"instance name invalid characters",
 				map[string]any{"instance_name": ".aaaaa"},
-				"instance_name: Does not match pattern '^[a-z][a-z0-9-]+$'",
+				"instance_name: Does not match pattern '^[a-z][a-z0-9-]+[a-z0-9]$'",
 			),
 			Entry(
 				"database name maximum length is 64 characters",
@@ -156,12 +168,32 @@ var _ = Describe("Mysql", Label("MySQL"), func() {
 			Entry(
 				"invalid region",
 				map[string]any{"region": "-Asia-northeast1"},
-				"region: Does not match pattern '^[a-z][a-z0-9-]+$'",
+				"region: Does not match pattern '^[a-z][a-z0-9-]+[a-z0-9]$'",
 			),
 			Entry(
 				"tier invalid characters",
 				map[string]any{"tier": ".aaaaa"},
-				"tier: Does not match pattern '^[a-z][a-z0-9-]+$'",
+				"tier: Does not match pattern '^[a-z][a-z0-9-]+[a-z0-9]$'",
+			),
+			Entry(
+				"invalid backup location",
+				map[string]any{"backups_location": "australia-central-"},
+				"backups_location: Does not match pattern '^[a-z][a-z0-9-]+[a-z0-9]$'",
+			),
+			Entry(
+				"invalid backups retain number",
+				map[string]any{"backups_retain_number": -7},
+				"backups_retain_number: Must be greater than or equal to 0",
+			),
+			Entry(
+				"invalid transaction log retention days",
+				map[string]any{"backups_transaction_log_retention_days": -1},
+				"backups_transaction_log_retention_days: Must be greater than or equal to 0",
+			),
+			Entry(
+				"invalid transaction log retention days",
+				map[string]any{"backups_transaction_log_retention_days": 8},
+				"backups_transaction_log_retention_days: Must be less than or equal to 7",
 			),
 		)
 	})
@@ -189,6 +221,10 @@ var _ = Describe("Mysql", Label("MySQL"), func() {
 			Entry("update disk_autoresize_limit", map[string]any{"disk_autoresize_limit": 400}),
 			Entry("update storage_gb", map[string]any{"storage_gb": 100}),
 			Entry("update deletion_protection", map[string]any{"deletion_protection": true}),
+			Entry("update backups_start_time", map[string]any{"backups_start_time": "22:33"}),
+			Entry("update backups_location", map[string]any{"backups_location": "safety-deposit-box"}),
+			Entry("update backups_retain_number", map[string]any{"backups_retain_number": 0}),
+			Entry("update backups_transaction_log_retention_days", map[string]any{"backups_transaction_log_retention_days": 1}),
 		)
 
 		DescribeTable("should prevent updating properties flagged as `prohibit_update` because it can result in the recreation of the service instance and lost data",

@@ -59,7 +59,8 @@ provision:
       examples:
         - db-n1-standard-2
         - db-n1-standard-16
-      pattern: ^[a-z][a-z0-9-]+$
+      <<: &gcp_name_constraint
+        pattern: ^[a-z][a-z0-9-]+[a-z0-9]$
   - field_name: mysql_version
     required: true
     type: string
@@ -106,7 +107,7 @@ provision:
     constraints:
       maxLength: 98
       minLength: 6
-      pattern: ^[a-z][a-z0-9-]+$
+      <<: *gcp_name_constraint
     prohibit_update: true
   - field_name: db_name
     type: string
@@ -124,7 +125,7 @@ provision:
       examples:
         - us-central1
         - asia-northeast1
-      pattern: ^[a-z][a-z0-9-]+$
+      <<: *gcp_name_constraint
   - field_name: authorized_network
     type: string
     details: The name of the Google Compute Engine network to which the instance is connected. If left unspecified, the network named 'default' will be used.
@@ -135,6 +136,32 @@ provision:
     details: The id of the Google Compute Engine network to which the instance is connected.
     default: ""
     prohibit_update: true
+  - field_name: backups_start_time
+    type: string
+    details: Time indicating when the backup should start, in HH:MM format
+    default: "07:00"
+  - field_name: backups_location
+    type: string
+    details: The name of the region to store the backup
+    constraints:
+      default: null
+      nullable: true
+      <<: *gcp_name_constraint
+  - field_name: backups_retain_number
+    type: number
+    details: The number of backups to retain. Setting this value to 0 disables the backups
+    default: 7
+    constraints:
+      minimum: 0
+  - field_name: backups_transaction_log_retention_days
+    type: number
+    details: |
+      The number of days to retain the transaction logs. Setting this value to 0 disables transaction log backups.
+      The transaction logs can be retained up to 7 days
+    default: 0
+    constraints:
+      minimum: 0
+      maximum: 7
   computed_inputs:
   - name: labels
     default: ${json.marshal(request.default_labels)}
