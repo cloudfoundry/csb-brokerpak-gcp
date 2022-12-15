@@ -142,7 +142,7 @@ provision:
     default: "07:00"
   - field_name: backups_location
     type: string
-    details: The name of the region to store the backup
+    details: The name of a specific region to store the backup. Defaults to multi-regional.
     constraints:
       default: null
       nullable: true
