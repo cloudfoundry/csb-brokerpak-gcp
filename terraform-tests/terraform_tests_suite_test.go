@@ -4,16 +4,15 @@ import (
 	"os"
 	"testing"
 
-	"golang.org/x/exp/maps"
-
 	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
 	cp "github.com/otiai10/copy"
+	"golang.org/x/exp/maps"
 )
 
 func TestTerraformTests(t *testing.T) {
 	RegisterFailHandler(Fail)
-	RunSpecs(t, "TerraformTests Suite")
+	RunSpecs(t, "Terraform Tests Suite")
 }
 
 var (

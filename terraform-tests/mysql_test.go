@@ -18,20 +18,24 @@ var _ = Describe("mysql", Label("mysql-terraform"), Ordered, func() {
 	)
 
 	defaultVars := map[string]any{
-		"tier":                  "db-n1-standard-2",
-		"storage_gb":            10,
-		"credentials":           googleCredentials,
-		"project":               googleProject,
-		"instance_name":         "test-instance-name-456",
-		"db_name":               "test-db-name-987",
-		"region":                "us-central1",
-		"authorized_network":    "default",
-		"authorized_network_id": "",
-		"mysql_version":         "8.0",
-		"labels":                map[string]string{"label1": "value1"},
-		"disk_autoresize":       true,
-		"disk_autoresize_limit": 0,
-		"deletion_protection":   false,
+		"tier":                                   "db-n1-standard-2",
+		"storage_gb":                             10,
+		"credentials":                            googleCredentials,
+		"project":                                googleProject,
+		"instance_name":                          "test-instance-name-456",
+		"db_name":                                "test-db-name-987",
+		"region":                                 "us-central1",
+		"authorized_network":                     "default",
+		"authorized_network_id":                  "",
+		"mysql_version":                          "8.0",
+		"labels":                                 map[string]string{"label1": "value1"},
+		"disk_autoresize":                        true,
+		"disk_autoresize_limit":                  0,
+		"deletion_protection":                    false,
+		"backups_start_time":                     "07:00",
+		"backups_location":                       nil,
+		"backups_retain_number":                  7,
+		"backups_transaction_log_retention_days": 0,
 	}
 
 	BeforeAll(func() {
@@ -39,7 +43,7 @@ var _ = Describe("mysql", Label("mysql-terraform"), Ordered, func() {
 		Init(terraformProvisionDir)
 	})
 
-	Context("pass through", func() {
+	Context("default values", func() {
 		BeforeAll(func() {
 			plan = ShowPlan(terraformProvisionDir, buildVars(defaultVars, map[string]any{}))
 		})
@@ -68,6 +72,19 @@ var _ = Describe("mysql", Label("mysql-terraform"), Ordered, func() {
 							),
 							"disk_autoresize":       BeTrue(),
 							"disk_autoresize_limit": BeNumerically("==", 0),
+							"backup_configuration": ContainElement(
+								MatchKeys(IgnoreExtras, Keys{
+									"enabled":            BeTrue(),
+									"start_time":         Equal("07:00"),
+									"binary_log_enabled": BeFalse(),
+									"backup_retention_settings": ContainElement(
+										MatchKeys(IgnoreExtras, Keys{
+											"retained_backups": BeNumerically("==", 7),
+											"retention_unit":   Equal("COUNT"),
+										}),
+									),
+								}),
+							),
 						}),
 					),
 				}),
@@ -83,6 +100,37 @@ var _ = Describe("mysql", Label("mysql-terraform"), Ordered, func() {
 			Expect(AfterValuesForType(plan, "google_sql_user")).To(
 				MatchKeys(IgnoreExtras, Keys{
 					"instance": Equal("test-instance-name-456"),
+				}),
+			)
+		})
+	})
+
+	Context("backups", func() {
+		Specify("disabling backups", func() {
+			plan = ShowPlan(terraformProvisionDir, buildVars(defaultVars, map[string]any{"backups_retain_number": 0}))
+
+			Expect(AfterValuesForType(plan, "google_sql_database_instance")).To(
+				MatchKeys(IgnoreExtras, Keys{
+					"settings": ContainElement(MatchKeys(IgnoreExtras, Keys{
+						"backup_configuration": ContainElement(MatchKeys(IgnoreExtras, Keys{
+							"enabled": BeFalse(),
+						})),
+					})),
+				}),
+			)
+		})
+
+		Specify("enabling transaction log backups", func() {
+			plan = ShowPlan(terraformProvisionDir, buildVars(defaultVars, map[string]any{"backups_transaction_log_retention_days": 3}))
+
+			Expect(AfterValuesForType(plan, "google_sql_database_instance")).To(
+				MatchKeys(IgnoreExtras, Keys{
+					"settings": ContainElement(MatchKeys(IgnoreExtras, Keys{
+						"backup_configuration": ContainElement(MatchKeys(IgnoreExtras, Keys{
+							"binary_log_enabled":             BeTrue(),
+							"transaction_log_retention_days": BeNumerically("==", 3),
+						})),
+					})),
 				}),
 			)
 		})
