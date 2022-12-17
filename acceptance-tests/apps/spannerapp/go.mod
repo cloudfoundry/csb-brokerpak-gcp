@@ -3,7 +3,7 @@ module spannerapp
 go 1.19
 
 require (
-	cloud.google.com/go/spanner v1.41.0
+	cloud.google.com/go/spanner v1.42.0
 	github.com/cloudfoundry-community/go-cfenv v1.18.0
 	github.com/gorilla/mux v1.8.0
 	google.golang.org/api v0.104.0
@@ -24,7 +24,7 @@ require (
 )
 
 require (
-	cloud.google.com/go v0.105.0 // indirect
+	cloud.google.com/go v0.107.0 // indirect
 	github.com/golang/groupcache v0.0.0-20200121045136-8c9f03a8e57e // indirect
 	github.com/golang/protobuf v1.5.2 // indirect
 	github.com/google/go-cmp v0.5.9 // indirect
