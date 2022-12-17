@@ -8,7 +8,7 @@ require (
 	github.com/Pallinder/go-randomdata v1.2.0
 	github.com/cloudfoundry/cloud-service-broker v0.13.3
 	github.com/hashicorp/terraform-json v0.14.0
-	github.com/onsi/ginkgo/v2 v2.6.0
+	github.com/onsi/ginkgo/v2 v2.6.1
 	github.com/onsi/gomega v1.24.1
 	github.com/otiai10/copy v1.9.0
 	golang.org/x/exp v0.0.0-20221126150942-6ab00d035af9
