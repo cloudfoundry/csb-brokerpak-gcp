@@ -12,8 +12,17 @@ resource "google_sql_database_instance" "instance" {
     disk_autoresize_limit = var.disk_autoresize_limit
 
     ip_configuration {
-      ipv4_enabled    = false
+      ipv4_enabled    = var.public_ip
       private_network = local.authorized_network_id
+
+      dynamic "authorized_networks" {
+        for_each = var.authorized_networks_cidrs
+        iterator = networks
+
+        content {
+          value = networks.value
+        }
+      }
     }
     backup_configuration {
       enabled    = local.backups_enabled

@@ -131,6 +131,14 @@ provision:
     details: The id of the Google Compute Engine network to which the instance is connected. If left unspecified, the default network will be used.
     default: ""
     prohibit_update: true
+  - field_name: authorized_networks_cidrs
+    type: array
+    details: CIDR notation IPv4 or IPv6 addresses that are allowed to access this instance.
+    default: []
+  - field_name: public_ip
+    type: boolean
+    details: Assigns a static public IPV4 IP to the database. Note - authorized_networks_cidrs must be configured on the selected network to enable external access.
+    default: false
   - field_name: backups_start_time
     type: string
     details: Time indicating when the backup should start, in HH:MM format

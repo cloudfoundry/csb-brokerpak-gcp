@@ -66,6 +66,8 @@ var _ = Describe("Mysql", Label("MySQL"), func() {
 				SatisfyAll(
 					HaveKeyWithValue("db_name", "csb-db"),
 					HaveKeyWithValue("authorized_network_id", ""),
+					HaveKeyWithValue("public_ip", false),
+					HaveKeyWithValue("authorized_networks_cidrs", []any{}),
 					HaveKeyWithValue("credentials", "broker-gcp-creds"),
 					HaveKeyWithValue("mysql_version", "MYSQL_5_7"),
 					HaveKeyWithValue("db_name", "csb-db"),
@@ -102,6 +104,8 @@ var _ = Describe("Mysql", Label("MySQL"), func() {
 				"backups_location":                       "somewhere-over-the-rainbow12",
 				"backups_retain_number":                  5,
 				"backups_transaction_log_retention_days": 6,
+				"public_ip":                              true,
+				"authorized_networks_cidrs":              []any{"one", "two"},
 			})
 
 			Expect(err).NotTo(HaveOccurred())
@@ -121,6 +125,8 @@ var _ = Describe("Mysql", Label("MySQL"), func() {
 					HaveKeyWithValue("backups_location", Equal("somewhere-over-the-rainbow12")),
 					HaveKeyWithValue("backups_retain_number", BeNumerically("==", 5)),
 					HaveKeyWithValue("backups_transaction_log_retention_days", BeNumerically("==", 6)),
+					HaveKeyWithValue("public_ip", BeTrue()),
+					HaveKeyWithValue("authorized_networks_cidrs", ConsistOf("one", "two")),
 				),
 			)
 		})
@@ -222,6 +228,8 @@ var _ = Describe("Mysql", Label("MySQL"), func() {
 			Entry("update backups_location", map[string]any{"backups_location": "safety-deposit-box"}),
 			Entry("update backups_retain_number", map[string]any{"backups_retain_number": 0}),
 			Entry("update backups_transaction_log_retention_days", map[string]any{"backups_transaction_log_retention_days": 1}),
+			Entry("update public_ip", map[string]any{"public_ip": true}),
+			Entry("update authorized_networks_cidrs", map[string]any{"authorized_networks_cidrs": []any{"three", "four"}}),
 		)
 
 		DescribeTable("should prevent updating properties flagged as `prohibit_update` because it can result in the recreation of the service instance and lost data",
