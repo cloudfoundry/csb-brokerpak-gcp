@@ -12,7 +12,7 @@ import (
 )
 
 var _ = Describe("mysql", Label("mysql-terraform"), Ordered, func() {
-	const googleSqlDbInstance = "google_sql_database_instance"
+	const googleSQLDBInstance = "google_sql_database_instance"
 
 	var (
 		plan                  tfjson.Plan
@@ -53,7 +53,7 @@ var _ = Describe("mysql", Label("mysql-terraform"), Ordered, func() {
 		})
 
 		It("maps parameters to corresponding values", func() {
-			Expect(AfterValuesForType(plan, googleSqlDbInstance)).To(
+			Expect(AfterValuesForType(plan, googleSQLDBInstance)).To(
 				MatchKeys(0, Keys{
 					"name":                   Equal("test-instance-name-456"),
 					"database_version":       Equal("8.0"),
@@ -114,7 +114,7 @@ var _ = Describe("mysql", Label("mysql-terraform"), Ordered, func() {
 		Specify("disabling backups", func() {
 			plan = ShowPlan(terraformProvisionDir, buildVars(defaultVars, map[string]any{"backups_retain_number": 0}))
 
-			Expect(AfterValuesForType(plan, googleSqlDbInstance)).To(
+			Expect(AfterValuesForType(plan, googleSQLDBInstance)).To(
 				MatchKeys(IgnoreExtras, Keys{
 					"settings": ContainElement(MatchKeys(IgnoreExtras, Keys{
 						"backup_configuration": ContainElement(MatchKeys(IgnoreExtras, Keys{
@@ -128,7 +128,7 @@ var _ = Describe("mysql", Label("mysql-terraform"), Ordered, func() {
 		Specify("enabling transaction log backups", func() {
 			plan = ShowPlan(terraformProvisionDir, buildVars(defaultVars, map[string]any{"backups_transaction_log_retention_days": 3}))
 
-			Expect(AfterValuesForType(plan, googleSqlDbInstance)).To(
+			Expect(AfterValuesForType(plan, googleSQLDBInstance)).To(
 				MatchKeys(IgnoreExtras, Keys{
 					"settings": ContainElement(MatchKeys(IgnoreExtras, Keys{
 						"backup_configuration": ContainElement(MatchKeys(IgnoreExtras, Keys{
@@ -145,7 +145,7 @@ var _ = Describe("mysql", Label("mysql-terraform"), Ordered, func() {
 		Specify("enabling a public IP address", func() {
 			plan = ShowPlan(terraformProvisionDir, buildVars(defaultVars, map[string]any{"public_ip": true}))
 
-			Expect(AfterValuesForType(plan, googleSqlDbInstance)).To(
+			Expect(AfterValuesForType(plan, googleSQLDBInstance)).To(
 				MatchKeys(IgnoreExtras, Keys{
 					"settings": ContainElement(MatchKeys(IgnoreExtras, Keys{
 						"ip_configuration": ContainElement(MatchKeys(IgnoreExtras, Keys{
@@ -159,7 +159,7 @@ var _ = Describe("mysql", Label("mysql-terraform"), Ordered, func() {
 		Specify("setting authorized network CIDRs", func() {
 			plan = ShowPlan(terraformProvisionDir, buildVars(defaultVars, map[string]any{"authorized_networks_cidrs": []string{"one", "two"}}))
 
-			Expect(AfterValuesForType(plan, googleSqlDbInstance)).To(
+			Expect(AfterValuesForType(plan, googleSQLDBInstance)).To(
 				MatchKeys(IgnoreExtras, Keys{
 					"settings": ContainElement(MatchKeys(IgnoreExtras, Keys{
 						"ip_configuration": ContainElement(MatchKeys(IgnoreExtras, Keys{
