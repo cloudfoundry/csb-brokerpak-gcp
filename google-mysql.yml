@@ -133,7 +133,7 @@ provision:
     prohibit_update: true
   - field_name: authorized_network_id
     type: string
-    details: The id of the Google Compute Engine network to which the instance is connected.
+    details: The id of the Google Compute Engine network to which the instance is connected. If left unspecified, the default network will be used.
     default: ""
     prohibit_update: true
   - field_name: backups_start_time
