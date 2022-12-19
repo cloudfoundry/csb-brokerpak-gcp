@@ -1,4 +1,3 @@
-variable "authorized_network" { type = string }
 variable "authorized_network_id" { type = string }
 variable "instance_name" { type = string }
 variable "db_name" { type = string }
