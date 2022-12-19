@@ -1,5 +1,5 @@
 data "google_compute_network" "authorized-network" {
-  name = "default"
+  name = var.authorized_network
 }
 
 locals {
