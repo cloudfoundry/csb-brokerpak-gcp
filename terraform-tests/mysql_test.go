@@ -3,15 +3,17 @@ package terraformtests
 import (
 	"path"
 
-	. "csbbrokerpakgcp/terraform-tests/helpers"
-
 	tfjson "github.com/hashicorp/terraform-json"
 	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
 	. "github.com/onsi/gomega/gstruct"
+
+	. "csbbrokerpakgcp/terraform-tests/helpers"
 )
 
 var _ = Describe("mysql", Label("mysql-terraform"), Ordered, func() {
+	const googleSQLDBInstance = "google_sql_database_instance"
+
 	var (
 		plan                  tfjson.Plan
 		terraformProvisionDir string
@@ -27,6 +29,8 @@ var _ = Describe("mysql", Label("mysql-terraform"), Ordered, func() {
 		"region":                                 "us-central1",
 		"authorized_network":                     "default",
 		"authorized_network_id":                  "",
+		"authorized_networks_cidrs":              []string{},
+		"public_ip":                              false,
 		"mysql_version":                          "8.0",
 		"labels":                                 map[string]string{"label1": "value1"},
 		"disk_autoresize":                        true,
@@ -49,7 +53,7 @@ var _ = Describe("mysql", Label("mysql-terraform"), Ordered, func() {
 		})
 
 		It("maps parameters to corresponding values", func() {
-			Expect(AfterValuesForType(plan, "google_sql_database_instance")).To(
+			Expect(AfterValuesForType(plan, googleSQLDBInstance)).To(
 				MatchKeys(0, Keys{
 					"name":                   Equal("test-instance-name-456"),
 					"database_version":       Equal("8.0"),
@@ -66,8 +70,9 @@ var _ = Describe("mysql", Label("mysql-terraform"), Ordered, func() {
 							"user_labels": MatchKeys(0, Keys{"label1": Equal("value1")}),
 							"ip_configuration": ContainElement(
 								MatchKeys(IgnoreExtras, Keys{
-									"ipv4_enabled":    BeFalse(),
-									"private_network": Equal("https://www.googleapis.com/compute/v1/projects/cloud-service-broker/global/networks/default"),
+									"ipv4_enabled":        BeFalse(),
+									"private_network":     Equal("https://www.googleapis.com/compute/v1/projects/cloud-service-broker/global/networks/default"),
+									"authorized_networks": BeEmpty(),
 								}),
 							),
 							"disk_autoresize":       BeTrue(),
@@ -109,7 +114,7 @@ var _ = Describe("mysql", Label("mysql-terraform"), Ordered, func() {
 		Specify("disabling backups", func() {
 			plan = ShowPlan(terraformProvisionDir, buildVars(defaultVars, map[string]any{"backups_retain_number": 0}))
 
-			Expect(AfterValuesForType(plan, "google_sql_database_instance")).To(
+			Expect(AfterValuesForType(plan, googleSQLDBInstance)).To(
 				MatchKeys(IgnoreExtras, Keys{
 					"settings": ContainElement(MatchKeys(IgnoreExtras, Keys{
 						"backup_configuration": ContainElement(MatchKeys(IgnoreExtras, Keys{
@@ -123,12 +128,45 @@ var _ = Describe("mysql", Label("mysql-terraform"), Ordered, func() {
 		Specify("enabling transaction log backups", func() {
 			plan = ShowPlan(terraformProvisionDir, buildVars(defaultVars, map[string]any{"backups_transaction_log_retention_days": 3}))
 
-			Expect(AfterValuesForType(plan, "google_sql_database_instance")).To(
+			Expect(AfterValuesForType(plan, googleSQLDBInstance)).To(
 				MatchKeys(IgnoreExtras, Keys{
 					"settings": ContainElement(MatchKeys(IgnoreExtras, Keys{
 						"backup_configuration": ContainElement(MatchKeys(IgnoreExtras, Keys{
 							"binary_log_enabled":             BeTrue(),
 							"transaction_log_retention_days": BeNumerically("==", 3),
+						})),
+					})),
+				}),
+			)
+		})
+	})
+
+	Context("networking", func() {
+		Specify("enabling a public IP address", func() {
+			plan = ShowPlan(terraformProvisionDir, buildVars(defaultVars, map[string]any{"public_ip": true}))
+
+			Expect(AfterValuesForType(plan, googleSQLDBInstance)).To(
+				MatchKeys(IgnoreExtras, Keys{
+					"settings": ContainElement(MatchKeys(IgnoreExtras, Keys{
+						"ip_configuration": ContainElement(MatchKeys(IgnoreExtras, Keys{
+							"ipv4_enabled": BeTrue(),
+						})),
+					})),
+				}),
+			)
+		})
+
+		Specify("setting authorized network CIDRs", func() {
+			plan = ShowPlan(terraformProvisionDir, buildVars(defaultVars, map[string]any{"authorized_networks_cidrs": []string{"one", "two"}}))
+
+			Expect(AfterValuesForType(plan, googleSQLDBInstance)).To(
+				MatchKeys(IgnoreExtras, Keys{
+					"settings": ContainElement(MatchKeys(IgnoreExtras, Keys{
+						"ip_configuration": ContainElement(MatchKeys(IgnoreExtras, Keys{
+							"authorized_networks": ConsistOf(
+								MatchKeys(IgnoreExtras, Keys{"value": Equal("one")}),
+								MatchKeys(IgnoreExtras, Keys{"value": Equal("two")}),
+							),
 						})),
 					})),
 				}),
