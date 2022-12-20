@@ -13,7 +13,7 @@ import (
 var _ = Describe("Mysql", Label("mysql"), func() {
 	It("can be accessed by an app", func() {
 		By("creating a service instance")
-		serviceInstance := services.CreateInstance("csb-google-mysql", "small")
+		serviceInstance := services.CreateInstance("csb-google-mysql", "default")
 		defer serviceInstance.Delete()
 
 		By("pushing the unstarted app twice")
