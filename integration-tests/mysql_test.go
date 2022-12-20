@@ -49,9 +49,6 @@ var _ = Describe("Mysql", Label("MySQL"), func() {
 		Expect(service.Metadata.DisplayName).NotTo(BeNil())
 		Expect(service.Plans).To(
 			ConsistOf(
-				MatchFields(IgnoreExtras, Fields{"Name": Equal("small")}),
-				MatchFields(IgnoreExtras, Fields{"Name": Equal("medium")}),
-				MatchFields(IgnoreExtras, Fields{"Name": Equal("large")}),
 				MatchFields(IgnoreExtras, Fields{"Name": Equal("custom-plan")}),
 			),
 		)
@@ -135,9 +132,9 @@ var _ = Describe("Mysql", Label("MySQL"), func() {
 		})
 
 		It("should not allow changing of plan defined properties", func() {
-			_, err := broker.Provision(mySQLServiceName, "small", map[string]any{"storage_gb": 44})
+			_, err := broker.Provision(mySQLServiceName, customMySQLPlanName, map[string]any{"mysql_version": "MYSQL_8_0"})
 
-			Expect(err).To(MatchError(ContainSubstring("plan defined properties cannot be changed: storage_gb")))
+			Expect(err).To(MatchError(ContainSubstring("plan defined properties cannot be changed: mysql_version")))
 		})
 
 		DescribeTable("property constraints",
