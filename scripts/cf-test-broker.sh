@@ -17,13 +17,14 @@ fi
 set -o nounset
 
 export PCF_NETWORK=$(cat $env | jq -r .service_network_name)
-
+GCP_PROJECT=$(cat $env | jq -r .project)
+PCF_NETWORK_ID="$(https://www.googleapis.com/compute/v1/projects/$GCP_PROJECT/global/networks/$PCF_NETWORK)"
 make "push-broker-${1}"
 
 SERVICE=google-mysql
 PLAN=small
 NAME=mysql-test
-PARAMS="{\"authorized_network\":\"${PCF_NETWORK}\"}"
+PARAMS="{\"authorized_network_id\":\"${PCF_NETWORK_ID}\"}"
 
 cf create-service "${SERVICE}" "${PLAN}" "${NAME}" -c "${PARAMS}"
 
