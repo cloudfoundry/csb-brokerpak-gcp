@@ -65,7 +65,6 @@ var _ = Describe("Mysql", Label("MySQL"), func() {
 			Expect(mockTerraform.FirstTerraformInvocationVars()).To(
 				SatisfyAll(
 					HaveKeyWithValue("db_name", "csb-db"),
-					HaveKeyWithValue("authorized_network", "default"),
 					HaveKeyWithValue("authorized_network_id", ""),
 					HaveKeyWithValue("public_ip", false),
 					HaveKeyWithValue("authorized_networks_cidrs", []any{}),
@@ -96,7 +95,6 @@ var _ = Describe("Mysql", Label("MySQL"), func() {
 				"instance_name":                          "fakeinstancename",
 				"db_name":                                "fake-db_name",
 				"region":                                 "asia-northeast1",
-				"authorized_network":                     "fake-authorized_network",
 				"authorized_network_id":                  "fake-authorized_network_id",
 				"tier":                                   "fake-tier",
 				"disk_autoresize":                        true,
@@ -118,7 +116,6 @@ var _ = Describe("Mysql", Label("MySQL"), func() {
 					HaveKeyWithValue("instance_name", "fakeinstancename"),
 					HaveKeyWithValue("db_name", "fake-db_name"),
 					HaveKeyWithValue("region", "asia-northeast1"),
-					HaveKeyWithValue("authorized_network", "fake-authorized_network"),
 					HaveKeyWithValue("authorized_network_id", "fake-authorized_network_id"),
 					HaveKeyWithValue("tier", "fake-tier"),
 					HaveKeyWithValue("disk_autoresize", true),
@@ -251,7 +248,6 @@ var _ = Describe("Mysql", Label("MySQL"), func() {
 			Entry("update instance_name", map[string]any{"instance_name": "another-instance-name"}),
 			Entry("update db_name", map[string]any{"db_name": "another-db-name"}),
 			Entry("update region", map[string]any{"region": "australia-southeast1"}),
-			Entry("update authorized_network", map[string]any{"authorized_network": "another-authorized-network"}),
 			Entry("update authorized_network_id", map[string]any{"authorized_network_id": "another-authorized-network_id"}),
 		)
 

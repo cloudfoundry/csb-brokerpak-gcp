@@ -1,4 +1,3 @@
-variable "authorized_network" { type = string }
 variable "authorized_network_id" { type = string }
 variable "authorized_networks_cidrs" { type = list(string) }
 variable "public_ip" { type = bool }
