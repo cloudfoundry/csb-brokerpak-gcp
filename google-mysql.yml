@@ -190,9 +190,15 @@ provision:
   - field_name: password
     type: string
     details: The password to authenticate to the database instance.
-  - field_name: use_tls
-    type: boolean
-    details: Using TLS for connection
+  - field_name: sslrootcert
+    type: string
+    details: Root CA for the database instance.
+  - field_name: sslcert
+    type: string
+    details: Client certificate for establishing a mutual TLS connection with the database instance.
+  - field_name: sslkey
+    type: string
+    details: Client private key for establishing a mutual TLS connection with the database instance.
 bind:
   plan_inputs: []
   user_inputs: []
@@ -213,10 +219,15 @@ bind:
     type: string
     default: ${instance.details["password"]}
     overwrite: true
-  - name: use_tls
-    type: boolean
-    default: ${instance.details["use_tls"]}
-    overwrite: true
+  - name: sslrootcert
+    type: string
+    default: ${instance.details["sslrootcert"]}
+  - name: sslcert
+    type: string
+    default: ${instance.details["sslcert"]}
+  - name: sslkey
+    type: string
+    default: ${instance.details["sslkey"]}
   template_refs:
     provider: terraform/cloudsql/mysql/bind/provider.tf
     versions: terraform/cloudsql/mysql/bind/versions.tf
@@ -239,6 +250,15 @@ bind:
   - field_name: jdbcUrl
     type: string
     details: The jdbc url to connect to the database instance and database.
+  - field_name: sslrootcert
+    type: string
+    details: Root CA for the database instance.
+  - field_name: sslcert
+    type: string
+    details: Client certificate for establishing a mutual TLS connection.
+  - field_name: sslkey
+    type: string
+    details: Client private key for establishing a mutual TLS connection.
 examples:
 - name: small configuration
   description: Create a small mysql instance
