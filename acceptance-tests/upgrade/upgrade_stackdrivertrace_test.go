@@ -26,7 +26,7 @@ var _ = Describe("UpgradeStackdrivertraceTest", Label("stackdrivertrace"), func(
 			serviceBroker := brokers.Create(
 				brokers.WithPrefix("csb-stackdrivertrace"),
 				brokers.WithSourceDir(releasedBuildDir),
-				brokers.WithReleaseEnv(),
+				brokers.WithReleasedEnv(),
 			)
 			defer serviceBroker.Delete()
 

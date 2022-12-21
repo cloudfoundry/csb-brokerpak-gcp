@@ -49,10 +49,9 @@ func (b Broker) env() []apps.EnvVar {
 	return append(result, b.envExtras...)
 }
 
-func (b Broker) releaseEnv() []apps.EnvVar {
+func (b Broker) releasedEnv() []apps.EnvVar {
 	return []apps.EnvVar{
 		{Name: "GSB_SERVICE_CSB_GOOGLE_POSTGRES_PLANS", Value: `[{"name":"small","id":"5b45de36-cb90-11ec-a755-77f8be95a49d","description":"PostgreSQL with default version, shared CPU, minimum 0.6GB ram, 10GB storage","display_name":"small","tier":"db-f1-micro","storage_gb":10},{"name":"medium","id":"a3359fa6-cb90-11ec-bcb6-cb68544eda78","description":"PostgreSQL with default version, shared CPU, minimum 1.7GB ram, 20GB storage","display_name":"medium","tier":"db-g1-small","storage_gb":20},{"name":"large","id":"cd95c5b4-cb90-11ec-a5da-df87b7fb7426","description":"PostgreSQL with default version, minimum 8 cores, minimum 8GB ram, 50GB storage","display_name":"large","tier":"db-custom-8-8192","storage_gb":50}]`},
-		{Name: "GSB_SERVICE_CSB_GOOGLE_MYSQL_PLANS", Value: `[{"name": "default","id": "eec62c9b-b25e-4e65-bad5-6b74d90274bf","description": "Default MySQL v5.7 10GB storage","display_name": "default","mysql_version": "MYSQL_5_7","storage_gb": 10,"tier": "db-n1-standard-2"}]`},
 	}
 }
 

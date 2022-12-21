@@ -18,12 +18,12 @@ var _ = Describe("UpgradeMYSQLTest", Label("mysql"), func() {
 			serviceBroker := brokers.Create(
 				brokers.WithPrefix("csb-mysql"),
 				brokers.WithSourceDir(releasedBuildDir),
-				brokers.WithReleaseEnv(),
+				brokers.WithReleasedEnv(),
 			)
 			defer serviceBroker.Delete()
 
 			By("creating a service instance")
-			serviceInstance := services.CreateInstance("csb-google-mysql", "default", services.WithBroker(serviceBroker))
+			serviceInstance := services.CreateInstance("csb-google-mysql", "small", services.WithBroker(serviceBroker))
 			defer serviceInstance.Delete()
 
 			By("pushing the unstarted app twice")
@@ -59,7 +59,7 @@ var _ = Describe("UpgradeMYSQLTest", Label("mysql"), func() {
 			Expect(appTwo.GET(key)).To(Equal(value))
 
 			By("updating the instance plan")
-			serviceInstance.Update("-p", "medium")
+			serviceInstance.Update("-p", "default")
 
 			By("getting the value using the second app")
 			Expect(appTwo.GET(key)).To(Equal(value))
