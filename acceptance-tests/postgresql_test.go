@@ -77,8 +77,8 @@ var _ = Describe("PostgreSQL", Label("postgresql"), func() {
 
 	It("can create service keys with a public IP address", func() {
 		By("creating a service instance with a public IP address")
-		publicIpParams := services.WithParameters(map[string]any{"public_ip": true})
-		serviceInstance := services.CreateInstance("csb-google-postgres", "small", publicIpParams)
+		publicIPParams := services.WithParameters(map[string]any{"public_ip": true})
+		serviceInstance := services.CreateInstance("csb-google-postgres", "small", publicIPParams)
 		defer serviceInstance.Delete()
 
 		By("creating and examining a service key")
@@ -90,7 +90,8 @@ var _ = Describe("PostgreSQL", Label("postgresql"), func() {
 		creds, _ := serviceKeyData["credentials"].(map[string]any)
 
 		Expect(creds).To(HaveKey("uri"))
-		uri, _ := creds["uri"]
+		uri, ok := creds["uri"]
+		Expect(ok).To(BeTrue())
 		uriString, ok := uri.(string)
 		Expect(ok).To(BeTrue())
 		databaseURI, err := url.ParseRequestURI(uriString)
