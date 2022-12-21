@@ -4,7 +4,7 @@ variable "private_ip" { type = string }
 variable "admin_username" { type = string }
 variable "admin_password" {
   sensitive = true
-  type = string
+  type      = string
 }
 variable "use_tls" { type = bool }
 
