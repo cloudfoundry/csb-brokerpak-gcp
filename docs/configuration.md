@@ -102,13 +102,13 @@ credhub:
 
 Services for a given IaaS should have common parameter names for service wide platform resources (like location)
 
-GCP services support global region and authorized_network parameters:
+GCP services support global region and authorized_network_id parameters:
 
 ```yaml
 provision:
   defaults: '{
     "region": "europe-west1", 
-    "authorized_network": "pcf-env-network"
+    "authorized_network_id": https://www.googleapis.com/compute/v1/projects/<GCP_PROJECT>/global/networks/<GCP_PAS_NETWORK>"
   }'
 ```
 
