@@ -1,5 +1,5 @@
 provider "csbpg" {
-  host            = var.hostname
+  host            = var.private_ip
   port            = local.port
   username        = var.admin_username
   password        = var.admin_password
