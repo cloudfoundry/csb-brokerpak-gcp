@@ -26,27 +26,12 @@ plans:
   id: bbc4853e-8a63-11ea-a54e-670ca63cee0b
   description: 'Beta - Private Storage bucket'
   display_name: 'Private (Beta)'
-  properties:
-    acl: private
 - name: public-read
   id: c07f21a6-8a63-11ea-bc1b-d38b123189cb
   description: 'Beta - Public-read Storage bucket'
   display_name: 'Public Read (Beta)'
-  properties:
-    acl: publicRead
 provision:
-  plan_inputs:
-  - field_name: acl
-    type: string
-    details: Storage bucket ACL (see https://cloud.google.com/storage/docs/access-control/lists#predefined-acl)
-    enum:
-      private: private
-      publicRead: publicRead
-      publicReadWrite: publicReadWrite
-      bucketOwnerRead: bucketOwnerRead
-      bucketOwnerFullControl: bucketOwnerFullControl
-      projectPrivate: projectPrivate
-      authenticatedRead: authenticatedRead
+  plan_inputs: []
   user_inputs:
   - field_name: name
     type: string
