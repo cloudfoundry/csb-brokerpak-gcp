@@ -181,9 +181,12 @@ provision:
   - field_name: name
     type: string
     details: The name of the database.
+  - field_name: private_ip
+    type: string
+    details: Private IP address of the MySQL endpoint used internally to manage bindings.
   - field_name: hostname
     type: string
-    details: Hostname or IP address of the exposed mysql endpoint used by clients to connect to the service.
+    details: The IP address of the exposed MySQL endpoint used by clients to connect to the service.
   - field_name: username
     type: string
     details: The username to authenticate to the database instance.
@@ -204,6 +207,10 @@ bind:
   - name: mysql_hostname
     type: string
     default: ${instance.details["hostname"]}
+    overwrite: true
+  - name: private_ip
+    type: string
+    default: ${instance.details["private_ip"]}
     overwrite: true
   - name: admin_username
     type: string
