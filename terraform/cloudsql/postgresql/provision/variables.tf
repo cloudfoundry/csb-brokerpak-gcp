@@ -15,9 +15,6 @@ variable "backups_location" { type = string }
 variable "backups_start_time" { type = string }
 variable "backups_point_in_time_log_retain_days" { type = number }
 
-variable "credentials" {
-  type      = string
-  sensitive = true
-}
+variable "credentials" { type = string }
 variable "project" { type = string }
 variable "require_ssl" { type = bool }

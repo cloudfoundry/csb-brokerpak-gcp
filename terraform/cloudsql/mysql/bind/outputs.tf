@@ -15,16 +15,11 @@ output "uri" {
 output "port" { value = local.port }
 output "jdbcUrl" {
   sensitive = true
-  value = format("jdbc:mysql://%s:%d/%s?user=%s\u0026password=%s\u0026sslMode=REQUIRED",
+  value = format("jdbc:mysql://%s:%d/%s?user=%s\u0026password=%s\u0026useSSL=%v",
     var.mysql_hostname,
     local.port,
     var.mysql_db_name,
     mysql_user.newuser.user,
-  random_password.password.result)
-}
-output "sslrootcert" { value = var.sslrootcert }
-output "sslcert" { value = var.sslcert }
-output "sslkey" {
-  sensitive = true
-  value     = var.sslkey
+    random_password.password.result,
+  var.use_tls)
 }

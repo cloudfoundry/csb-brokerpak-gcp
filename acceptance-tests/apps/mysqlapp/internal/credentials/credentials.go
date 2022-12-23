@@ -2,6 +2,7 @@ package credentials
 
 import (
 	"fmt"
+	"strconv"
 
 	"github.com/cloudfoundry-community/go-cfenv"
 	"github.com/go-sql-driver/mysql"
@@ -36,7 +37,7 @@ func Read() (*mysql.Config, error) {
 	}
 
 	c := mysql.NewConfig()
-	c.TLSConfig = "true"
+	c.TLSConfig = strconv.FormatBool(m.UseTLS)
 	c.Net = "tcp"
 	c.Addr = m.Host
 	c.User = m.Username
