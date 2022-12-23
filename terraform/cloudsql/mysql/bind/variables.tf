@@ -6,7 +6,13 @@ variable "admin_password" {
   sensitive = true
   type      = string
 }
-variable "use_tls" { type = bool }
+
+variable "sslrootcert" { type = string }
+variable "sslcert" { type = string }
+variable "sslkey" {
+  sensitive = true
+  type      = string
+}
 
 locals {
   port = 3306
