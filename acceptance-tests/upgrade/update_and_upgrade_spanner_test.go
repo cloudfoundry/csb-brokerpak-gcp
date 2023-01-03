@@ -18,7 +18,7 @@ var _ = Describe("UpgradeSpannerTest", Label("spanner"), func() {
 			serviceBroker := brokers.Create(
 				brokers.WithPrefix("csb-spanner"),
 				brokers.WithSourceDir(releasedBuildDir),
-				brokers.WithReleaseEnv(),
+				brokers.WithReleasedEnv(),
 			)
 			defer serviceBroker.Delete()
 
