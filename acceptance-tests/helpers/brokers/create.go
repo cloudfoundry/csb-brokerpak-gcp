@@ -1,12 +1,13 @@
 package brokers
 
 import (
-	"csbbrokerpakgcp/acceptance-tests/helpers/apps"
-	"csbbrokerpakgcp/acceptance-tests/helpers/cf"
-	"csbbrokerpakgcp/acceptance-tests/helpers/random"
 	"fmt"
 	"os"
 	"strings"
+
+	"csbbrokerpakgcp/acceptance-tests/helpers/apps"
+	"csbbrokerpakgcp/acceptance-tests/helpers/cf"
+	"csbbrokerpakgcp/acceptance-tests/helpers/random"
 )
 
 type Option func(broker *Broker)
@@ -66,9 +67,9 @@ func WithEnv(env ...apps.EnvVar) Option {
 	}
 }
 
-func WithReleaseEnv() Option {
+func WithReleasedEnv() Option {
 	return func(b *Broker) {
-		b.envExtras = append(b.envExtras, b.releaseEnv()...)
+		b.envExtras = append(b.envExtras, b.releasedEnv()...)
 	}
 }
 
