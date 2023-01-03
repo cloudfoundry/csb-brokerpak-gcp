@@ -1,14 +1,17 @@
 package acceptance_test
 
 import (
+	"net"
+	"net/url"
+
+	. "github.com/onsi/ginkgo/v2"
+	. "github.com/onsi/gomega"
+
 	"csbbrokerpakgcp/acceptance-tests/helpers/apps"
 	"csbbrokerpakgcp/acceptance-tests/helpers/brokers"
 	"csbbrokerpakgcp/acceptance-tests/helpers/matchers"
 	"csbbrokerpakgcp/acceptance-tests/helpers/random"
 	"csbbrokerpakgcp/acceptance-tests/helpers/services"
-
-	. "github.com/onsi/ginkgo/v2"
-	. "github.com/onsi/gomega"
 )
 
 var _ = Describe("PostgreSQL", Label("postgresql"), func() {
@@ -71,4 +74,31 @@ var _ = Describe("PostgreSQL", Label("postgresql"), func() {
 		By("dropping the schema using the second app")
 		appTwo.DELETE(schema)
 	})
+
+	It("can create service keys with a public IP address", func() {
+		By("creating a service instance with a public IP address")
+		publicIPParams := services.WithParameters(map[string]any{"public_ip": true})
+		serviceInstance := services.CreateInstance("csb-google-postgres", "small", publicIPParams)
+		defer serviceInstance.Delete()
+
+		By("creating and examining a service key")
+		serviceKey := serviceInstance.CreateServiceKey()
+		var serviceKeyData map[string]any
+		serviceKey.Get(&serviceKeyData)
+
+		Expect(serviceKeyData).To(HaveKey("credentials"))
+		creds, _ := serviceKeyData["credentials"].(map[string]any)
+
+		Expect(creds).To(HaveKey("uri"))
+		uri, ok := creds["uri"]
+		Expect(ok).To(BeTrue())
+		uriString, ok := uri.(string)
+		Expect(ok).To(BeTrue())
+		databaseURI, err := url.ParseRequestURI(uriString)
+		Expect(err).NotTo(HaveOccurred())
+		uriIP := net.ParseIP(databaseURI.Hostname())
+		Expect(uriIP).NotTo(BeNil())
+		Expect(uriIP.IsPrivate()).To(BeFalse())
+	})
+
 })

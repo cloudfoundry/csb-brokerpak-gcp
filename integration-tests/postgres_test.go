@@ -34,7 +34,7 @@ var postgresPlans = []map[string]any{
 	postgresAllOverridesPlan,
 }
 
-var _ = Describe("postgres", func() {
+var _ = Describe("postgres", Label("postgres"), func() {
 	BeforeEach(func() {
 		Expect(mockTerraform.SetTFState([]testframework.TFStateValue{})).To(Succeed())
 	})
@@ -229,6 +229,7 @@ var _ = Describe("postgres", func() {
 				fakeSSLRoot    = "REAL_SSL_ROOT_CERT"
 				fakeClientCert = "REAL_SSL_CLIENT_CERT"
 				fakeClientKey  = "REAL_SSL_CLIENT_KEY"
+				fakePrivateIP  = "REAL_PRIVATE_IP"
 			)
 			err := mockTerraform.SetTFState([]testframework.TFStateValue{
 				{Name: "hostname", Type: "string", Value: "create.hostname.gcp.test"},
@@ -239,6 +240,7 @@ var _ = Describe("postgres", func() {
 				{Name: "sslrootcert", Type: "string", Value: fakeSSLRoot},
 				{Name: "sslcert", Type: "string", Value: fakeClientCert},
 				{Name: "sslkey", Type: "string", Value: fakeClientKey},
+				{Name: "private_ip", Type: "string", Value: fakePrivateIP},
 			})
 			Expect(err).NotTo(HaveOccurred())
 
@@ -266,6 +268,7 @@ var _ = Describe("postgres", func() {
 				"sslrootcert": fakeSSLRoot,
 				"sslcert":     fakeClientCert,
 				"sslkey":      fakeClientKey,
+				"private_ip":  fakePrivateIP,
 			}))
 		})
 	})

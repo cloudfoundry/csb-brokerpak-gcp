@@ -26,27 +26,12 @@ plans:
   id: bbc4853e-8a63-11ea-a54e-670ca63cee0b
   description: 'Beta - Private Storage bucket'
   display_name: 'Private (Beta)'
-  properties:
-    acl: private
 - name: public-read
   id: c07f21a6-8a63-11ea-bc1b-d38b123189cb
   description: 'Beta - Public-read Storage bucket'
   display_name: 'Public Read (Beta)'
-  properties:
-    acl: publicRead
 provision:
-  plan_inputs:
-  - field_name: acl
-    type: string
-    details: Storage bucket ACL (see https://cloud.google.com/storage/docs/access-control/lists#predefined-acl)
-    enum:
-      private: private
-      publicRead: publicRead
-      publicReadWrite: publicReadWrite
-      bucketOwnerRead: bucketOwnerRead
-      bucketOwnerFullControl: bucketOwnerFullControl
-      projectPrivate: projectPrivate
-      authenticatedRead: authenticatedRead
+  plan_inputs: []
   user_inputs:
   - field_name: name
     type: string
@@ -139,7 +124,7 @@ bind:
     outputs: terraform/storage/bind/outputs.tf
   outputs:
   - required: true
-    field_name: Email
+    field_name: email
     type: string
     details: Email address of the service account.
     constraints:
@@ -147,21 +132,21 @@ bind:
       - pcf-binding-ex312029@my-project.iam.gserviceaccount.com
       pattern: ^pcf-binding-[a-z0-9-]+@.+\.gserviceaccount\.com$
   - required: true
-    field_name: Name
+    field_name: name
     type: string
     details: The name of the service account.
     constraints:
       examples:
       - pcf-binding-ex312029
   - required: true
-    field_name: PrivateKeyData
+    field_name: private_key_data
     type: string
     details: Service account private key data. Base64 encoded JSON.
     constraints:
       minLength: 512
       pattern: ^[A-Za-z0-9+/]*=*$
   - required: true
-    field_name: ProjectId
+    field_name: project_id
     type: string
     details: ID of the project that owns the service account.
     constraints:
@@ -171,14 +156,14 @@ bind:
       minLength: 6
       pattern: ^[a-z0-9-]+$
   - required: true
-    field_name: UniqueId
+    field_name: unique_id
     type: string
     details: Unique and stable ID of the service account.
     constraints:
       examples:
       - "112447814736626230844"
   - required: true
-    field_name: Credentials
+    field_name: credentials
     type: string
     details: Credentials of the service account.
 examples:

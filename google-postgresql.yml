@@ -167,6 +167,9 @@ provision:
   - field_name: sslrootcert
     type: string
     details: The CA Certificate used to connect to the SQL instance via TLS
+  - field_name: private_ip
+    type: string
+    details: Private IP address of the mysql endpoint used internally to manage bindings
 bind:
   plan_inputs: []
   user_inputs: []
@@ -202,6 +205,10 @@ bind:
   - name: sslrootcert
     type: string
     default: ${instance.details["sslrootcert"]}
+    overwrite: true
+  - name: private_ip
+    type: string
+    default: ${instance.details["private_ip"]}
     overwrite: true
   template_refs:
     provider: terraform/cloudsql/postgresql/bind/provider.tf
