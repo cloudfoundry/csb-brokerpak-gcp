@@ -40,13 +40,7 @@ provision:
   - field_name: storage_class
     type: string
     details: The Storage Class of the new bucket.
-    default: STANDARD
-    enum:
-      STANDARD : STANDARD
-      MULTI_REGIONAL: MULTI_REGIONAL
-      REGIONAL : REGIONAL
-      NEARLINE : NEARLINE
-      COLDLINE : COLDLINE
+    default: MULTI_REGIONAL
   - field_name: region
     type: string
     details: The region where the buckets are created.
