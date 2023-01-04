@@ -12,7 +12,7 @@ import (
 )
 
 var _ = Describe("storage", Label("storage-terraform"), Ordered, func() {
-	const googleSQLDBInstance = "google_sql_database_instance"
+	const googleBucketResource = "google_storage_bucket"
 
 	var (
 		plan                  tfjson.Plan
@@ -39,10 +39,10 @@ var _ = Describe("storage", Label("storage-terraform"), Ordered, func() {
 		})
 
 		It("maps parameters to corresponding values", func() {
-			Expect(AfterValuesForType(plan, googleSQLDBInstance)).To(
-				MatchKeys(0, Keys{
+			Expect(AfterValuesForType(plan, googleBucketResource)).To(
+				MatchKeys(IgnoreExtras, Keys{
 					"name":          Equal("bucket-name"),
-					"location":      Equal("us-central1"),
+					"location":      Equal("US-CENTRAL1"),
 					"storage_class": Equal("MULTI_REGIONAL"),
 					"labels":        MatchKeys(0, Keys{"label1": Equal("value1")}),
 				}),
