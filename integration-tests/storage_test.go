@@ -25,11 +25,11 @@ var _ = Describe("Storage Bucket", Label("storage"), func() {
 		Expect(err).NotTo(HaveOccurred())
 
 		service := testframework.FindService(catalog, serviceName)
-		Expect(service.ID).NotTo(BeNil())
-		Expect(service.Name).NotTo(BeNil())
+		Expect(service.ID).NotTo(BeEmpty())
+		Expect(service.Name).NotTo(BeEmpty())
 		Expect(service.Tags).To(ConsistOf("gcp", "storage", "beta"))
-		Expect(service.Metadata.ImageUrl).NotTo(BeNil())
-		Expect(service.Metadata.DisplayName).NotTo(BeNil())
+		Expect(service.Metadata.ImageUrl).NotTo(BeEmpty())
+		Expect(service.Metadata.DisplayName).NotTo(BeEmpty())
 		Expect(service.Plans).To(
 			ConsistOf(
 				MatchFields(IgnoreExtras, Fields{"Name": Equal("private")}),
