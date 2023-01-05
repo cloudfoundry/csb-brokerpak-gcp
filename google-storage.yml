@@ -39,14 +39,14 @@ provision:
     default: csb-${request.instance_id}
   - field_name: storage_class
     type: string
-    details: The Storage Class of the new bucket.
-    default: STANDARD
-    enum:
-      STANDARD : STANDARD
-      MULTI_REGIONAL: MULTI_REGIONAL
-      REGIONAL : REGIONAL
-      NEARLINE : NEARLINE
-      COLDLINE : COLDLINE
+    details: |
+      The Storage Class of the new bucket.
+      For more information about valid storage class values, see https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/storage_bucket#storage_class.
+    default: MULTI_REGIONAL
+    constraints:
+      examples:
+        - STANDARD
+        - COLDLINE
   - field_name: region
     type: string
     details: The region where the buckets are created.
