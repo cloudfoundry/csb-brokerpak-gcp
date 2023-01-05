@@ -1,11 +1,12 @@
 package upgrade_test
 
 import (
+	"fmt"
+
 	"csbbrokerpakgcp/acceptance-tests/helpers/apps"
 	"csbbrokerpakgcp/acceptance-tests/helpers/brokers"
 	"csbbrokerpakgcp/acceptance-tests/helpers/random"
 	"csbbrokerpakgcp/acceptance-tests/helpers/services"
-	"fmt"
 
 	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
@@ -18,7 +19,7 @@ var _ = Describe("UpgradeRedisTest", Label("redis"), func() {
 			serviceBroker := brokers.Create(
 				brokers.WithPrefix("csb-redis"),
 				brokers.WithSourceDir(releasedBuildDir),
-				brokers.WithReleaseEnv(),
+				brokers.WithReleasedEnv(),
 			)
 			defer serviceBroker.Delete()
 
