@@ -9,6 +9,15 @@ import (
 	. "github.com/onsi/gomega/gstruct"
 )
 
+const (
+	redisServiceName             = "csb-google-redis"
+	redisServiceID               = "0e86ad78-99b3-48b6-a986-b594e7995fd6"
+	redisServiceDescription      = "Beta - Cloud Memorystore for Redis is a fully managed Redis service for the Google Cloud Platform."
+	redisServiceDisplayName      = "Google Cloud Memorystore for Redis (Beta)"
+	redisServiceDocumentationURL = "https://cloud.google.com/memorystore/docs/redis/"
+	redisServiceSupportURL       = "https://cloud.google.com/support/"
+)
+
 var customRedisPlans = []map[string]any{
 	customRedisPlan,
 }
@@ -28,8 +37,6 @@ var customRedisPlan = map[string]any{
 }
 
 var _ = Describe("Redis", func() {
-	const redisServiceName = "csb-google-redis"
-
 	BeforeEach(func() {
 		Expect(mockTerraform.SetTFState([]testframework.TFStateValue{})).To(Succeed())
 	})
@@ -43,16 +50,27 @@ var _ = Describe("Redis", func() {
 		Expect(err).NotTo(HaveOccurred())
 
 		service := testframework.FindService(catalog, redisServiceName)
-		Expect(service.ID).NotTo(BeNil())
-		Expect(service.Name).NotTo(BeNil())
+		Expect(service.ID).To(Equal(redisServiceID))
+		Expect(service.Description).To(Equal(redisServiceDescription))
 		Expect(service.Tags).To(ConsistOf("gcp", "redis", "beta"))
-		Expect(service.Metadata.ImageUrl).NotTo(BeNil())
-		Expect(service.Metadata.DisplayName).NotTo(BeNil())
+		Expect(service.Metadata.ImageUrl).To(ContainSubstring("data:image/png;base64,"))
+		Expect(service.Metadata.DisplayName).To(Equal(redisServiceDisplayName))
+		Expect(service.Metadata.DocumentationUrl).To(Equal(redisServiceDocumentationURL))
+		Expect(service.Metadata.SupportUrl).To(Equal(redisServiceSupportURL))
 		Expect(service.Plans).To(
 			ConsistOf(
-				MatchFields(IgnoreExtras, Fields{"Name": Equal("basic")}),
-				MatchFields(IgnoreExtras, Fields{"Name": Equal("ha")}),
-				MatchFields(IgnoreExtras, Fields{"Name": Equal("custom-plan")}),
+				MatchFields(IgnoreExtras, Fields{
+					Name: Equal("basic"),
+					ID:   Equal("6ed44104-8777-4b57-8c03-826b3af7d0be"),
+				}),
+				MatchFields(IgnoreExtras, Fields{
+					Name: Equal("ha"),
+					ID:   Equal("8c85c90c-f8e3-4337-9069-c03036243894"),
+				}),
+				MatchFields(IgnoreExtras, Fields{
+					Name: Equal("custom-plan"),
+					ID:   Equal("9dfa265e-1c4d-40c6-ade6-b341ffd6ccc3"),
+				}),
 			),
 		)
 	})
