@@ -52,7 +52,7 @@ var _ = Describe("Storage Bucket", Label("storage"), func() {
 				SatisfyAll(
 					HaveKeyWithValue("name", fmt.Sprintf("csb-%s", instanceID)),
 					HaveKeyWithValue("storage_class", "MULTI_REGIONAL"),
-					HaveKeyWithValue("region", "us-central1"),
+					HaveKeyWithValue("region", "us"),
 					HaveKeyWithValue("labels", MatchKeys(IgnoreExtras, Keys{
 						"pcf-instance-id": Equal(instanceID),
 					})),
