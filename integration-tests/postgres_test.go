@@ -7,6 +7,15 @@ import (
 	. "github.com/onsi/gomega/gstruct"
 )
 
+const (
+	postgresServiceName             = "csb-google-postgres"
+	postgresServiceID               = "40501b82-cb90-11ec-b1c2-e3a703778055"
+	postgresServiceDescription      = "PostgreSQL is a fully managed service for the Google Cloud Platform."
+	postgresServiceDisplayName      = "Google Cloud PostgreSQL"
+	postgresServiceDocumentationURL = "https://cloud.google.com/sql/docs/postgres"
+	postgresServiceSupportURL       = "https://cloud.google.com/support/"
+)
+
 var postgresNoOverridesPlan = map[string]any{
 	"name":        "no-overrides",
 	"id":          "5f60d632-8f1e-11ec-9832-7bd519d660a9",
@@ -47,16 +56,24 @@ var _ = Describe("postgres", Label("postgres"), func() {
 		catalog, err := broker.Catalog()
 		Expect(err).NotTo(HaveOccurred())
 
-		service := testframework.FindService(catalog, "csb-google-postgres")
-		Expect(service.ID).NotTo(BeNil())
-		Expect(service.Name).NotTo(BeNil())
+		service := testframework.FindService(catalog, postgresServiceName)
+		Expect(service.ID).To(Equal(postgresServiceID))
+		Expect(service.Description).To(Equal(postgresServiceDescription))
 		Expect(service.Tags).To(ConsistOf("gcp", "postgresql", "postgres"))
-		Expect(service.Metadata.ImageUrl).NotTo(BeNil())
-		Expect(service.Metadata.DisplayName).NotTo(BeNil())
+		Expect(service.Metadata.ImageUrl).To(ContainSubstring("data:image/png;base64,"))
+		Expect(service.Metadata.DisplayName).To(Equal(postgresServiceDisplayName))
+		Expect(service.Metadata.DocumentationUrl).To(Equal(postgresServiceDocumentationURL))
+		Expect(service.Metadata.SupportUrl).To(Equal(postgresServiceSupportURL))
 		Expect(service.Plans).To(
 			ConsistOf(
-				MatchFields(IgnoreExtras, Fields{"Name": Equal("all-overrides")}),
-				MatchFields(IgnoreExtras, Fields{"Name": Equal("no-overrides")}),
+				MatchFields(IgnoreExtras, Fields{
+					ID:   Equal("4be43944-8f20-11ec-9ea5-834eb2499c32"),
+					Name: Equal("all-overrides"),
+				}),
+				MatchFields(IgnoreExtras, Fields{
+					ID:   Equal("5f60d632-8f1e-11ec-9832-7bd519d660a9"),
+					Name: Equal("no-overrides"),
+				}),
 			),
 		)
 	})
