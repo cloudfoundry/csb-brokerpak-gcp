@@ -56,15 +56,17 @@ var _ = Describe("Storage Bucket", Label("storage"), func() {
 					HaveKeyWithValue("labels", MatchKeys(IgnoreExtras, Keys{
 						"pcf-instance-id": Equal(instanceID),
 					})),
+					HaveKeyWithValue("placement_dual_region_data_locations", BeEmpty()),
 				),
 			)
 		})
 
 		It("should allow properties to be set on provision", func() {
 			_, err := broker.Provision(serviceName, "private", map[string]any{
-				"name":          "bucket-name",
-				"storage_class": "STANDARD",
-				"region":        "us-central2",
+				"name":                                 "bucket-name",
+				"storage_class":                        "STANDARD",
+				"region":                               "us",
+				"placement_dual_region_data_locations": []string{"us-west1", "us-west2"},
 			})
 			Expect(err).NotTo(HaveOccurred())
 
@@ -72,7 +74,8 @@ var _ = Describe("Storage Bucket", Label("storage"), func() {
 				SatisfyAll(
 					HaveKeyWithValue("name", "bucket-name"),
 					HaveKeyWithValue("storage_class", "STANDARD"),
-					HaveKeyWithValue("region", "us-central2"),
+					HaveKeyWithValue("region", "us"),
+					HaveKeyWithValue("placement_dual_region_data_locations", ConsistOf("us-west1", "us-west2")),
 				),
 			)
 		})
@@ -85,18 +88,25 @@ var _ = Describe("Storage Bucket", Label("storage"), func() {
 				instanceID, err = broker.Provision(serviceName, "public-read", nil)
 
 				Expect(err).NotTo(HaveOccurred())
-				Expect(mockTerraform.Reset()).To(Succeed())
 			})
 
-			It("should prevent updating properties flagged as `prohibit_update` because it can result in the recreation of the service instance and lost data", func() {
-				err := broker.Update(instanceID, serviceName, "public-read", map[string]any{"region": "asia-southeast1"})
+			DescribeTable(
+				"preventing updates with `prohibit_update` as it can force resource replacement or re-creation",
+				func(prop string, value any) {
+					err := broker.Update(instanceID, serviceName, "public-read", map[string]any{prop: value})
 
-				Expect(err).To(MatchError(
-					ContainSubstring(
-						"attempt to update parameter that may result in service instance re-creation and data loss",
-					),
-				))
-			})
+					Expect(err).To(MatchError(
+						ContainSubstring(
+							"attempt to update parameter that may result in service instance re-creation and data loss",
+						),
+					))
+
+					const initialProvisionInvocation = 1
+					Expect(mockTerraform.ApplyInvocations()).To(HaveLen(initialProvisionInvocation))
+				},
+				Entry("region", "region", "no-matter-what-region"),
+				Entry("placement_dual_region_data_locations", "placement_dual_region_data_locations", []string{"us-west1", "us-west2"}),
+			)
 		})
 	})
 })

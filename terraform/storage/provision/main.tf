@@ -4,6 +4,13 @@ resource "google_storage_bucket" "bucket" {
   storage_class = var.storage_class
   labels        = var.labels
 
+  dynamic "custom_placement_config" {
+    for_each = length(var.placement_dual_region_data_locations) == 0 ? [] : [null]
+    content {
+      data_locations = var.placement_dual_region_data_locations
+    }
+  }
+
   lifecycle {
     prevent_destroy = true
   }
