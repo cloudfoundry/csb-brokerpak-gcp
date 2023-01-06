@@ -23,6 +23,8 @@ var (
 const (
 	brokerGCPProject = "broker-gcp-project"
 	brokerGCPCreds   = "broker-gcp-creds"
+	Name             = "Name"
+	ID               = "ID"
 )
 
 var _ = BeforeSuite(func() {
@@ -37,9 +39,9 @@ var _ = BeforeSuite(func() {
 		"GSB_COMPATIBILITY_ENABLE_BETA_SERVICES=true",
 		"GOOGLE_CREDENTIALS=" + brokerGCPCreds,
 		"GOOGLE_PROJECT=" + brokerGCPProject,
-		`GSB_SERVICE_CSB_GOOGLE_POSTGRES_PLANS=` + marshall(postgresPlans),
-		"GSB_SERVICE_CSB_GOOGLE_MYSQL_PLANS=" + marshall(customMySQLPlans),
-		"GSB_SERVICE_CSB_GOOGLE_REDIS_PLANS=" + marshall(customRedisPlans),
+		`GSB_SERVICE_CSB_GOOGLE_POSTGRES_PLANS=` + marshal(postgresPlans),
+		"GSB_SERVICE_CSB_GOOGLE_MYSQL_PLANS=" + marshal(customMySQLPlans),
+		"GSB_SERVICE_CSB_GOOGLE_REDIS_PLANS=" + marshal(customRedisPlans),
 		"CSB_LISTENER_HOST=localhost", // prevents permissions popup
 	})).To(Succeed())
 })
@@ -50,7 +52,7 @@ var _ = AfterSuite(func() {
 	}
 })
 
-func marshall(element any) string {
+func marshal(element any) string {
 	b, err := json.Marshal(element)
 	Expect(err).NotTo(HaveOccurred())
 	return string(b)
