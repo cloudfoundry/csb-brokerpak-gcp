@@ -50,9 +50,10 @@ provision:
   - field_name: region
     type: string
     details: The region where the buckets are created.
-    default: us-central1
+    default: us
     constraints:
       examples:
+        - us
         - us-central1
         - asia-northeast1
       pattern: ^[a-z][a-z0-9-]+$
