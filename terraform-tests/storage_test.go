@@ -22,7 +22,7 @@ var _ = Describe("storage", Label("storage-terraform"), Ordered, func() {
 	defaultVars := map[string]any{
 		"credentials":   googleCredentials,
 		"project":       googleProject,
-		"region":        "us-central1",
+		"region":        "us",
 		"labels":        map[string]string{"label1": "value1"},
 		"name":          "bucket-name",
 		"storage_class": "MULTI_REGIONAL",
@@ -42,7 +42,7 @@ var _ = Describe("storage", Label("storage-terraform"), Ordered, func() {
 			Expect(AfterValuesForType(plan, googleBucketResource)).To(
 				MatchKeys(IgnoreExtras, Keys{
 					"name":          Equal("bucket-name"),
-					"location":      Equal("US-CENTRAL1"),
+					"location":      Equal("US"),
 					"storage_class": Equal("MULTI_REGIONAL"),
 					"labels":        MatchKeys(0, Keys{"label1": Equal("value1")}),
 				}),
