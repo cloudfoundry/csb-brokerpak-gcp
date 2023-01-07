@@ -3,7 +3,7 @@ module csbbrokerpakgcp
 go 1.19
 
 require (
-	cloud.google.com/go/trace v1.4.0
+	cloud.google.com/go/trace v1.5.0
 	code.cloudfoundry.org/jsonry v1.1.4
 	github.com/Pallinder/go-randomdata v1.2.0
 	github.com/cloudfoundry/cloud-service-broker v0.13.4
@@ -19,7 +19,7 @@ require (
 )
 
 require (
-	cloud.google.com/go v0.105.0 // indirect
+	cloud.google.com/go v0.107.0 // indirect
 	cloud.google.com/go/compute v1.13.0 // indirect
 	cloud.google.com/go/compute/metadata v0.2.2 // indirect
 	cloud.google.com/go/iam v0.8.0 // indirect
