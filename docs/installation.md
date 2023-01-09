@@ -149,7 +149,7 @@ make push-broker
 Once this completes, the output from `cf marketplace` should include:
 
 ```
-csb-google-mysql            small, medium, large   Mysql is a fully managed service for the Google Cloud Platform.
+csb-google-mysql            small, medium, large   MySQL is a fully managed service for the Google Cloud Platform.
 
 csb-google-postgres         small, medium, large   PostgreSQL is a fully managed service for the Google Cloud Platform.
 

@@ -13,7 +13,7 @@ import (
 	"csbbrokerpakgcp/acceptance-tests/helpers/services"
 )
 
-var _ = Describe("Mysql", Label("mysql"), func() {
+var _ = Describe("MySQL", Label("mysql"), func() {
 	It("can be accessed by an app", func() {
 		By("creating a service instance")
 		serviceInstance := services.CreateInstance("csb-google-mysql", "default")
