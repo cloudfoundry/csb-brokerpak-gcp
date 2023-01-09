@@ -2,8 +2,10 @@
 .github
 .idea
 acceptance-tests
-docs
 integration-tests
+terraform-tests
+service-images
+docs
 providers
 scripts
 terraform

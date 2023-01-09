@@ -280,4 +280,71 @@ var _ = Describe("Mysql", Label("MySQL"), func() {
 		)
 	})
 
+	Context("bind a service ", func() {
+		It("return the bind values from terraform output", func() {
+			const (
+				fakeSSLRoot    = "CREATED_SSL_ROOT_CERT"
+				fakeClientCert = "CREATED_SSL_CLIENT_CERT"
+				fakeClientKey  = "CREATED_SSL_CLIENT_KEY"
+				fakePrivateIP  = "CREATED_PRIVATE_IP"
+			)
+			instanceID := provisionInstanceForBinding(
+				fakeSSLRoot,
+				fakeClientCert,
+				fakeClientKey,
+				fakePrivateIP,
+			)
+
+			// mocking Terraform state for binding propose
+			err := mockTerraform.SetTFState([]testframework.TFStateValue{
+				{Name: "username", Type: "string", Value: "bind.test.username"},
+				{Name: "password", Type: "string", Value: "bind.test.password"},
+				{Name: "uri", Type: "string", Value: "bind.test.uri"},
+				{Name: "jdbcUrl", Type: "string", Value: "bind.test.jdbcUrl"},
+				{Name: "port", Type: "number", Value: 3306},
+			})
+			Expect(err).NotTo(HaveOccurred())
+
+			bindResult, err := broker.Bind(mySQLServiceName, customMySQLPlanName, instanceID, nil)
+			Expect(err).NotTo(HaveOccurred())
+
+			Expect(bindResult).To(Equal(map[string]any{
+				"username":    "bind.test.username",
+				"hostname":    "created.hostname.gcp.test",
+				"jdbcUrl":     "bind.test.jdbcUrl",
+				"name":        "created.test.instancename",
+				"password":    "bind.test.password",
+				"uri":         "bind.test.uri",
+				"sslrootcert": fakeSSLRoot,
+				"sslcert":     fakeClientCert,
+				"sslkey":      fakeClientKey,
+				"private_ip":  fakePrivateIP,
+				"port":        float64(3306),
+			}))
+		})
+	})
 })
+
+func provisionInstanceForBinding(
+	fakeSSLRoot,
+	fakeClientCert,
+	fakeClientKey,
+	fakePrivateIP string,
+) string {
+	// used in computed outputs in binding definition
+	err := mockTerraform.SetTFState([]testframework.TFStateValue{
+		{Name: "hostname", Type: "string", Value: "created.hostname.gcp.test"},
+		{Name: "username", Type: "string", Value: "created.test.username"},
+		{Name: "password", Type: "string", Value: "created.test.password"},
+		{Name: "name", Type: "string", Value: "created.test.instancename"},
+		{Name: "sslrootcert", Type: "string", Value: fakeSSLRoot},
+		{Name: "sslcert", Type: "string", Value: fakeClientCert},
+		{Name: "sslkey", Type: "string", Value: fakeClientKey},
+		{Name: "private_ip", Type: "string", Value: fakePrivateIP},
+	})
+	Expect(err).NotTo(HaveOccurred())
+
+	instanceID, err := broker.Provision(mySQLServiceName, customMySQLPlanName, map[string]any{"tier": "db-n1-standard-1"})
+	Expect(err).NotTo(HaveOccurred())
+	return instanceID
+}
