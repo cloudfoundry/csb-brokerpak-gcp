@@ -52,7 +52,7 @@ var _ = Describe("storage", Label("storage-terraform"), Ordered, func() {
 		})
 	})
 
-	FContext("dual region configuration", func() {
+	Context("dual region configuration", func() {
 		BeforeAll(func() {
 			plan = ShowPlan(terraformProvisionDir, buildVars(defaultVars, map[string]any{
 				"storage_class":                        "STANDARD",
