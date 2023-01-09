@@ -12,9 +12,9 @@ import (
 const (
 	mySQLServiceName             = "csb-google-mysql"
 	mySQLServiceID               = "b9f3d4f3-8716-4179-8b7c-e80bd5bccb31"
-	mySQLServiceDisplayName      = "Google Cloud Mysql (Beta)"
+	mySQLServiceDisplayName      = "Google Cloud MySQL (Beta)"
 	mySQLServiceDocumentationURL = "https://cloud.google.com/sql/docs/mysql/"
-	mySQLServiceDescription      = "Beta - Mysql is a fully managed service for the Google Cloud Platform."
+	mySQLServiceDescription      = "Beta - MySQL is a fully managed service for the Google Cloud Platform."
 	mySQLServiceSupportURL       = "https://cloud.google.com/support/"
 	mySQLCustomPlanName          = "custom-plan"
 	mySQLCustomPlanID            = "9daa07f1-78e8-4bda-9efe-91576102c30d"

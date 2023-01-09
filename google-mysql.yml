@@ -15,9 +15,9 @@
 version: 1
 name: csb-google-mysql
 id: b9f3d4f3-8716-4179-8b7c-e80bd5bccb31
-description: Beta - Mysql is a fully managed service for the
+description: Beta - MySQL is a fully managed service for the
   Google Cloud Platform.
-display_name: Google Cloud Mysql (Beta)
+display_name: Google Cloud MySQL (Beta)
 image_url: file://service-images/csb.png
 documentation_url: https://cloud.google.com/sql/docs/mysql/
 support_url: https://cloud.google.com/support/
