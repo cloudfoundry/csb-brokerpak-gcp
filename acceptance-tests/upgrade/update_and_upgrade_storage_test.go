@@ -59,7 +59,7 @@ var _ = Describe("UpgradeStorageTest", Label("storage"), func() {
 			Expect(got).To(Equal(blobDataOne))
 
 			By("re-applying the terraform for service instance")
-			serviceInstance.Update("-c", `{"storage_class": "REGIONAL"}`)
+			serviceInstance.Update("-c", `{"storage_class": "COLDLINE"}`)
 
 			By("deleting bindings created before the upgrade")
 			bindingOne.Unbind()
