@@ -10,8 +10,14 @@ import (
 )
 
 const (
-	mySQLServiceName    = "csb-google-mysql"
-	customMySQLPlanName = "custom-plan"
+	mySQLServiceName             = "csb-google-mysql"
+	mySQLServiceID               = "b9f3d4f3-8716-4179-8b7c-e80bd5bccb31"
+	mySQLServiceDisplayName      = "Google Cloud MySQL (Beta)"
+	mySQLServiceDocumentationURL = "https://cloud.google.com/sql/docs/mysql/"
+	mySQLServiceDescription      = "Beta - MySQL is a fully managed service for the Google Cloud Platform."
+	mySQLServiceSupportURL       = "https://cloud.google.com/support/"
+	mySQLCustomPlanName          = "custom-plan"
+	mySQLCustomPlanID            = "9daa07f1-78e8-4bda-9efe-91576102c30d"
 )
 
 var customMySQLPlans = []map[string]any{
@@ -19,8 +25,8 @@ var customMySQLPlans = []map[string]any{
 }
 
 var customMySQLPlan = map[string]any{
-	"name":          customMySQLPlanName,
-	"id":            "9daa07f1-78e8-4bda-9efe-91576102c30d",
+	"name":          mySQLCustomPlanName,
+	"id":            mySQLCustomPlanID,
 	"description":   "custom plan defined by customer",
 	"mysql_version": "MYSQL_5_7",
 	"metadata": map[string]any{
@@ -28,7 +34,7 @@ var customMySQLPlan = map[string]any{
 	},
 }
 
-var _ = Describe("Mysql", Label("MySQL"), func() {
+var _ = Describe("MySQL", Label("MySQL"), func() {
 	BeforeEach(func() {
 		Expect(mockTerraform.SetTFState([]testframework.TFStateValue{})).NotTo(HaveOccurred())
 	})
@@ -42,21 +48,26 @@ var _ = Describe("Mysql", Label("MySQL"), func() {
 		Expect(err).NotTo(HaveOccurred())
 
 		service := testframework.FindService(catalog, mySQLServiceName)
-		Expect(service.ID).NotTo(BeNil())
-		Expect(service.Name).NotTo(BeNil())
+		Expect(service.ID).To(Equal(mySQLServiceID))
+		Expect(service.Description).To(Equal(mySQLServiceDescription))
 		Expect(service.Tags).To(ConsistOf("gcp", "mysql", "beta"))
-		Expect(service.Metadata.ImageUrl).NotTo(BeNil())
-		Expect(service.Metadata.DisplayName).NotTo(BeNil())
+		Expect(service.Metadata.ImageUrl).To(ContainSubstring("data:image/png;base64,"))
+		Expect(service.Metadata.DisplayName).To(Equal(mySQLServiceDisplayName))
+		Expect(service.Metadata.DocumentationUrl).To(Equal(mySQLServiceDocumentationURL))
+		Expect(service.Metadata.SupportUrl).To(Equal(mySQLServiceSupportURL))
 		Expect(service.Plans).To(
 			ConsistOf(
-				MatchFields(IgnoreExtras, Fields{"Name": Equal("custom-plan")}),
+				MatchFields(IgnoreExtras, Fields{
+					ID:   Equal(mySQLCustomPlanID),
+					Name: Equal(mySQLCustomPlanName),
+				}),
 			),
 		)
 	})
 
 	Describe("provisioning", func() {
 		It("should provision a plan", func() {
-			instanceID, err := broker.Provision(mySQLServiceName, customMySQLPlanName, map[string]any{"tier": "db-n1-standard-1"})
+			instanceID, err := broker.Provision(mySQLServiceName, mySQLCustomPlanName, map[string]any{"tier": "db-n1-standard-1"})
 
 			Expect(err).NotTo(HaveOccurred())
 			Expect(mockTerraform.FirstTerraformInvocationVars()).To(
@@ -86,7 +97,7 @@ var _ = Describe("Mysql", Label("MySQL"), func() {
 		})
 
 		It("should allow setting properties not defined in the plan", func() {
-			_, err := broker.Provision(mySQLServiceName, customMySQLPlanName, map[string]any{
+			_, err := broker.Provision(mySQLServiceName, mySQLCustomPlanName, map[string]any{
 				"credentials":                            "fake-credentials",
 				"project":                                "fake-project",
 				"instance_name":                          "fakeinstancename",
@@ -129,14 +140,14 @@ var _ = Describe("Mysql", Label("MySQL"), func() {
 		})
 
 		It("should not allow changing of plan defined properties", func() {
-			_, err := broker.Provision(mySQLServiceName, customMySQLPlanName, map[string]any{"mysql_version": "MYSQL_8_0"})
+			_, err := broker.Provision(mySQLServiceName, mySQLCustomPlanName, map[string]any{"mysql_version": "MYSQL_8_0"})
 
 			Expect(err).To(MatchError(ContainSubstring("plan defined properties cannot be changed: mysql_version")))
 		})
 
 		DescribeTable("property constraints",
 			func(params map[string]any, expectedErrorMsg string) {
-				_, err := broker.Provision(mySQLServiceName, customMySQLPlanName, params)
+				_, err := broker.Provision(mySQLServiceName, mySQLCustomPlanName, params)
 
 				Expect(err).To(MatchError(ContainSubstring(expectedErrorMsg)))
 			},
@@ -203,14 +214,14 @@ var _ = Describe("Mysql", Label("MySQL"), func() {
 
 		BeforeEach(func() {
 			var err error
-			instanceID, err = broker.Provision(mySQLServiceName, customMySQLPlanName, map[string]any{"tier": "db-n1-standard-1"})
+			instanceID, err = broker.Provision(mySQLServiceName, mySQLCustomPlanName, map[string]any{"tier": "db-n1-standard-1"})
 
 			Expect(err).NotTo(HaveOccurred())
 		})
 
 		DescribeTable("should allow updating properties not flagged as `prohibit_update` and not specified in the plan",
 			func(params map[string]any) {
-				err := broker.Update(instanceID, mySQLServiceName, customMySQLPlanName, params)
+				err := broker.Update(instanceID, mySQLServiceName, mySQLCustomPlanName, params)
 
 				Expect(err).NotTo(HaveOccurred())
 			},
@@ -231,7 +242,7 @@ var _ = Describe("Mysql", Label("MySQL"), func() {
 
 		DescribeTable("should prevent updating properties flagged as `prohibit_update` because it can result in the recreation of the service instance and lost data",
 			func(params map[string]any) {
-				err := broker.Update(instanceID, mySQLServiceName, customMySQLPlanName, params)
+				err := broker.Update(instanceID, mySQLServiceName, mySQLCustomPlanName, params)
 
 				Expect(err).To(MatchError(
 					ContainSubstring(
@@ -250,7 +261,7 @@ var _ = Describe("Mysql", Label("MySQL"), func() {
 
 		DescribeTable("should not allow updating properties that are specified in the plan",
 			func(key string, value any) {
-				err := broker.Update(instanceID, mySQLServiceName, customMySQLPlanName, map[string]any{key: value})
+				err := broker.Update(instanceID, mySQLServiceName, mySQLCustomPlanName, map[string]any{key: value})
 
 				Expect(err).To(
 					MatchError(
@@ -265,7 +276,7 @@ var _ = Describe("Mysql", Label("MySQL"), func() {
 
 		DescribeTable("should not allow updating additional properties",
 			func(key string, value any) {
-				err := broker.Update(instanceID, mySQLServiceName, customMySQLPlanName, map[string]any{key: value})
+				err := broker.Update(instanceID, mySQLServiceName, mySQLCustomPlanName, map[string]any{key: value})
 
 				Expect(err).To(
 					MatchError(
@@ -305,7 +316,7 @@ var _ = Describe("Mysql", Label("MySQL"), func() {
 			})
 			Expect(err).NotTo(HaveOccurred())
 
-			bindResult, err := broker.Bind(mySQLServiceName, customMySQLPlanName, instanceID, nil)
+			bindResult, err := broker.Bind(mySQLServiceName, mySQLCustomPlanName, instanceID, nil)
 			Expect(err).NotTo(HaveOccurred())
 
 			Expect(bindResult).To(Equal(map[string]any{
@@ -344,7 +355,7 @@ func provisionInstanceForBinding(
 	})
 	Expect(err).NotTo(HaveOccurred())
 
-	instanceID, err := broker.Provision(mySQLServiceName, customMySQLPlanName, map[string]any{"tier": "db-n1-standard-1"})
+	instanceID, err := broker.Provision(mySQLServiceName, mySQLCustomPlanName, map[string]any{"tier": "db-n1-standard-1"})
 	Expect(err).NotTo(HaveOccurred())
 	return instanceID
 }

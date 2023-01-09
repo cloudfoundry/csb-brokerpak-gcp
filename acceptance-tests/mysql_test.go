@@ -13,7 +13,7 @@ import (
 	"csbbrokerpakgcp/acceptance-tests/helpers/services"
 )
 
-var _ = Describe("Mysql", Label("mysql"), func() {
+var _ = Describe("MySQL", Label("mysql"), func() {
 	It("can be accessed by an app", func() {
 		By("creating a service instance")
 		serviceInstance := services.CreateInstance("csb-google-mysql", "default")
@@ -47,7 +47,7 @@ var _ = Describe("Mysql", Label("mysql"), func() {
 	It("can create service keys with a public IP address", func() {
 		By("creating a service instance with a public IP address")
 		publicIPParams := services.WithParameters(map[string]any{"public_ip": true})
-		serviceInstance := services.CreateInstance("csb-google-mysql", "small", publicIPParams)
+		serviceInstance := services.CreateInstance("csb-google-mysql", "default", publicIPParams)
 		defer serviceInstance.Delete()
 
 		By("creating and examining a service key")

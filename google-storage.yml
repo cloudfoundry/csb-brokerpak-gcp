@@ -39,23 +39,37 @@ provision:
     default: csb-${request.instance_id}
   - field_name: storage_class
     type: string
-    details: The Storage Class of the new bucket.
-    default: STANDARD
-    enum:
-      STANDARD : STANDARD
-      MULTI_REGIONAL: MULTI_REGIONAL
-      REGIONAL : REGIONAL
-      NEARLINE : NEARLINE
-      COLDLINE : COLDLINE
-  - field_name: region
-    type: string
-    details: The region where the buckets are created.
-    default: us-central1
+    details: |
+      The Storage Class of the new bucket.
+      For more information about valid storage class values, see https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/storage_bucket#storage_class.
+    default: MULTI_REGIONAL
     constraints:
       examples:
+        - STANDARD
+        - COLDLINE
+  - field_name: region
+    type: string
+    details: |
+      The region where the buckets are created.
+      For more information about regions, see https://cloud.google.com/storage/docs/locations or https://cloud.google.com/about/locations
+    default: us
+    constraints:
+      examples:
+        - us
         - us-central1
         - asia-northeast1
       pattern: ^[a-z][a-z0-9-]+$
+    prohibit_update: true
+  - field_name: placement_dual_region_data_locations
+    type: array
+    details: |
+      The list of individual regions that comprise a dual-region bucket.
+      Check the list of valid storage classes for dual-region: https://cloud.google.com/storage/docs/storage-classes. 
+      For more information about regions, see https://cloud.google.com/storage/docs/locations or https://cloud.google.com/about/locations
+    default: []
+    constraints:
+      examples:
+        - ["us-east1", "us-east4"]
     prohibit_update: true
   - field_name: credentials
     type: string
