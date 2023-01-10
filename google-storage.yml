@@ -71,6 +71,12 @@ provision:
       examples:
         - ["us-east1", "us-east4"]
     prohibit_update: true
+  - field_name: versioning
+    type: boolean
+    details: |
+      Whether the versioning configuration is enabled.
+      For more information about versioning, see https://cloud.google.com/storage/docs/object-versioning
+    default: true
   - field_name: credentials
     type: string
     details: GCP credentials
