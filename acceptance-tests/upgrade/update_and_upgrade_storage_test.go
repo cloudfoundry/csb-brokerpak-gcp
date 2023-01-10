@@ -25,6 +25,10 @@ var _ = Describe("UpgradeStorageTest", Label("storage"), func() {
 			serviceInstance := services.CreateInstance(
 				"csb-google-storage-bucket",
 				"private",
+				services.WithParameters(map[string]any{
+					"region":        "us-central1",
+					"storage_class": "STANDARD",
+				}),
 				services.WithBroker(serviceBroker),
 			)
 			defer serviceInstance.Delete()
