@@ -54,7 +54,7 @@ var _ = Describe("mysql", Label("mysql-terraform"), Ordered, func() {
 
 		It("maps parameters to corresponding values", func() {
 			Expect(AfterValuesForType(plan, googleSQLDBInstance)).To(
-				MatchKeys(0, Keys{
+				MatchAllKeys(Keys{
 					"name":                   Equal("test-instance-name-456"),
 					"database_version":       Equal("8.0"),
 					"region":                 Equal("us-central1"),
@@ -67,7 +67,7 @@ var _ = Describe("mysql", Label("mysql-terraform"), Ordered, func() {
 						MatchKeys(IgnoreExtras, Keys{
 							"tier":        Equal("db-n1-standard-2"),
 							"disk_size":   BeNumerically("==", 10),
-							"user_labels": MatchKeys(0, Keys{"label1": Equal("value1")}),
+							"user_labels": MatchAllKeys(Keys{"label1": Equal("value1")}),
 							"ip_configuration": ContainElement(
 								MatchKeys(IgnoreExtras, Keys{
 									"ipv4_enabled":        BeFalse(),
