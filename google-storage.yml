@@ -77,6 +77,10 @@ provision:
       Whether the versioning configuration is enabled.
       For more information about versioning, see https://cloud.google.com/storage/docs/object-versioning
     default: true
+  - field_name: public_access_prevention
+    type: string
+    details: Prevents public access to a bucket. Acceptable values are "inherited" or "enforced". Default is "enforced".
+    default: "enforced"
   - field_name: credentials
     type: string
     details: GCP credentials

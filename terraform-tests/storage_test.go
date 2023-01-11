@@ -28,6 +28,7 @@ var _ = Describe("storage", Label("storage-terraform"), Ordered, func() {
 		"storage_class":                        "MULTI_REGIONAL",
 		"placement_dual_region_data_locations": []string{},
 		"versioning":                           true,
+		"public_access_prevention":             "fake-public-access-prevention-value",
 	}
 
 	BeforeAll(func() {
@@ -48,6 +49,7 @@ var _ = Describe("storage", Label("storage-terraform"), Ordered, func() {
 					"storage_class":           Equal("MULTI_REGIONAL"),
 					"labels":                  MatchAllKeys(Keys{"label1": Equal("value1")}),
 					"custom_placement_config": BeEmpty(), // TF internals: It is a []any{} which means no custom_placement_config
+					"public_access_prevention": Equal("fake-public-access-prevention-value"),
 					"versioning": ConsistOf(
 						MatchAllKeys(Keys{
 							"enabled": BeTrue(),
