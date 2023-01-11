@@ -44,11 +44,11 @@ var _ = Describe("storage", Label("storage-terraform"), Ordered, func() {
 		It("maps parameters to corresponding values", func() {
 			Expect(AfterValuesForType(plan, googleBucketResource)).To(
 				MatchKeys(IgnoreExtras, Keys{
-					"name":                    Equal("bucket-name"),
-					"location":                Equal("US"),
-					"storage_class":           Equal("MULTI_REGIONAL"),
-					"labels":                  MatchAllKeys(Keys{"label1": Equal("value1")}),
-					"custom_placement_config": BeEmpty(), // TF internals: It is a []any{} which means no custom_placement_config
+					"name":                     Equal("bucket-name"),
+					"location":                 Equal("US"),
+					"storage_class":            Equal("MULTI_REGIONAL"),
+					"labels":                   MatchAllKeys(Keys{"label1": Equal("value1")}),
+					"custom_placement_config":  BeEmpty(), // TF internals: It is a []any{} which means no custom_placement_config
 					"public_access_prevention": Equal("fake-public-access-prevention-value"),
 					"versioning": ConsistOf(
 						MatchAllKeys(Keys{
