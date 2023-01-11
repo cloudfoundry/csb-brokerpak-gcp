@@ -71,6 +71,10 @@ provision:
       examples:
         - ["us-east1", "us-east4"]
     prohibit_update: true
+  - field_name: public_access_prevention
+    type: string
+    details: Prevents public access to a bucket. Acceptable values are "inherited" or "enforced". Default is "enforced".
+    default: "enforced"
   - field_name: credentials
     type: string
     details: GCP credentials

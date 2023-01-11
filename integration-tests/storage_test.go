@@ -57,6 +57,7 @@ var _ = Describe("Storage Bucket", Label("storage"), func() {
 						"pcf-instance-id": Equal(instanceID),
 					})),
 					HaveKeyWithValue("placement_dual_region_data_locations", BeEmpty()),
+					HaveKeyWithValue("public_access_prevention", "enforced"),
 				),
 			)
 		})
@@ -67,6 +68,7 @@ var _ = Describe("Storage Bucket", Label("storage"), func() {
 				"storage_class":                        "STANDARD",
 				"region":                               "us",
 				"placement_dual_region_data_locations": []string{"us-west1", "us-west2"},
+				"public_access_prevention":             "inherited",
 			})
 			Expect(err).NotTo(HaveOccurred())
 
@@ -76,6 +78,7 @@ var _ = Describe("Storage Bucket", Label("storage"), func() {
 					HaveKeyWithValue("storage_class", "STANDARD"),
 					HaveKeyWithValue("region", "us"),
 					HaveKeyWithValue("placement_dual_region_data_locations", ConsistOf("us-west1", "us-west2")),
+					HaveKeyWithValue("public_access_prevention", "inherited"),
 				),
 			)
 		})
