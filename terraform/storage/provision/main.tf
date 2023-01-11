@@ -12,6 +12,10 @@ resource "google_storage_bucket" "bucket" {
     }
   }
 
+  versioning {
+    enabled = var.versioning
+  }
+
   lifecycle {
     prevent_destroy = true
   }
