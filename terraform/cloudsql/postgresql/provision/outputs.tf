@@ -15,3 +15,4 @@ output "sslkey" {
   sensitive = true
 }
 output "sslrootcert" { value = google_sql_database_instance.instance.server_ca_cert.0.cert }
+

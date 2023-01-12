@@ -7,7 +7,6 @@ import (
 	"net/http"
 	"time"
 
-	"github.com/go-sql-driver/mysql"
 	"github.com/gorilla/mux"
 )
 
@@ -17,8 +16,8 @@ const (
 	valueColumn = "valuedata"
 )
 
-func App(config *mysql.Config) *mux.Router {
-	db := connect(config)
+func App(uri string) *mux.Router {
+	db := connect(uri)
 
 	r := mux.NewRouter()
 	r.HandleFunc("/", aliveness).Methods("HEAD", "GET")
@@ -33,8 +32,8 @@ func aliveness(w http.ResponseWriter, r *http.Request) {
 	w.WriteHeader(http.StatusNoContent)
 }
 
-func connect(config *mysql.Config) *sql.DB {
-	db, err := sql.Open("mysql", config.FormatDSN())
+func connect(uri string) *sql.DB {
+	db, err := sql.Open("mysql", uri)
 	if err != nil {
 		log.Fatalf("failed to connect to database: %s", err)
 	}

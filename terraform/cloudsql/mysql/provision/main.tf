@@ -66,3 +66,8 @@ resource "google_sql_user" "admin_user" {
   instance = google_sql_database_instance.instance.name
   password = random_password.password.result
 }
+
+resource "google_sql_ssl_cert" "client_cert" {
+  common_name = random_string.username.result
+  instance    = google_sql_database_instance.instance.name
+}
