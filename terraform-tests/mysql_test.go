@@ -111,7 +111,7 @@ var _ = Describe("mysql", Label("mysql-terraform"), Ordered, func() {
 	})
 
 	Context("backups", func() {
-		Specify("disabling backups", func() {
+		Specify("disabling", func() {
 			plan = ShowPlan(terraformProvisionDir, buildVars(defaultVars, map[string]any{"backups_retain_number": 0}))
 
 			Expect(AfterValuesForType(plan, googleSQLDBInstance)).To(
@@ -125,7 +125,7 @@ var _ = Describe("mysql", Label("mysql-terraform"), Ordered, func() {
 			)
 		})
 
-		Specify("enabling transaction log backups", func() {
+		Specify("enabling transaction log", func() {
 			plan = ShowPlan(terraformProvisionDir, buildVars(defaultVars, map[string]any{"backups_transaction_log_retention_days": 3}))
 
 			Expect(AfterValuesForType(plan, googleSQLDBInstance)).To(
@@ -171,6 +171,16 @@ var _ = Describe("mysql", Label("mysql-terraform"), Ordered, func() {
 					})),
 				}),
 			)
+		})
+	})
+
+	Context("TLS", func() {
+		It("generates the artefacts", func() {
+			plan = ShowPlan(terraformProvisionDir, buildVars(defaultVars, map[string]any{}))
+
+			Expect(AfterValuesForType(plan, "google_sql_ssl_cert")).To(MatchKeys(IgnoreExtras, Keys{
+				"instance": Equal("test-instance-name-456"),
+			}))
 		})
 	})
 })

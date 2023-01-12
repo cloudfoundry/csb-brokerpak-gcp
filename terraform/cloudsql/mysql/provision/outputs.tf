@@ -7,4 +7,10 @@ output "password" {
   sensitive = true
   value     = google_sql_user.admin_user.password
 }
-output "use_tls" { value = false }
+
+output "sslrootcert" { value = google_sql_database_instance.instance.server_ca_cert.0.cert }
+output "sslcert" { value = google_sql_ssl_cert.client_cert.cert }
+output "sslkey" {
+  value     = google_sql_ssl_cert.client_cert.private_key
+  sensitive = true
+}
