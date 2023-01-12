@@ -29,6 +29,7 @@ var _ = Describe("storage", Label("storage-terraform"), Ordered, func() {
 		"placement_dual_region_data_locations": []string{},
 		"versioning":                           true,
 		"public_access_prevention":             "fake-public-access-prevention-value",
+		"uniform_bucket_level_access":          true,
 	}
 
 	BeforeAll(func() {
@@ -55,6 +56,7 @@ var _ = Describe("storage", Label("storage-terraform"), Ordered, func() {
 							"enabled": BeTrue(),
 						}),
 					),
+					"uniform_bucket_level_access": BeTrue(),
 				}),
 			)
 		})
