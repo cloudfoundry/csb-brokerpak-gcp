@@ -1,9 +1,10 @@
 resource "google_storage_bucket" "bucket" {
-  name                     = var.name
-  location                 = var.region
-  storage_class            = var.storage_class
-  labels                   = var.labels
-  public_access_prevention = var.public_access_prevention
+  name                        = var.name
+  location                    = var.region
+  storage_class               = var.storage_class
+  labels                      = var.labels
+  public_access_prevention    = var.public_access_prevention
+  uniform_bucket_level_access = var.uniform_bucket_level_access
 
   dynamic "custom_placement_config" {
     for_each = length(var.placement_dual_region_data_locations) == 0 ? [] : [null]
