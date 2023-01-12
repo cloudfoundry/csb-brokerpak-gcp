@@ -81,6 +81,12 @@ provision:
     type: string
     details: Prevents public access to a bucket. Acceptable values are "inherited" or "enforced". Default is "enforced".
     default: "enforced"
+  - field_name: uniform_bucket_level_access
+    type: boolean
+    details: |
+      Enables Uniform bucket-level access to a bucket.
+      For more information about uniform bucket-level access, see https://cloud.google.com/storage/docs/uniform-bucket-level-access
+    default: true
   - field_name: credentials
     type: string
     details: GCP credentials
