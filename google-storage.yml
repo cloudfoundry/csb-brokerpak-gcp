@@ -87,6 +87,12 @@ provision:
       Enables Uniform bucket-level access to a bucket.
       For more information about uniform bucket-level access, see https://cloud.google.com/storage/docs/uniform-bucket-level-access
     default: true
+  - field_name: default_kms_key_name
+    type: string
+    details: |
+      The `id` of a Cloud KMS key that will be used to encrypt objects inserted into this bucket.
+      For more information about encryption keys, see https://cloud.google.com/storage/docs/encryption/using-customer-managed-keys
+    default: ""
   - field_name: credentials
     type: string
     details: GCP credentials

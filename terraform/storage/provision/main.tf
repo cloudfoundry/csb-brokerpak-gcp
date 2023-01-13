@@ -17,6 +17,15 @@ resource "google_storage_bucket" "bucket" {
     enabled = var.versioning
   }
 
+  # Having a permanent encryption block with default_kms_key_name = "" works but results in terraform applying a change every run
+  # There is no enabled = false attribute available to ask terraform to ignore the block
+  dynamic "encryption" {
+    for_each = trimspace(var.default_kms_key_name) != "" ? [true] : []
+    content {
+      default_kms_key_name = var.default_kms_key_name
+    }
+  }
+
   lifecycle {
     prevent_destroy = true
   }
