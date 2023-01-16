@@ -64,8 +64,10 @@ provision:
     type: array
     details: |
       The list of individual regions that comprise a dual-region bucket.
+      Set the `storage_class` property with a valid storage class for the dual-region configuration.
+      The `MULTI_REGIONAL` and `REGIONAL` storage classes are not accepted to configure the bucket in dual-region.
       Check the list of valid storage classes for dual-region: https://cloud.google.com/storage/docs/storage-classes. 
-      For more information about regions, see https://cloud.google.com/storage/docs/locations or https://cloud.google.com/about/locations
+      For more information about valid regions, see https://cloud.google.com/storage/docs/locations.
     default: []
     constraints:
       examples:
