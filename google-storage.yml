@@ -91,7 +91,7 @@ provision:
     type: string
     details: |
       The `id` of a Cloud KMS key that will be used to encrypt objects inserted into this bucket.
-      Its default value is `empty` so a Google-managed encryption key will be used instead.
+      Its default value is `""` so a Google-managed encryption key will be used instead.
       For more information about encryption keys, see https://cloud.google.com/storage/docs/encryption/using-customer-managed-keys
       Note: The key ring must be in the same location as the data you intend to encrypt, in other words, the same location as the `region` property,
       but it can be in a different project.
