@@ -85,7 +85,7 @@ provision:
     type: boolean
     details: |
       Enables Uniform bucket-level access to a bucket. When enabled, the option becomes permanent after 90 days.
-      Disables ACL's.
+      Disables ACLs.
       For more information about uniform bucket-level access, see https://cloud.google.com/storage/docs/uniform-bucket-level-access
     default: false
   - field_name: credentials
