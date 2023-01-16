@@ -59,7 +59,7 @@ var _ = Describe("Storage Bucket", Label("storage"), func() {
 					HaveKeyWithValue("placement_dual_region_data_locations", BeEmpty()),
 					HaveKeyWithValue("public_access_prevention", "enforced"),
 					HaveKeyWithValue("versioning", BeFalse()),
-					HaveKeyWithValue("uniform_bucket_level_access", BeTrue()),
+					HaveKeyWithValue("uniform_bucket_level_access", BeFalse()),
 					HaveKeyWithValue("default_kms_key_name", BeEmpty()),
 				),
 			)
@@ -73,7 +73,7 @@ var _ = Describe("Storage Bucket", Label("storage"), func() {
 				"placement_dual_region_data_locations": []string{"us-west1", "us-west2"},
 				"public_access_prevention":             "inherited",
 				"versioning":                           true,
-				"uniform_bucket_level_access":          false,
+				"uniform_bucket_level_access":          true,
 				"default_kms_key_name":                 "projects/project/locations/location/keyRings/key-ring-name/cryptoKeys/key-name",
 			})
 			Expect(err).NotTo(HaveOccurred())
@@ -86,7 +86,7 @@ var _ = Describe("Storage Bucket", Label("storage"), func() {
 					HaveKeyWithValue("placement_dual_region_data_locations", ConsistOf("us-west1", "us-west2")),
 					HaveKeyWithValue("public_access_prevention", "inherited"),
 					HaveKeyWithValue("versioning", BeTrue()),
-					HaveKeyWithValue("uniform_bucket_level_access", BeFalse()),
+					HaveKeyWithValue("uniform_bucket_level_access", BeTrue()),
 					HaveKeyWithValue("default_kms_key_name", "projects/project/locations/location/keyRings/key-ring-name/cryptoKeys/key-name"),
 				),
 			)
