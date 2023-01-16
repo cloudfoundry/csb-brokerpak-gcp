@@ -19,11 +19,11 @@ import (
 )
 
 type AppResponseUser struct {
-	Id   int    `json:"id"`
+	ID   int    `json:"id"`
 	Name string `json:"name"`
 }
 
-type MySqlOption struct {
+type MySQLOption struct {
 	Name  string `json:"variableName"`
 	Value string `json:"value"`
 }
@@ -40,8 +40,8 @@ var _ = Describe("MySQL", Label("mysql"), func() {
 
 		testPath := path.Dir(testExecutable)
 		appManifest := path.Join(testPath, "apps", "javadbapp", "manifest.yml")
-		appOne := apps.Push(apps.WithApp(apps.JavaDbApp), apps.WithManifest(appManifest))
-		appTwo := apps.Push(apps.WithApp(apps.JavaDbApp), apps.WithManifest(appManifest))
+		appOne := apps.Push(apps.WithApp(apps.JavaDBApp), apps.WithManifest(appManifest))
+		appTwo := apps.Push(apps.WithApp(apps.JavaDBApp), apps.WithManifest(appManifest))
 		defer apps.Delete(appOne, appTwo)
 
 		By("binding the apps to the storage service instance")
@@ -67,12 +67,12 @@ var _ = Describe("MySQL", Label("mysql"), func() {
 		Expect(err).NotTo(HaveOccurred())
 
 		By("getting the value using the second app")
-		got := appTwo.GET("%d", userIn.Id)
+		got := appTwo.GET("%d", userIn.ID)
 		err = json.Unmarshal([]byte(got), &userOut)
 		Expect(err).NotTo(HaveOccurred())
 		Expect(userOut.Name).To(Equal(value), "The first app stored [%s] as the value, the second app retrieved [%s]", value, userOut.Name)
 
-		tlsCipher := MySqlOption{}
+		tlsCipher := MySQLOption{}
 		By("verifying the DB connection utilises TLS")
 		got = appOne.GET("mysql-ssl")
 		err = json.Unmarshal([]byte(got), &tlsCipher)
