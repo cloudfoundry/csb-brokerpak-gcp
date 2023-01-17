@@ -45,6 +45,10 @@ resource "google_sql_database_instance" "instance" {
   lifecycle {
     prevent_destroy = true
   }
+
+  timeouts {
+    create = "60m"
+  }
 }
 
 resource "google_sql_database" "database" {
