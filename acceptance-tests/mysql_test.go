@@ -1,8 +1,13 @@
 package acceptance_test
 
 import (
+	"encoding/json"
+	"io"
 	"net"
 	"net/url"
+	"os"
+	"path"
+	"strings"
 
 	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
@@ -13,15 +18,35 @@ import (
 	"csbbrokerpakgcp/acceptance-tests/helpers/services"
 )
 
+type appResponseUser struct {
+	ID   int    `json:"id"`
+	Name string `json:"name"`
+}
+
+type mySQLOption struct {
+	Name  string `json:"variableName"`
+	Value string `json:"value"`
+}
+
 var _ = Describe("MySQL", Label("mysql"), func() {
-	It("can be accessed by an app", func() {
+	It("can be accessed by an app", Label("JDBC"), func() {
+		var (
+			userIn, userOut appResponseUser
+			tlsCipher       mySQLOption
+		)
+
 		By("creating a service instance")
 		serviceInstance := services.CreateInstance("csb-google-mysql", "default")
 		defer serviceInstance.Delete()
 
 		By("pushing the unstarted app twice")
-		appOne := apps.Push(apps.WithApp(apps.MySQL))
-		appTwo := apps.Push(apps.WithApp(apps.MySQL))
+		testExecutable, err := os.Executable()
+		Expect(err).NotTo(HaveOccurred())
+
+		testPath := path.Dir(testExecutable)
+		appManifest := path.Join(testPath, "apps", "jdbctestapp", "manifest.yml")
+		appOne := apps.Push(apps.WithApp(apps.JDBCTestAppMysql), apps.WithManifest(appManifest))
+		appTwo := apps.Push(apps.WithApp(apps.JDBCTestAppMysql), apps.WithManifest(appManifest))
 		defer apps.Delete(appOne, appTwo)
 
 		By("binding the apps to the storage service instance")
@@ -35,13 +60,28 @@ var _ = Describe("MySQL", Label("mysql"), func() {
 		Expect(binding.Credential()).To(matchers.HaveCredHubRef)
 
 		By("setting a key-value using the first app")
-		key := random.Hexadecimal()
 		value := random.Hexadecimal()
-		appOne.PUT(value, key)
+		response := appOne.POST("", "?name=%s", value)
+
+		responseBody, err := io.ReadAll(response.Body)
+		Expect(err).NotTo(HaveOccurred())
+
+		err = json.Unmarshal(responseBody, &userIn)
+		Expect(err).NotTo(HaveOccurred())
 
 		By("getting the value using the second app")
-		got := appTwo.GET(key)
-		Expect(got).To(Equal(value))
+		got := appTwo.GET("%d", userIn.ID)
+		err = json.Unmarshal([]byte(got), &userOut)
+		Expect(err).NotTo(HaveOccurred())
+		Expect(userOut.Name).To(Equal(value), "The first app stored [%s] as the value, the second app retrieved [%s]", value, userOut.Name)
+
+		By("verifying the DB connection utilises TLS")
+		got = appOne.GET("mysql-ssl")
+		err = json.Unmarshal([]byte(got), &tlsCipher)
+		Expect(err).NotTo(HaveOccurred())
+
+		Expect(strings.ToLower(tlsCipher.Name)).To(Equal("ssl_cipher"))
+		Expect(tlsCipher.Value).NotTo(BeEmpty(), "Expected Mysql connection for app %s to be encrypted", appOne.Name)
 	})
 
 	It("can create service keys with a public IP address", func() {

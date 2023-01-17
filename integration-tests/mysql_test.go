@@ -28,7 +28,7 @@ var customMySQLPlan = map[string]any{
 	"name":          mySQLCustomPlanName,
 	"id":            mySQLCustomPlanID,
 	"description":   "custom plan defined by customer",
-	"mysql_version": "MYSQL_5_7",
+	"mysql_version": "MYSQL_8_0",
 	"metadata": map[string]any{
 		"displayName": "custom plan defined by customer (beta)",
 	},
@@ -77,7 +77,7 @@ var _ = Describe("MySQL", Label("MySQL"), func() {
 					HaveKeyWithValue("public_ip", false),
 					HaveKeyWithValue("authorized_networks_cidrs", []any{}),
 					HaveKeyWithValue("credentials", "broker-gcp-creds"),
-					HaveKeyWithValue("mysql_version", "MYSQL_5_7"),
+					HaveKeyWithValue("mysql_version", "MYSQL_8_0"),
 					HaveKeyWithValue("db_name", "csb-db"),
 					HaveKeyWithValue("instance_name", "csb-mysql-"+instanceID),
 					HaveKeyWithValue("project", "broker-gcp-project"),
@@ -271,7 +271,7 @@ var _ = Describe("MySQL", Label("MySQL"), func() {
 					),
 				)
 			},
-			Entry("update mysql_version", "mysql_version", "MYSQL_5_7"),
+			Entry("update mysql_version", "mysql_version", "MYSQL_8_0"),
 		)
 
 		DescribeTable("should not allow updating additional properties",

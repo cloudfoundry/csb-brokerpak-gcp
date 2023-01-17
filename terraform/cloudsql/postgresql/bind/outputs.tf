@@ -16,8 +16,7 @@ output "uri" {
 output "port" { value = local.port }
 output "jdbcUrl" {
   sensitive = true
-  value = format("jdbc:%s://%s:%s/%s?user=%s\u0026password=%s\u0026ssl=%v",
-    "postgresql",
+  value = format("jdbc:postgresql://%s:%s/%s?user=%s\u0026password=%s\u0026ssl=%v",
     var.hostname,
     local.port,
     var.db_name,
