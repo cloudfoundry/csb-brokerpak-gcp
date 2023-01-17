@@ -4,6 +4,8 @@ import (
 	"crypto/tls"
 	"crypto/x509"
 	"fmt"
+	"log"
+	"os"
 
 	"github.com/cloudfoundry-community/go-cfenv"
 	"github.com/go-sql-driver/mysql"
@@ -12,7 +14,9 @@ import (
 )
 
 const (
-	customCaConfigName = "custom-ca"
+	customCaConfigName          = "custom-ca"
+	newBindingFormatFeatureFlag = "NEW_BINDING_FORMAT_FEATURE_FLAG"
+	enabled                     = "ENABLED"
 )
 
 func Read() (string, error) {
@@ -31,34 +35,41 @@ func Read() (string, error) {
 		return "", fmt.Errorf("failed to decode credentials: %w", err)
 	}
 
+	m.isNewBindingFormat = os.Getenv(newBindingFormatFeatureFlag) == enabled
+
 	if err := m.validate(); err != nil {
 		return "", fmt.Errorf("parsed credentials are not valid %s", err.Error())
 	}
 
-	if err := registerCustomCA(m.SSLRootCert, m.SSLKey, m.SSLCert); err != nil {
-		return "", fmt.Errorf("failed to register custom certificate %s", err.Error())
-	}
-
 	c := mysql.NewConfig()
-	c.TLSConfig = "skip-verify"
+	c.TLSConfig = "false"
 	c.Net = "tcp"
 	c.Addr = fmt.Sprintf("%s:%d", m.Host, m.Port)
 	c.User = m.Username
 	c.Passwd = m.Password
 	c.DBName = m.Database
 
+	if m.isNewBindingFormat {
+		log.Println("registering custom CA")
+		c.TLSConfig = "skip-verify"
+		if err := registerCustomCA(m.SSLRootCert, m.SSLKey, m.SSLCert); err != nil {
+			return "", fmt.Errorf("failed to register custom certificate %s", err.Error())
+		}
+	}
+
 	return c.FormatDSN(), nil
 }
 
 type binding struct {
-	Host        string `mapstructure:"hostname"`
-	Database    string `mapstructure:"name"`
-	Username    string `mapstructure:"username"`
-	Password    string `mapstructure:"password"`
-	Port        int    `mapstructure:"port"`
-	SSLCert     string `mapstructure:"sslcert"`
-	SSLKey      string `mapstructure:"sslkey"`
-	SSLRootCert string `mapstructure:"sslrootcert"`
+	Host               string `mapstructure:"hostname"`
+	Database           string `mapstructure:"name"`
+	Username           string `mapstructure:"username"`
+	Password           string `mapstructure:"password"`
+	Port               int    `mapstructure:"port"`
+	SSLCert            string `mapstructure:"sslcert"`
+	SSLKey             string `mapstructure:"sslkey"`
+	SSLRootCert        string `mapstructure:"sslrootcert"`
+	isNewBindingFormat bool
 }
 
 func (b binding) validate() error {
@@ -82,6 +93,10 @@ func (b binding) validate() error {
 
 	if b.Port == 0 {
 		err = multierr.Append(err, fmt.Errorf("invalid port"))
+	}
+
+	if !b.isNewBindingFormat {
+		return err
 	}
 
 	if b.SSLCert == "" {
