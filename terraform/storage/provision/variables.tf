@@ -8,3 +8,4 @@ variable "placement_dual_region_data_locations" { type = list(string) }
 variable "versioning" { type = bool }
 variable "public_access_prevention" { type = string }
 variable "uniform_bucket_level_access" { type = bool }
+variable "default_kms_key_name" { type = string }
