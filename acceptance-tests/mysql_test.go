@@ -18,18 +18,23 @@ import (
 	"csbbrokerpakgcp/acceptance-tests/helpers/services"
 )
 
-type AppResponseUser struct {
+type appResponseUser struct {
 	ID   int    `json:"id"`
 	Name string `json:"name"`
 }
 
-type MySQLOption struct {
+type mySQLOption struct {
 	Name  string `json:"variableName"`
 	Value string `json:"value"`
 }
 
 var _ = Describe("MySQL", Label("mysql"), func() {
-	It("can be accessed by an app", func() {
+	It("can be accessed by an app", Label("JDBC"), func() {
+		var (
+			userIn, userOut appResponseUser
+			tlsCipher       mySQLOption
+		)
+
 		By("creating a service instance")
 		serviceInstance := services.CreateInstance("csb-google-mysql", "default")
 		defer serviceInstance.Delete()
@@ -39,9 +44,9 @@ var _ = Describe("MySQL", Label("mysql"), func() {
 		Expect(err).NotTo(HaveOccurred())
 
 		testPath := path.Dir(testExecutable)
-		appManifest := path.Join(testPath, "apps", "javadbapp", "manifest.yml")
-		appOne := apps.Push(apps.WithApp(apps.JavaDBApp), apps.WithManifest(appManifest))
-		appTwo := apps.Push(apps.WithApp(apps.JavaDBApp), apps.WithManifest(appManifest))
+		appManifest := path.Join(testPath, "apps", "jdbctestapp", "manifest.yml")
+		appOne := apps.Push(apps.WithApp(apps.JDBCTestAppMysql), apps.WithManifest(appManifest))
+		appTwo := apps.Push(apps.WithApp(apps.JDBCTestAppMysql), apps.WithManifest(appManifest))
 		defer apps.Delete(appOne, appTwo)
 
 		By("binding the apps to the storage service instance")
@@ -61,8 +66,6 @@ var _ = Describe("MySQL", Label("mysql"), func() {
 		responseBody, err := io.ReadAll(response.Body)
 		Expect(err).NotTo(HaveOccurred())
 
-		userIn := AppResponseUser{}
-		userOut := AppResponseUser{}
 		err = json.Unmarshal(responseBody, &userIn)
 		Expect(err).NotTo(HaveOccurred())
 
@@ -72,7 +75,6 @@ var _ = Describe("MySQL", Label("mysql"), func() {
 		Expect(err).NotTo(HaveOccurred())
 		Expect(userOut.Name).To(Equal(value), "The first app stored [%s] as the value, the second app retrieved [%s]", value, userOut.Name)
 
-		tlsCipher := MySQLOption{}
 		By("verifying the DB connection utilises TLS")
 		got = appOne.GET("mysql-ssl")
 		err = json.Unmarshal([]byte(got), &tlsCipher)
