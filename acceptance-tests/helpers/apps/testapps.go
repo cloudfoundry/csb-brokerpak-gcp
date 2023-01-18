@@ -15,6 +15,7 @@ const (
 	PostgreSQL       AppCode = "postgresqlapp"
 	Redis            AppCode = "redisapp"
 	StackdriverTrace AppCode = "stackdrivertraceapp"
+	JDBCTestAppMysql AppCode = "jdbctestapp/jdbctestapp-mysql-1.0.0.jar"
 )
 
 func (a AppCode) Dir() string {
@@ -31,7 +32,7 @@ func (a AppCode) Dir() string {
 
 func WithApp(app AppCode) Option {
 	switch app {
-	case StackdriverTrace:
+	case StackdriverTrace, JDBCTestAppMysql:
 		return WithDir(app.Dir())
 	default:
 		return WithPreBuild(app.Dir())

@@ -86,7 +86,7 @@ fi
 echo "    GSB_SERVICE_CSB_GOOGLE_POSTGRES_PLANS: $(echo "$GSB_SERVICE_CSB_GOOGLE_POSTGRES_PLANS" | jq @json)" >>$cfmf
 
 if [[ -z "$GSB_SERVICE_CSB_GOOGLE_MYSQL_PLANS" ]]; then
-  GSB_SERVICE_CSB_GOOGLE_MYSQL_PLANS='[{"name": "default","id": "eec62c9b-b25e-4e65-bad5-6b74d90274bf","description": "Default MySQL v5.7 10GB storage","display_name": "default","mysql_version": "MYSQL_5_7","storage_gb": 10,"tier": "db-n1-standard-2"}]'
+  GSB_SERVICE_CSB_GOOGLE_MYSQL_PLANS='[{"name": "default","id": "eec62c9b-b25e-4e65-bad5-6b74d90274bf","description": "Default MySQL v5.7 10GB storage","display_name": "default","mysql_version": "MYSQL_8_0","storage_gb": 10,"tier": "db-n1-standard-2"}]'
 fi
 echo "    GSB_SERVICE_CSB_GOOGLE_MYSQL_PLANS: $(echo "$GSB_SERVICE_CSB_GOOGLE_MYSQL_PLANS" | jq @json)" >>$cfmf
 
