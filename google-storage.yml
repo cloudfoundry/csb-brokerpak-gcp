@@ -222,3 +222,8 @@ examples:
   plan_id: c07f21a6-8a63-11ea-bc1b-d38b123189cb
   provision_params: { "storage_class": "STANDARD" }
   bind_params: { "role": "storage.objectAdmin" }
+- name: gcp-bucket-dual-region
+  description: Dual Region Bucket
+  plan_id: bbc4853e-8a63-11ea-a54e-670ca63cee0b
+  provision_params: { "storage_class": "NEARLINE", "placement_dual_region_data_locations": ["us-east1","us-east4"], "region": "us" }
+  bind_params: { "role": "storage.objectAdmin" }
