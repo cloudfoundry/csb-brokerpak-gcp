@@ -42,7 +42,7 @@ func Read() (string, error) {
 	}
 
 	c := mysql.NewConfig()
-	c.TLSConfig = "true"
+	c.TLSConfig = "false"
 	c.Net = "tcp"
 	c.Addr = fmt.Sprintf("%s:%d", m.Host, m.Port)
 	c.User = m.Username
