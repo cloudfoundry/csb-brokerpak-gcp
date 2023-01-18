@@ -100,6 +100,13 @@ provision:
       but it can be in a different project.
       For available Cloud KMS locations, see Cloud KMS [locations](https://cloud.google.com/kms/docs/locations)
     default: ""
+  - field_name: autoclass
+    type: boolean
+    details: |
+      Automatically transitions each object to hotter or colder storage based on object-level activity, to optimise for cost and latency.
+      For more information about autoclass feature, see https://cloud.google.com/storage/docs/autoclass
+    default: false
+    prohibit_update: true
   - field_name: credentials
     type: string
     details: GCP credentials

@@ -31,6 +31,7 @@ var _ = Describe("storage", Label("storage-terraform"), Ordered, func() {
 		"public_access_prevention":             "fake-public-access-prevention-value",
 		"uniform_bucket_level_access":          true,
 		"default_kms_key_name":                 "projects/project/locations/location/keyRings/key-ring-name/cryptoKeys/key-name",
+		"autoclass":                            false,
 	}
 
 	BeforeAll(func() {
@@ -61,6 +62,11 @@ var _ = Describe("storage", Label("storage-terraform"), Ordered, func() {
 					"encryption": ConsistOf(
 						MatchAllKeys(Keys{
 							"default_kms_key_name": Equal("projects/project/locations/location/keyRings/key-ring-name/cryptoKeys/key-name"),
+						}),
+					),
+					"autoclass": ConsistOf(
+						MatchAllKeys(Keys{
+							"enabled": BeFalse(),
 						}),
 					),
 				}),
