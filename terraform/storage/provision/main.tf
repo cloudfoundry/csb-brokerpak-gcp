@@ -7,9 +7,9 @@ resource "google_storage_bucket" "bucket" {
   uniform_bucket_level_access = var.uniform_bucket_level_access
 
   dynamic "custom_placement_config" {
-    for_each = length(var.placement_dual_region_data_locations) == 0 ? [] : [null]
+    for_each = length(toset(var.placement_dual_region_data_locations)) > 0 ? [true] : []
     content {
-      data_locations = var.placement_dual_region_data_locations
+      data_locations = toset([for region in var.placement_dual_region_data_locations : upper(region)])
     }
   }
 

@@ -91,7 +91,7 @@ var _ = Describe("storage", Label("storage-terraform"), Ordered, func() {
 					"labels":        MatchAllKeys(Keys{"label1": Equal("value1")}),
 					"custom_placement_config": ConsistOf(
 						MatchAllKeys(Keys{
-							"data_locations": ConsistOf("us-west1", "us-west2"),
+							"data_locations": ConsistOf("US-WEST1", "US-WEST2"),
 						}),
 					),
 					"versioning": ConsistOf(
