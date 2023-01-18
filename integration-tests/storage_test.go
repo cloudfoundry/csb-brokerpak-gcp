@@ -61,6 +61,7 @@ var _ = Describe("Storage Bucket", Label("storage"), func() {
 					HaveKeyWithValue("versioning", BeFalse()),
 					HaveKeyWithValue("uniform_bucket_level_access", BeFalse()),
 					HaveKeyWithValue("default_kms_key_name", BeEmpty()),
+					HaveKeyWithValue("autoclass", BeFalse()),
 				),
 			)
 		})
@@ -75,6 +76,7 @@ var _ = Describe("Storage Bucket", Label("storage"), func() {
 				"versioning":                           true,
 				"uniform_bucket_level_access":          true,
 				"default_kms_key_name":                 "projects/project/locations/location/keyRings/key-ring-name/cryptoKeys/key-name",
+				"autoclass":                            true,
 			})
 			Expect(err).NotTo(HaveOccurred())
 
@@ -88,6 +90,7 @@ var _ = Describe("Storage Bucket", Label("storage"), func() {
 					HaveKeyWithValue("versioning", BeTrue()),
 					HaveKeyWithValue("uniform_bucket_level_access", BeTrue()),
 					HaveKeyWithValue("default_kms_key_name", "projects/project/locations/location/keyRings/key-ring-name/cryptoKeys/key-name"),
+					HaveKeyWithValue("autoclass", BeTrue()),
 				),
 			)
 		})
@@ -118,6 +121,7 @@ var _ = Describe("Storage Bucket", Label("storage"), func() {
 				},
 				Entry("region", "region", "no-matter-what-region"),
 				Entry("placement_dual_region_data_locations", "placement_dual_region_data_locations", []string{"us-west1", "us-west2"}),
+				Entry("autoclass", "autoclass", true),
 			)
 		})
 	})

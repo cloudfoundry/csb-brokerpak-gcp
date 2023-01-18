@@ -26,6 +26,10 @@ resource "google_storage_bucket" "bucket" {
     }
   }
 
+  autoclass {
+    enabled = var.autoclass
+  }
+
   lifecycle {
     prevent_destroy = true
   }
