@@ -26,8 +26,11 @@ resource "google_storage_bucket" "bucket" {
     }
   }
 
-  autoclass {
-    enabled = var.autoclass
+  dynamic "autoclass" {
+    for_each = var.autoclass ? [true] : []
+    content {
+      enabled = var.autoclass
+    }
   }
 
   lifecycle {
