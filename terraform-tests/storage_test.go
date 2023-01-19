@@ -64,11 +64,7 @@ var _ = Describe("storage", Label("storage-terraform"), Ordered, func() {
 							"default_kms_key_name": Equal("projects/project/locations/location/keyRings/key-ring-name/cryptoKeys/key-name"),
 						}),
 					),
-					"autoclass": ConsistOf(
-						MatchAllKeys(Keys{
-							"enabled": BeFalse(),
-						}),
-					),
+					"autoclass": BeEmpty(),
 				}),
 			)
 		})
