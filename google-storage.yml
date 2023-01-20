@@ -107,6 +107,30 @@ provision:
       For more information about autoclass feature, see https://cloud.google.com/storage/docs/autoclass
     default: false
     prohibit_update: true
+  - field_name: retention_policy_retention_period
+    type: number
+    details: |
+      The period of time, in seconds, that objects in the bucket must be retained and cannot be deleted, overwritten, or archived,
+      in other words, it is the configuration of the bucket's data retention policy for how long objects in the bucket should be retained.
+      The value must be less than 2_147_483_647 seconds
+      For more information about retention policy feature, see https://cloud.google.com/storage/docs/bucket-lock
+    default: 0
+    constraints:
+      minimum: 0
+  - field_name: retention_policy_is_locked
+    type: boolean
+    details: |
+      The `retention_policy_is_locked` property locks a retention policy to permanently set it on the bucket.
+      A retention policy locked implies:
+      * It is not possible to remove it.
+      * It is not possible to delete a bucket unless every object in the bucket has met the retention period.
+      * It is not possible to reduce the retention period of a locked retention policy.
+      * It is not possible to increase the retention period of a locked retention policy.
+      Caution: Lock a retention policy is an irreversible action. Once set to true, it can no longer be set to false.
+      This change will attempt to recreate the bucket, but the system will block it and send an error.
+      The property `retention_policy_retention_period` has to be set with a value greater than `0`.
+      For more information about policy locks, see https://cloud.google.com/storage/docs/bucket-lock.
+    default: false
   - field_name: credentials
     type: string
     details: GCP credentials
