@@ -126,8 +126,8 @@ provision:
       * It is not possible to delete a bucket unless every object in the bucket has met the retention period.
       * It is not possible to reduce the retention period of a locked retention policy.
       * It is not possible to increase the retention period of a locked retention policy.
-      Caution: Lock a retention policy is an irreversible action. Once set to true, it can no longer be set to false.
-      This change will attempt to recreate the bucket, but the system will block it and send an error.
+      Caution: Locking a retention policy is an irreversible action. Once set to true, any attempt to set it to
+      false or to delete the service will result in an error.
       The property `retention_policy_retention_period` has to be set with a value greater than `0`.
       For more information about policy locks, see https://cloud.google.com/storage/docs/bucket-lock.
     default: false
