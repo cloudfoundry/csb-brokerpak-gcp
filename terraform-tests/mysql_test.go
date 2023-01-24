@@ -40,6 +40,9 @@ var _ = Describe("mysql", Label("mysql-terraform"), Ordered, func() {
 		"backups_location":                       nil,
 		"backups_retain_number":                  7,
 		"backups_transaction_log_retention_days": 0,
+		"highly_available":                       false,
+		"location_preference_zone":               "",
+		"location_preference_secondary_zone":     "",
 	}
 
 	BeforeAll(func() {
@@ -90,6 +93,13 @@ var _ = Describe("mysql", Label("mysql-terraform"), Ordered, func() {
 									),
 								}),
 							),
+							"location_preference": ContainElement(
+								MatchKeys(IgnoreExtras, Keys{
+									"zone":           BeEmpty(),
+									"secondary_zone": BeEmpty(),
+								}),
+							),
+							"availability_type": Equal("ZONAL"),
 						}),
 					),
 				}),
@@ -181,6 +191,28 @@ var _ = Describe("mysql", Label("mysql-terraform"), Ordered, func() {
 			Expect(AfterValuesForType(plan, "google_sql_ssl_cert")).To(MatchKeys(IgnoreExtras, Keys{
 				"instance": Equal("test-instance-name-456"),
 			}))
+		})
+	})
+
+	Context("High availability", func() {
+		Specify("enabling", func() {
+			plan = ShowPlan(terraformProvisionDir, buildVars(defaultVars, map[string]any{
+				"highly_available":                   true,
+				"location_preference_zone":           "a",
+				"location_preference_secondary_zone": "c",
+			}))
+
+			Expect(AfterValuesForType(plan, googleSQLDBInstance)).To(
+				MatchKeys(IgnoreExtras, Keys{
+					"settings": ContainElement(MatchKeys(IgnoreExtras, Keys{
+						"availability_type": Equal("REGIONAL"),
+						"location_preference": ContainElement(MatchKeys(IgnoreExtras, Keys{
+							"zone":           Equal("us-central1-a"),
+							"secondary_zone": Equal("us-central1-c"),
+						})),
+					})),
+				}),
+			)
 		})
 	})
 })

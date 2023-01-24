@@ -10,6 +10,8 @@ resource "google_sql_database_instance" "instance" {
     user_labels           = var.labels
     disk_autoresize       = var.disk_autoresize
     disk_autoresize_limit = var.disk_autoresize_limit
+    availability_type     = local.availability_type
+
 
     ip_configuration {
       ipv4_enabled    = var.public_ip
@@ -24,6 +26,12 @@ resource "google_sql_database_instance" "instance" {
         }
       }
     }
+
+    location_preference {
+      zone           = local.primary_zone
+      secondary_zone = local.secondary_zone
+    }
+
     backup_configuration {
       enabled    = local.backups_enabled
       start_time = var.backups_start_time
