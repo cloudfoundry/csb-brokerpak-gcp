@@ -32,6 +32,8 @@ var _ = Describe("storage", Label("storage-terraform"), Ordered, func() {
 		"uniform_bucket_level_access":          true,
 		"default_kms_key_name":                 "projects/project/locations/location/keyRings/key-ring-name/cryptoKeys/key-name",
 		"autoclass":                            false,
+		"retention_policy_is_locked":           false,
+		"retention_policy_retention_period":    3600,
 	}
 
 	BeforeAll(func() {
@@ -65,6 +67,12 @@ var _ = Describe("storage", Label("storage-terraform"), Ordered, func() {
 						}),
 					),
 					"autoclass": BeEmpty(),
+					"retention_policy": ConsistOf(
+						MatchAllKeys(Keys{
+							"is_locked":        BeFalse(),
+							"retention_period": BeNumerically("==", 3600),
+						}),
+					),
 				}),
 			)
 		})
@@ -97,6 +105,40 @@ var _ = Describe("storage", Label("storage-terraform"), Ordered, func() {
 					),
 				}),
 			)
+		})
+	})
+
+	Context("retention policy", func() {
+		When("`retention_policy_is_locked` is nil", func() {
+			It("should map to false", func() {
+				plan = ShowPlan(terraformProvisionDir, buildVars(defaultVars, map[string]any{
+					"retention_policy_is_locked":        nil,
+					"retention_policy_retention_period": 3600,
+				}))
+				Expect(AfterValuesForType(plan, googleBucketResource)).To(
+					MatchKeys(IgnoreExtras, Keys{
+						"retention_policy": ConsistOf(
+							MatchAllKeys(Keys{
+								"is_locked":        BeFalse(),
+								"retention_period": BeNumerically("==", 3600),
+							}),
+						),
+					}),
+				)
+			})
+		})
+
+		When("no retention period `retention_policy`", func() {
+			It("should not be defined", func() {
+				plan = ShowPlan(terraformProvisionDir, buildVars(defaultVars, map[string]any{
+					"retention_policy_retention_period": 0,
+				}))
+				Expect(AfterValuesForType(plan, googleBucketResource)).To(
+					MatchKeys(IgnoreExtras, Keys{
+						"retention_policy": BeEmpty(), // TF internals: It is a []any{} which means no retention_policy
+					}),
+				)
+			})
 		})
 	})
 })
