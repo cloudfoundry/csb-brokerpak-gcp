@@ -104,6 +104,8 @@ provision:
     type: boolean
     details: |
       Automatically transitions each object to hotter or colder storage based on object-level activity, to optimise for cost and latency.
+      Caution: Only the `STANDARD` storage class will be accepted when enabling the Autoclass feature.
+      Any attempt to set it using a storage class other than `STANDARD` will result in an error.
       For more information about autoclass feature, see https://cloud.google.com/storage/docs/autoclass
     default: false
     prohibit_update: true
