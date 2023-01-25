@@ -51,7 +51,7 @@ func Read() (string, error) {
 
 	if m.isNewBindingFormat {
 		log.Println("registering custom CA")
-		c.TLSConfig = "skip-verify"
+		c.TLSConfig = customCaConfigName
 		if err := registerCustomCA(m.SSLRootCert, m.SSLKey, m.SSLCert); err != nil {
 			return "", fmt.Errorf("failed to register custom certificate %s", err.Error())
 		}
@@ -127,10 +127,12 @@ func registerCustomCA(rootCert, key, cert string) error {
 	}
 
 	clientCert = append(clientCert, certs)
+	log.Printf("registering custom cert")
 	err = mysql.RegisterTLSConfig(customCaConfigName, &tls.Config{
-		RootCAs:      rootCertPool,
-		MinVersion:   tls.VersionTLS12,
-		Certificates: clientCert,
+		RootCAs:            rootCertPool,
+		MinVersion:         tls.VersionTLS12,
+		Certificates:       clientCert,
+		InsecureSkipVerify: true,
 	})
 	if err != nil {
 		return fmt.Errorf("unable to register custom-ca mysql config: %s", err.Error())
