@@ -114,6 +114,9 @@ var _ = Describe("MySQL", Label("MySQL"), func() {
 				"backups_transaction_log_retention_days": 6,
 				"public_ip":                              true,
 				"authorized_networks_cidrs":              []any{"one", "two"},
+				"highly_available":                       true,
+				"location_preference_zone":               "a",
+				"location_preference_secondary_zone":     "c",
 			})
 
 			Expect(err).NotTo(HaveOccurred())
@@ -135,6 +138,9 @@ var _ = Describe("MySQL", Label("MySQL"), func() {
 					HaveKeyWithValue("backups_transaction_log_retention_days", BeNumerically("==", 6)),
 					HaveKeyWithValue("public_ip", BeTrue()),
 					HaveKeyWithValue("authorized_networks_cidrs", ConsistOf("one", "two")),
+					HaveKeyWithValue("highly_available", BeTrue()),
+					HaveKeyWithValue("location_preference_zone", Equal("a")),
+					HaveKeyWithValue("location_preference_secondary_zone", Equal("c")),
 				),
 			)
 		})
@@ -206,6 +212,16 @@ var _ = Describe("MySQL", Label("MySQL"), func() {
 				map[string]any{"backups_transaction_log_retention_days": 8},
 				"backups_transaction_log_retention_days: Must be less than or equal to 7",
 			),
+			Entry(
+				"invalid preferred primary zone",
+				map[string]any{"location_preference_zone": "abc"},
+				"location_preference_zone: Does not match pattern '^[a-z]?$'",
+			),
+			Entry(
+				"invalid preferred secondary zone",
+				map[string]any{"location_preference_secondary_zone": "abc"},
+				"location_preference_secondary_zone: Does not match pattern '^[a-z]?$'",
+			),
 		)
 	})
 
@@ -238,6 +254,9 @@ var _ = Describe("MySQL", Label("MySQL"), func() {
 			Entry("update backups_transaction_log_retention_days", map[string]any{"backups_transaction_log_retention_days": 1}),
 			Entry("update public_ip", map[string]any{"public_ip": true}),
 			Entry("update authorized_networks_cidrs", map[string]any{"authorized_networks_cidrs": []any{"three", "four"}}),
+			Entry("update highly_available", map[string]any{"highly_available": true}),
+			Entry("update location_preference_zone", map[string]any{"location_preference_zone": "a"}),
+			Entry("update location_preference_secondary_zone", map[string]any{"location_preference_secondary_zone": "c"}),
 		)
 
 		DescribeTable("should prevent updating properties flagged as `prohibit_update` because it can result in the recreation of the service instance and lost data",

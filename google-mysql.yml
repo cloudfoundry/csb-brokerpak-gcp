@@ -33,8 +33,8 @@ provision:
     details: GCP DB machine type (see machine type information https://cloud.google.com/sql/docs/mysql/instance-settings)
     constraints:
       examples:
-        - db-n1-standard-2
-        - db-n1-standard-16
+      - db-n1-standard-2
+      - db-n1-standard-16
       <<: &gcp_name_constraint
         pattern: ^[a-z][a-z0-9-]+[a-z0-9]$
   - field_name: mysql_version
@@ -99,8 +99,8 @@ provision:
     prohibit_update: true
     constraints:
       examples:
-        - us-central1
-        - asia-northeast1
+      - us-central1
+      - asia-northeast1
       <<: *gcp_name_constraint
   - field_name: authorized_network_id
     type: string
@@ -136,11 +136,38 @@ provision:
     type: number
     details: |
       The number of days to retain the transaction logs. Setting this value to 0 disables transaction log backups.
-      The transaction logs can be retained up to 7 days
+      The transaction logs can be retained up to 7 days. When transaction logs are enabled, regular backups are forced
+      to be enabled, even if `backups_retain_number` is set to 0.
     default: 0
     constraints:
       minimum: 0
       maximum: 7
+  - field_name: highly_available
+    type: boolean
+    details: |
+      Enable regional high availability for the service instance. This will result in a hot standby instance deployed
+      to a different zone in the same region, and will affect the billing accordingly. Requires transaction log backups 
+      to be enabled. See https://cloud.google.com/sql/docs/mysql/high-availability for more details.
+    default: false
+  - field_name: location_preference_zone
+    type: string
+    details: |
+      Preferred zone in the instance region for the primary instance in a highly available setup. E.g. "a" or "c". When
+      not specified, one of the available zones will be chosen automatically. See
+      https://cloud.google.com/compute/docs/regions-zones#available for a list of available zones.
+    default: ""
+    constraints:
+      pattern: ^[a-z]?$
+  - field_name: location_preference_secondary_zone
+    type: string
+    details: |
+      Preferred zone in the instance region for the standby instance in a highly available setup. E.g. "b" or "f". In a
+      highly available configuration, when the secondary zone is not specified, a zone different from the one specified
+      for the primary instance will be chosen automatically. See
+      https://cloud.google.com/compute/docs/regions-zones#available for a list of available zones.
+    default: ""
+    constraints:
+      pattern: ^[a-z]?$
   computed_inputs:
   - name: labels
     default: ${json.marshal(request.default_labels)}
