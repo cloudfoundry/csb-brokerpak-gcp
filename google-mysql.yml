@@ -244,6 +244,7 @@ bind:
     main: terraform/cloudsql/mysql/bind/main.tf
     variables: terraform/cloudsql/mysql/bind/variables.tf
     outputs: terraform/cloudsql/mysql/bind/outputs.tf
+    data: terraform/cloudsql/mysql/bind/data.tf
   outputs:
   - field_name: username
     type: string

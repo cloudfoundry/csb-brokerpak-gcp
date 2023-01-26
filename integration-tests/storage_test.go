@@ -62,6 +62,8 @@ var _ = Describe("Storage Bucket", Label("storage"), func() {
 					HaveKeyWithValue("uniform_bucket_level_access", BeFalse()),
 					HaveKeyWithValue("default_kms_key_name", BeEmpty()),
 					HaveKeyWithValue("autoclass", BeFalse()),
+					HaveKeyWithValue("retention_policy_is_locked", BeFalse()),
+					HaveKeyWithValue("retention_policy_retention_period", BeNumerically("==", 0)),
 				),
 			)
 		})
@@ -77,6 +79,8 @@ var _ = Describe("Storage Bucket", Label("storage"), func() {
 				"uniform_bucket_level_access":          true,
 				"default_kms_key_name":                 "projects/project/locations/location/keyRings/key-ring-name/cryptoKeys/key-name",
 				"autoclass":                            true,
+				"retention_policy_is_locked":           true,
+				"retention_policy_retention_period":    3600,
 			})
 			Expect(err).NotTo(HaveOccurred())
 
@@ -91,6 +95,8 @@ var _ = Describe("Storage Bucket", Label("storage"), func() {
 					HaveKeyWithValue("uniform_bucket_level_access", BeTrue()),
 					HaveKeyWithValue("default_kms_key_name", "projects/project/locations/location/keyRings/key-ring-name/cryptoKeys/key-name"),
 					HaveKeyWithValue("autoclass", BeTrue()),
+					HaveKeyWithValue("retention_policy_is_locked", BeTrue()),
+					HaveKeyWithValue("retention_policy_retention_period", BeNumerically("==", 3600)),
 				),
 			)
 		})
