@@ -12,15 +12,7 @@ resource "random_password" "password" {
   min_special      = 2
 }
 
-resource "mysql_user" "newuser" {
-  user               = random_string.username.result
-  plaintext_password = random_password.password.result
-  host               = "%"
-}
-
-resource "mysql_grant" "newuser" {
-  user       = mysql_user.newuser.user
-  database   = var.mysql_db_name
-  host       = mysql_user.newuser.host
-  privileges = ["ALL"]
+resource "csbmysql_binding_user" "new_user" {
+  username = random_string.username.result
+  password = random_password.password.result
 }

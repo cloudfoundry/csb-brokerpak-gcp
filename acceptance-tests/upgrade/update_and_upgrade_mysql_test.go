@@ -1,6 +1,8 @@
 package upgrade_test
 
 import (
+	"encoding/json"
+
 	"csbbrokerpakgcp/acceptance-tests/helpers/apps"
 	"csbbrokerpakgcp/acceptance-tests/helpers/brokers"
 	"csbbrokerpakgcp/acceptance-tests/helpers/matchers"
@@ -44,10 +46,10 @@ var _ = Describe("UpgradeMYSQLTest", Label("mysql"), func() {
 			By("setting a key-value using the first app")
 			key := random.Hexadecimal()
 			value := random.Hexadecimal()
-			appOne.PUT(value, key)
+			appOne.PUT(value, "/key-value/%s", key)
 
 			By("getting the value using the second app")
-			Expect(appTwo.GET(key)).To(Equal(value))
+			Expect(appTwo.GET("/key-value/%s", key)).To(Equal(value))
 
 			By("pushing the development version of the broker")
 			serviceBroker.UpdateBroker(developmentBuildDir)
@@ -56,15 +58,16 @@ var _ = Describe("UpgradeMYSQLTest", Label("mysql"), func() {
 			serviceInstance.Upgrade()
 
 			appOne.SetEnv(apps.EnvVar{Name: "NEW_BINDING_FORMAT_FEATURE_FLAG", Value: "ENABLED"})
+			appTwo.SetEnv(apps.EnvVar{Name: "NEW_BINDING_FORMAT_FEATURE_FLAG", Value: "ENABLED"})
 
 			By("getting the value using the second app")
-			Expect(appTwo.GET(key)).To(Equal(value))
+			Expect(appTwo.GET("/key-value/%s", key)).To(Equal(value))
 
 			By("updating the instance plan")
 			serviceInstance.Update("-p", "default")
 
 			By("getting the value using the second app")
-			Expect(appTwo.GET(key)).To(Equal(value))
+			Expect(appTwo.GET("/key-value/%s", key)).To(Equal(value))
 
 			By("deleting bindings created before the upgrade")
 			bindingOne.Unbind()
@@ -76,13 +79,25 @@ var _ = Describe("UpgradeMYSQLTest", Label("mysql"), func() {
 			apps.Restage(appOne, appTwo)
 
 			By("getting the value using the second app")
-			Expect(appTwo.GET(key)).To(Equal(value))
+			Expect(appTwo.GET("/key-value/%s", key)).To(Equal(value))
 
 			By("checking data can still be written and read")
 			keyTwo := random.Hexadecimal()
 			valueTwo := random.Hexadecimal()
-			appOne.PUT(valueTwo, keyTwo)
-			Expect(appTwo.GET(keyTwo)).To(Equal(valueTwo))
+			appOne.PUT(valueTwo, "/key-value/%s", keyTwo)
+			Expect(appTwo.GET("/key-value/%s", keyTwo)).To(Equal(valueTwo))
+
+			By("verifying the DB connection utilises TLS")
+			got := appOne.GET("/admin/ssl")
+			var sslInfo struct {
+				VariableName string `json:"variable_name"`
+				Value        string `json:"value"`
+			}
+			err := json.Unmarshal([]byte(got), &sslInfo)
+			Expect(err).NotTo(HaveOccurred())
+
+			Expect("Ssl_cipher").To(Equal(sslInfo.VariableName))
+			Expect("ECDHE-RSA-AES128-GCM-SHA256").To(Equal(sslInfo.Value))
 		})
 	})
 })
