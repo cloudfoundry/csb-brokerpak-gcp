@@ -1,7 +1,7 @@
-output "username" { value = mysql_user.newuser.user }
+output "username" { value = csbmysql_binding_user.new_user.username }
 output "password" {
+  value     = csbmysql_binding_user.new_user.password
   sensitive = true
-  value     = random_password.password.result
 }
 output "uri" {
   sensitive = true
@@ -19,8 +19,9 @@ output "jdbcUrl" {
     var.mysql_hostname,
     local.port,
     var.mysql_db_name,
-    mysql_user.newuser.user,
-  random_password.password.result)
+    csbmysql_binding_user.new_user.username,
+    csbmysql_binding_user.new_user.password,
+  )
 }
 output "sslrootcert" { value = var.sslrootcert }
 output "sslcert" { value = var.sslcert }

@@ -21,8 +21,9 @@ func App(uri string) *mux.Router {
 
 	r := mux.NewRouter()
 	r.HandleFunc("/", aliveness).Methods("HEAD", "GET")
-	r.HandleFunc("/{key}", handleSet(db)).Methods("PUT")
-	r.HandleFunc("/{key}", handleGet(db)).Methods("GET")
+	r.HandleFunc("/key-value/{key}", handleSet(db)).Methods("PUT")
+	r.HandleFunc("/key-value/{key}", handleGet(db)).Methods("GET")
+	r.HandleFunc("/admin/ssl", handleGetSSLCipher(db)).Methods("GET")
 
 	return r
 }

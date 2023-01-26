@@ -13,7 +13,3 @@ variable "sslkey" {
   sensitive = true
   type      = string
 }
-
-locals {
-  port = 3306
-}
