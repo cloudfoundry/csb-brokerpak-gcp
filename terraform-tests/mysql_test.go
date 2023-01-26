@@ -142,6 +142,7 @@ var _ = Describe("mysql", Label("mysql-terraform"), Ordered, func() {
 				MatchKeys(IgnoreExtras, Keys{
 					"settings": ContainElement(MatchKeys(IgnoreExtras, Keys{
 						"backup_configuration": ContainElement(MatchKeys(IgnoreExtras, Keys{
+							"enabled":                        BeTrue(),
 							"binary_log_enabled":             BeTrue(),
 							"transaction_log_retention_days": BeNumerically("==", 3),
 						})),
