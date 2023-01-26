@@ -136,7 +136,8 @@ provision:
     type: number
     details: |
       The number of days to retain the transaction logs. Setting this value to 0 disables transaction log backups.
-      The transaction logs can be retained up to 7 days
+      The transaction logs can be retained up to 7 days. When transaction logs are enabled, regular backups are forced
+      to be enabled, even if `backups_retain_number` is set to 0.
     default: 0
     constraints:
       minimum: 0
@@ -144,8 +145,9 @@ provision:
   - field_name: highly_available
     type: boolean
     details: |
-      Enable regional high availability for the service instance. Requires transaction log backups to be enabled. See
-      https://cloud.google.com/sql/docs/mysql/high-availability for more details.
+      Enable regional high availability for the service instance. This will result in a hot standby instance deployed
+      to a different zone in the same region, and will affect the billing accordingly. Requires transaction log backups 
+      to be enabled. See https://cloud.google.com/sql/docs/mysql/high-availability for more details.
     default: false
   - field_name: location_preference_zone
     type: string
