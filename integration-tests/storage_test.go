@@ -9,9 +9,20 @@ import (
 	. "github.com/onsi/gomega/gstruct"
 )
 
-var _ = Describe("Storage Bucket", Label("storage"), func() {
-	const serviceName = "csb-google-storage-bucket"
+const (
+	storageServiceName             = "csb-google-storage-bucket"
+	storageServiceID               = "b247fcde-8a63-11ea-b945-cb26f061f70f"
+	storageServiceDisplayName      = "Google Cloud Storage (Beta)"
+	storageServiceDocumentationURL = "https://cloud.google.com/storage/docs/overview"
+	storageServiceDescription      = "Beta - Google Cloud Storage that uses the Terraform back-end and grants service accounts IAM permissions directly on the bucket."
+	storageServiceSupportURL       = "https://cloud.google.com/support/"
+	storagePrivatePlanName         = "private"
+	storagePrivatePlanID           = "bbc4853e-8a63-11ea-a54e-670ca63cee0b"
+	storagePublicPlanName          = "public-read"
+	storagePublicPlanID            = "c07f21a6-8a63-11ea-bc1b-d38b123189cb"
+)
 
+var _ = Describe("Storage Bucket", Label("storage"), func() {
 	BeforeEach(func() {
 		Expect(mockTerraform.SetTFState([]testframework.TFStateValue{})).To(Succeed())
 	})
@@ -20,32 +31,40 @@ var _ = Describe("Storage Bucket", Label("storage"), func() {
 		Expect(mockTerraform.Reset()).To(Succeed())
 	})
 
-	It("should publish in the catalog", func() {
+	It("publishes in the catalog", func() {
 		catalog, err := broker.Catalog()
 		Expect(err).NotTo(HaveOccurred())
 
-		service := testframework.FindService(catalog, serviceName)
-		Expect(service.ID).NotTo(BeEmpty())
-		Expect(service.Name).NotTo(BeEmpty())
+		service := testframework.FindService(catalog, storageServiceName)
+		Expect(service.ID).To(Equal(storageServiceID))
+		Expect(service.Description).To(Equal(storageServiceDescription))
 		Expect(service.Tags).To(ConsistOf("gcp", "storage", "beta"))
-		Expect(service.Metadata.ImageUrl).NotTo(BeEmpty())
-		Expect(service.Metadata.DisplayName).NotTo(BeEmpty())
+		Expect(service.Metadata.ImageUrl).To(ContainSubstring("data:image/png;base64,"))
+		Expect(service.Metadata.DisplayName).To(Equal(storageServiceDisplayName))
+		Expect(service.Metadata.DocumentationUrl).To(Equal(storageServiceDocumentationURL))
+		Expect(service.Metadata.SupportUrl).To(Equal(storageServiceSupportURL))
 		Expect(service.Plans).To(
 			ConsistOf(
-				MatchFields(IgnoreExtras, Fields{"Name": Equal("private")}),
-				MatchFields(IgnoreExtras, Fields{"Name": Equal("public-read")}),
+				MatchFields(IgnoreExtras, Fields{
+					ID:   Equal(storagePrivatePlanID),
+					Name: Equal(storagePrivatePlanName),
+				}),
+				MatchFields(IgnoreExtras, Fields{
+					ID:   Equal(storagePublicPlanID),
+					Name: Equal(storagePublicPlanName),
+				}),
 			),
 		)
 	})
 
 	Describe("provisioning", func() {
 		It("should check region constraints", func() {
-			_, err := broker.Provision(serviceName, "public-read", map[string]any{"region": "-Asia-northeast1"})
+			_, err := broker.Provision(storageServiceName, "public-read", map[string]any{"region": "-Asia-northeast1"})
 			Expect(err).To(MatchError(ContainSubstring("region: Does not match pattern '^[a-z][a-z0-9-]+$'")))
 		})
 
 		It("should provision a plan", func() {
-			instanceID, err := broker.Provision(serviceName, "private", map[string]any{})
+			instanceID, err := broker.Provision(storageServiceName, "private", map[string]any{})
 			Expect(err).NotTo(HaveOccurred())
 
 			Expect(mockTerraform.FirstTerraformInvocationVars()).To(
@@ -69,7 +88,7 @@ var _ = Describe("Storage Bucket", Label("storage"), func() {
 		})
 
 		It("should allow properties to be set on provision", func() {
-			_, err := broker.Provision(serviceName, "private", map[string]any{
+			_, err := broker.Provision(storageServiceName, "private", map[string]any{
 				"name":                                 "bucket-name",
 				"storage_class":                        "STANDARD",
 				"region":                               "us",
@@ -106,7 +125,7 @@ var _ = Describe("Storage Bucket", Label("storage"), func() {
 
 			BeforeEach(func() {
 				var err error
-				instanceID, err = broker.Provision(serviceName, "public-read", nil)
+				instanceID, err = broker.Provision(storageServiceName, "public-read", nil)
 
 				Expect(err).NotTo(HaveOccurred())
 			})
@@ -114,7 +133,7 @@ var _ = Describe("Storage Bucket", Label("storage"), func() {
 			DescribeTable(
 				"preventing updates with `prohibit_update` as it can force resource replacement or re-creation",
 				func(prop string, value any) {
-					err := broker.Update(instanceID, serviceName, "public-read", map[string]any{prop: value})
+					err := broker.Update(instanceID, storageServiceName, "public-read", map[string]any{prop: value})
 
 					Expect(err).To(MatchError(
 						ContainSubstring(

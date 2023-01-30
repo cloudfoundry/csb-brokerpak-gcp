@@ -45,7 +45,7 @@ var _ = Describe("Redis", func() {
 		Expect(mockTerraform.Reset()).To(Succeed())
 	})
 
-	It("should publish redis in the catalog", func() {
+	It("publishes in the catalog", func() {
 		catalog, err := broker.Catalog()
 		Expect(err).NotTo(HaveOccurred())
 
