@@ -43,7 +43,7 @@ var _ = Describe("MySQL", Label("MySQL"), func() {
 		Expect(mockTerraform.Reset()).To(Succeed())
 	})
 
-	It("should publish mysql in the catalog", func() {
+	It("publishes in the catalog", func() {
 		catalog, err := broker.Catalog()
 		Expect(err).NotTo(HaveOccurred())
 
