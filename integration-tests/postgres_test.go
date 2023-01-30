@@ -52,7 +52,7 @@ var _ = Describe("postgres", Label("postgres"), func() {
 		Expect(mockTerraform.Reset()).To(Succeed())
 	})
 
-	It("publishes postgres in the catalog", func() {
+	It("publishes in the catalog", func() {
 		catalog, err := broker.Catalog()
 		Expect(err).NotTo(HaveOccurred())
 
