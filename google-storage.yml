@@ -119,9 +119,9 @@ provision:
   - field_name: retention_policy_retention_period
     type: number
     details: |
-      The period of time, in seconds, that objects in the bucket must be retained and cannot be deleted, overwritten, or archived,
-      in other words, it is the configuration of the bucket's data retention policy for how long objects in the bucket should be retained.
-      The value must be less than 2_147_483_647 seconds
+      This configures the data retention policy for the bucket, which is the period of time in seconds
+      that objects in the bucket must be retained and cannot be deleted, overwritten, or archived.
+      The maximum value is `2147483647` (2,147,483,647 seconds).
       For more information about retention policy feature, see https://cloud.google.com/storage/docs/bucket-lock
     default: 0
     constraints:
@@ -130,14 +130,17 @@ provision:
     type: boolean
     details: |
       The `retention_policy_is_locked` property locks a retention policy to permanently set it on the bucket.
-      A retention policy locked implies:
-      * It is not possible to remove it.
+
+      Caution: Locking a retention policy is an irreversible action.
+      After you set it to true, any attempt to set it to false causes an error.
+
+      A locked retention policy means:
+      * It is not possible to remove the retention policy.
       * It is not possible to delete a bucket unless every object in the bucket has met the retention period.
-      * It is not possible to reduce the retention period of a locked retention policy.
-      * It is not possible to increase the retention period of a locked retention policy.
-      Caution: Locking a retention policy is an irreversible action. Once set to true, any attempt to set it to
-      false or to delete the service will result in an error.
-      The property `retention_policy_retention_period` has to be set with a value greater than `0`.
+      * It is not possible to reduce or increase the retention period of a locked retention policy.
+      * It is not possible to increase the retention period.
+
+      In order for this property to take effect, the property `retention_policy_retention_period` has to be set with a value greater than `0`.
       For more information about policy locks, see https://cloud.google.com/storage/docs/bucket-lock.
     default: false
   - field_name: credentials
