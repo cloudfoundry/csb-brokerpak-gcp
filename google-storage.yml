@@ -90,6 +90,13 @@ provision:
       Disables ACLs.
       For more information about uniform bucket-level access, see https://cloud.google.com/storage/docs/uniform-bucket-level-access
     default: false
+  - field_name: predefined_acl
+    type: string
+    details: |
+      The predefined ACL to apply to the bucket, for example `private`, `publicRead`.
+      For more information about predefined ACLs, see https://cloud.google.com/storage/docs/access-control/lists#predefined-acl
+      Cannot be specified with `uniform_bucket_level_access`.
+    default: ""
   - field_name: default_kms_key_name
     type: string
     details: |
@@ -246,7 +253,7 @@ examples:
 - name: gcp-bucket-public-read
   description: Public Read S3 Bucket
   plan_id: c07f21a6-8a63-11ea-bc1b-d38b123189cb
-  provision_params: { "storage_class": "STANDARD" }
+  provision_params: { "storage_class": "STANDARD", "predefined_acl": "publicRead", "public_access_prevention": "inherited" }
   bind_params: { "role": "storage.objectAdmin" }
 - name: gcp-bucket-dual-region
   description: Dual Region Bucket

@@ -12,3 +12,4 @@ variable "default_kms_key_name" { type = string }
 variable "autoclass" { type = bool }
 variable "retention_policy_is_locked" { type = bool }
 variable "retention_policy_retention_period" { type = number }
+variable "predefined_acl" { type = string }

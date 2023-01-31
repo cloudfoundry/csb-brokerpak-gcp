@@ -12,7 +12,10 @@ import (
 )
 
 var _ = Describe("storage", Label("storage-terraform"), Ordered, func() {
-	const googleBucketResource = "google_storage_bucket"
+	const (
+		googleBucketResource    = "google_storage_bucket"
+		googleBucketACLResource = "google_storage_bucket_acl"
+	)
 
 	var (
 		plan                  tfjson.Plan
@@ -34,6 +37,7 @@ var _ = Describe("storage", Label("storage-terraform"), Ordered, func() {
 		"autoclass":                            false,
 		"retention_policy_is_locked":           false,
 		"retention_policy_retention_period":    3600,
+		"predefined_acl":                       "",
 	}
 
 	BeforeAll(func() {
@@ -75,6 +79,10 @@ var _ = Describe("storage", Label("storage-terraform"), Ordered, func() {
 					),
 				}),
 			)
+		})
+
+		It("does not create an ACL", func() {
+			Expect(AfterValuesForType(plan, googleBucketACLResource)).To(BeNil())
 		})
 	})
 
@@ -139,6 +147,19 @@ var _ = Describe("storage", Label("storage-terraform"), Ordered, func() {
 					}),
 				)
 			})
+		})
+	})
+
+	Context("predefined_acl", func() {
+		It("creates an ACL", func() {
+			plan = ShowPlan(terraformProvisionDir, buildVars(defaultVars, map[string]any{
+				"predefined_acl": "publicRead",
+			}))
+
+			Expect(AfterValuesForType(plan, googleBucketACLResource)).To(MatchKeys(IgnoreExtras, Keys{
+				"bucket":         Equal("bucket-name"),
+				"predefined_acl": Equal("publicRead"),
+			}))
 		})
 	})
 })

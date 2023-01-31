@@ -75,14 +75,15 @@ var _ = Describe("Storage Bucket", Label("storage"), func() {
 					HaveKeyWithValue("labels", MatchKeys(IgnoreExtras, Keys{
 						"pcf-instance-id": Equal(instanceID),
 					})),
-					HaveKeyWithValue("placement_dual_region_data_locations", BeEmpty()),
+					HaveKeyWithValue("placement_dual_region_data_locations", Equal([]any{})),
 					HaveKeyWithValue("public_access_prevention", "enforced"),
 					HaveKeyWithValue("versioning", BeFalse()),
 					HaveKeyWithValue("uniform_bucket_level_access", BeFalse()),
-					HaveKeyWithValue("default_kms_key_name", BeEmpty()),
+					HaveKeyWithValue("default_kms_key_name", Equal("")),
 					HaveKeyWithValue("autoclass", BeFalse()),
 					HaveKeyWithValue("retention_policy_is_locked", BeFalse()),
 					HaveKeyWithValue("retention_policy_retention_period", BeNumerically("==", 0)),
+					HaveKeyWithValue("predefined_acl", Equal("")),
 				),
 			)
 		})
@@ -100,6 +101,7 @@ var _ = Describe("Storage Bucket", Label("storage"), func() {
 				"autoclass":                            true,
 				"retention_policy_is_locked":           true,
 				"retention_policy_retention_period":    3600,
+				"predefined_acl":                       "publicRead",
 			})
 			Expect(err).NotTo(HaveOccurred())
 
@@ -116,6 +118,7 @@ var _ = Describe("Storage Bucket", Label("storage"), func() {
 					HaveKeyWithValue("autoclass", BeTrue()),
 					HaveKeyWithValue("retention_policy_is_locked", BeTrue()),
 					HaveKeyWithValue("retention_policy_retention_period", BeNumerically("==", 3600)),
+					HaveKeyWithValue("predefined_acl", Equal("publicRead")),
 				),
 			)
 		})
