@@ -45,3 +45,9 @@ resource "google_storage_bucket" "bucket" {
     prevent_destroy = true
   }
 }
+
+resource "google_storage_bucket_acl" "bucket_acl" {
+  count          = length(var.predefined_acl) > 0 ? 1 : 0
+  bucket         = google_storage_bucket.bucket.name
+  predefined_acl = var.predefined_acl
+}
