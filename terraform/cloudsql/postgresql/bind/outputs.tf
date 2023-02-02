@@ -25,3 +25,11 @@ output "jdbcUrl" {
     var.require_ssl,
   )
 }
+output "name" { value = var.db_name }
+output "hostname" { value = var.hostname }
+output "require_ssl" { value = var.require_ssl }
+output "sslcert" { value = var.sslcert }
+output "sslkey" { value = var.sslkey }
+output "sslrootcert" { value = var.sslrootcert }
+output "private_ip" { value = var.private_ip }
+

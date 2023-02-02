@@ -101,6 +101,12 @@ bind:
   - name: bucket
     default: ${instance.details["bucket_name"]}
     overwrite: true
+  - name: cluster_name
+    default: ${instance.details["cluster_name"]}
+    overwrite: true
+  - name: region
+    default: ${instance.details["region"]}
+    overwrite: true
   template_refs:
     main: terraform/dataproc/bind/main.tf
     variables: terraform/dataproc/bind/variables.tf
@@ -118,6 +124,15 @@ bind:
   - field_name: name
     type: string
     details: Name of service account
+  - field_name: bucket_name
+    type: string
+    details: Name of the bucket used for staging jobs.
+  - field_name: cluster_name
+    type: string
+    details: The name of the Dataproc cluster.
+  - field_name: region
+    type: string
+    details: The GCP region of the Dataproc cluster.
 examples:
 - name: basic
   description: Create a standard Dataproc cluster with a service account that can kick off jobs (roles/dataproc.editor) and has objectAdmin access to the bucket that's created.

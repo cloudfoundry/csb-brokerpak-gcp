@@ -204,6 +204,9 @@ bind:
   - name: bucket
     default: ${instance.details["bucket_name"]}
     overwrite: true
+  - name: id
+    default: ${instance.details["id"]}
+    overwrite: true
   template_refs:
     main: terraform/storage/bind/main.tf
     variables: terraform/storage/bind/variables.tf
@@ -252,6 +255,14 @@ bind:
     field_name: credentials
     type: string
     details: Credentials of the service account.
+  - required: true
+    field_name: bucket_name
+    type: string
+    details: Name of the bucket this binding is for.
+  - required: true
+    field_name: id
+    type: string
+    details: The GCP ID of this bucket.
 examples:
 - name: gcp-bucket-public-read
   description: Public Read S3 Bucket

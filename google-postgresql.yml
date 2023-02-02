@@ -217,12 +217,33 @@ bind:
     variables: terraform/cloudsql/postgresql/bind/variables.tf
     outputs: terraform/cloudsql/postgresql/bind/outputs.tf
   outputs:
+  - field_name: name
+    type: string
+    details: The name of the database.
+  - field_name: hostname
+    type: string
+    details: Hostname or IP address of the exposed postgres endpoint used by clients to connect to the service.
   - field_name: username
     type: string
     details: The username to authenticate to the database instance.
   - field_name: password
     type: string
     details: The password to authenticate to the database instance.
+  - field_name: require_ssl
+    type: boolean
+    details: Using TLS for connection
+  - field_name: sslcert
+    type: string
+    details: The client CA Cert to authenticate with SQL instance
+  - field_name: sslkey
+    type: string
+    details: The client CA Cert to authenticate with SQL instance
+  - field_name: sslrootcert
+    type: string
+    details: The CA Certificate used to connect to the SQL instance via TLS
+  - field_name: private_ip
+    type: string
+    details: Private IP address of the mysql endpoint used internally to manage bindings
   - field_name: uri
     type: string
     details: The uri to connect to the database instance and database.

@@ -140,9 +140,57 @@ provision:
 bind:
   plan_inputs: []
   user_inputs: []
-  computed_inputs: []
-  template: ''
-  outputs: []
+  computed_inputs:
+  - name: memory_size_gb
+    type: integer
+    default: ${instance.details["memory_size_gb"]}
+    overwrite: true
+  - name: service_tier
+    type: string
+    default: ${instance.details["service_tier"]}
+    overwrite: true
+  - name: redis_version
+    type: string
+    default: ${instance.details["redis_version"]}
+    overwrite: true
+  - name: host
+    type: string
+    default: ${instance.details["host"]}
+    overwrite: true
+  - name: port
+    type: integer
+    default: ${instance.details["port"]}
+    overwrite: true
+  template_refs:
+    variables: terraform/redis/bind/variables.tf
+    outputs: terraform/redis/bind/outputs.tf
+  outputs:
+  - required: true
+    field_name: memory_size_gb
+    type: integer
+    details: The size of the instance in gigabytes.
+  - required: true
+    field_name: service_tier
+    type: string
+    details: The service tier of the instance.
+    enum:
+      BASIC: standalone instance
+      STANDARD_HA: highly available primary/replica instances
+  - field_name: redis_version
+    type: string
+    details: The version of the instance.
+    enum:
+      "": most recent version
+      REDIS_3_2: Redis 3.2
+      REDIS_4_0: Redis 4.0
+      REDIS_5_0: Redis 5.0
+      REDIS_6_X: Redis 6.x
+  - field_name: host
+    type: string
+    details: Hostname or IP address of the exposed Redis endpoint used by clients to connect to the service.
+  - field_name: port
+    type: integer
+    details: The port number of the exposed Redis endpoint.
 examples:
 - name: Development Configuration
   description: Create a small Redis instance for development.

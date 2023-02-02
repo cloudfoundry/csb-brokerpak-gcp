@@ -10,3 +10,6 @@ output "credentials" {
   sensitive = true
   value     = base64decode(google_service_account_key.key.private_key)
 }
+output "bucket_name" { value = var.bucket }
+output "id" { value = var.id }
+
