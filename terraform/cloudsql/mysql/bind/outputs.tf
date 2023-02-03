@@ -15,12 +15,13 @@ output "uri" {
 output "port" { value = local.port }
 output "jdbcUrl" {
   sensitive = true
-  value = format("jdbc:mysql://%s:%d/%s?user=%s\u0026password=%s\u0026useSsl=true\u0026disableSslHostnameVerification=true",
+  value = format("jdbc:mysql://%s:%d/%s?user=%s\u0026password=%s\u0026useSsl=%s\u0026disableSslHostnameVerification=true",
     var.mysql_hostname,
     local.port,
     var.mysql_db_name,
     csbmysql_binding_user.new_user.username,
     csbmysql_binding_user.new_user.password,
+    !var.allow_insecure_connections
   )
 }
 output "sslrootcert" { value = var.sslrootcert }

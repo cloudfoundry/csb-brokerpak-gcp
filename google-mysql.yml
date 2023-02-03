@@ -207,7 +207,12 @@ provision:
     details: Client private key for establishing a mutual TLS connection with the database instance.
 bind:
   plan_inputs: []
-  user_inputs: []
+  user_inputs:
+  - field_name: allow_insecure_connections
+    type: boolean
+    details: Allow the binding to accept insecure connections
+    default: false
+    prohibit_update: true
   computed_inputs:
   - name: mysql_db_name
     type: string

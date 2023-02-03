@@ -51,7 +51,7 @@ var _ = Describe("MySQL", Label("mysql"), func() {
 
 		By("binding the apps to the storage service instance")
 		binding := serviceInstance.Bind(appOne)
-		serviceInstance.Bind(appTwo)
+		serviceInstance.BindWithParams(appTwo, `{"allow_insecure_connections": true}`)
 
 		By("starting the apps")
 		apps.Start(appOne, appTwo)
@@ -75,13 +75,21 @@ var _ = Describe("MySQL", Label("mysql"), func() {
 		Expect(err).NotTo(HaveOccurred())
 		Expect(userOut.Name).To(Equal(value), "The first app stored [%s] as the value, the second app retrieved [%s]", value, userOut.Name)
 
-		By("verifying the DB connection utilises TLS")
+		By("verifying the first DB connection utilises TLS")
 		got = appOne.GET("mysql-ssl")
 		err = json.Unmarshal([]byte(got), &tlsCipher)
 		Expect(err).NotTo(HaveOccurred())
 
 		Expect(strings.ToLower(tlsCipher.Name)).To(Equal("ssl_cipher"))
 		Expect(tlsCipher.Value).NotTo(BeEmpty(), "Expected Mysql connection for app %s to be encrypted", appOne.Name)
+
+		By("verifying the second DB connection skips TLS")
+		got = appTwo.GET("mysql-ssl")
+		err = json.Unmarshal([]byte(got), &tlsCipher)
+		Expect(err).NotTo(HaveOccurred())
+
+		Expect(strings.ToLower(tlsCipher.Name)).To(Equal("ssl_cipher"))
+		Expect(tlsCipher.Value).To(BeEmpty(), "Expected Mysql connection for app %s not to be encrypted", appTwo.Name)
 	})
 
 	It("can create service keys with a public IP address", func() {
