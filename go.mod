@@ -15,7 +15,7 @@ require (
 	golang.org/x/tools v0.5.0
 	google.golang.org/api v0.108.0
 	gopkg.in/yaml.v3 v3.0.1
-	honnef.co/go/tools v0.4.0-0.dev
+	honnef.co/go/tools v0.4.0
 )
 
 require (
@@ -26,7 +26,7 @@ require (
 	cloud.google.com/go/storage v1.27.0 // indirect
 	code.cloudfoundry.org/credhub-cli v0.0.0-20220620130410-645eee56ecdb // indirect
 	code.cloudfoundry.org/lager v2.0.0+incompatible // indirect
-	github.com/BurntSushi/toml v0.4.1 // indirect
+	github.com/BurntSushi/toml v1.2.1 // indirect
 	github.com/agext/levenshtein v1.2.2 // indirect
 	github.com/apparentlymart/go-textseg/v13 v13.0.0 // indirect
 	github.com/aws/aws-sdk-go v1.33.0 // indirect
@@ -95,7 +95,7 @@ require (
 	github.com/zclconf/go-cty v1.12.1 // indirect
 	go.opencensus.io v0.24.0 // indirect
 	golang.org/x/crypto v0.5.0 // indirect
-	golang.org/x/exp/typeparams v0.0.0-20220218215828-6cf2b201936e // indirect
+	golang.org/x/exp/typeparams v0.0.0-20221208152030-732eee02a75a // indirect
 	golang.org/x/mod v0.7.0 // indirect
 	golang.org/x/net v0.5.0 // indirect
 	golang.org/x/oauth2 v0.0.0-20221014153046-6fdb5e3db783 // indirect
