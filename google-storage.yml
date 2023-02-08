@@ -35,8 +35,18 @@ provision:
   user_inputs:
   - field_name: name
     type: string
-    details: Name of bucket
+    details: |
+      Name of bucket.
+      To see the requirements the name must meet, see https://cloud.google.com/storage/docs/buckets#naming.
+      Names containing dots require verification, see https://cloud.google.com/storage/docs/domain-name-verification.
     default: csb-${request.instance_id}
+    prohibit_update: true
+    constraints:
+      examples:
+        - my-bucket
+        - 0f75d593-8e7b-4418-a5ba-cb2970f0b91e
+        - test.example.com
+      pattern: ^[a-z0-9][a-z0-9_.-]{1,220}[a-z0-9]$
   - field_name: storage_class
     type: string
     details: |

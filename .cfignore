@@ -4,7 +4,6 @@
 acceptance-tests
 integration-tests
 terraform-tests
-service-images
 docs
 providers
 scripts
