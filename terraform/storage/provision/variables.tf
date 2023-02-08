@@ -13,3 +13,5 @@ variable "autoclass" { type = bool }
 variable "retention_policy_is_locked" { type = bool }
 variable "retention_policy_retention_period" { type = number }
 variable "predefined_acl" { type = string }
+variable "logging_log_bucket_name" { type = string }
+variable "logging_log_object_prefix" { type = string }

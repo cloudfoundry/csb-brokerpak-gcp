@@ -84,6 +84,8 @@ var _ = Describe("Storage Bucket", Label("storage"), func() {
 					HaveKeyWithValue("retention_policy_is_locked", BeFalse()),
 					HaveKeyWithValue("retention_policy_retention_period", BeNumerically("==", 0)),
 					HaveKeyWithValue("predefined_acl", Equal("")),
+					HaveKeyWithValue("logging_log_bucket_name", ""),
+					HaveKeyWithValue("logging_log_object_prefix", ""),
 				),
 			)
 		})
@@ -102,6 +104,8 @@ var _ = Describe("Storage Bucket", Label("storage"), func() {
 				"retention_policy_is_locked":           true,
 				"retention_policy_retention_period":    3600,
 				"predefined_acl":                       "publicRead",
+				"logging_log_bucket_name":              "secondary_bucket_name",
+				"logging_log_object_prefix":            "prefix",
 			})
 			Expect(err).NotTo(HaveOccurred())
 
@@ -119,6 +123,8 @@ var _ = Describe("Storage Bucket", Label("storage"), func() {
 					HaveKeyWithValue("retention_policy_is_locked", BeTrue()),
 					HaveKeyWithValue("retention_policy_retention_period", BeNumerically("==", 3600)),
 					HaveKeyWithValue("predefined_acl", Equal("publicRead")),
+					HaveKeyWithValue("logging_log_bucket_name", "secondary_bucket_name"),
+					HaveKeyWithValue("logging_log_object_prefix", "prefix"),
 				),
 			)
 		})

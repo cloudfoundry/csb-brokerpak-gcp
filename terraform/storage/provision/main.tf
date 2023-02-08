@@ -41,6 +41,14 @@ resource "google_storage_bucket" "bucket" {
     }
   }
 
+  dynamic "logging" {
+    for_each = var.logging_log_bucket_name != "" ? [true] : []
+    content {
+      log_bucket        = var.logging_log_bucket_name
+      log_object_prefix = length(var.logging_log_object_prefix) > 0 ? var.logging_log_object_prefix : null
+    }
+  }
+
   lifecycle {
     prevent_destroy = true
   }

@@ -38,6 +38,8 @@ var _ = Describe("storage", Label("storage-terraform"), Ordered, func() {
 		"retention_policy_is_locked":           false,
 		"retention_policy_retention_period":    3600,
 		"predefined_acl":                       "",
+		"logging_log_bucket_name":              "",
+		"logging_log_object_prefix":            "",
 	}
 
 	BeforeAll(func() {
@@ -77,6 +79,7 @@ var _ = Describe("storage", Label("storage-terraform"), Ordered, func() {
 							"retention_period": BeNumerically("==", 3600),
 						}),
 					),
+					"logging": BeEmpty(),
 				}),
 			)
 		})
@@ -150,6 +153,24 @@ var _ = Describe("storage", Label("storage-terraform"), Ordered, func() {
 		})
 	})
 
+	Context("logging", func() {
+		It("enabling logging", func() {
+			plan = ShowPlan(terraformProvisionDir, buildVars(defaultVars, map[string]any{
+				"logging_log_bucket_name":   "secondary_bucket_name",
+				"logging_log_object_prefix": "prefix",
+			}))
+
+			Expect(AfterValuesForType(plan, googleBucketResource)).To(MatchKeys(IgnoreExtras, Keys{
+				"logging": ConsistOf(
+					MatchAllKeys(Keys{
+						"log_bucket":        Equal("secondary_bucket_name"),
+						"log_object_prefix": Equal("prefix"),
+					}),
+				),
+			}))
+		})
+	})
+
 	Context("predefined_acl", func() {
 		It("creates an ACL", func() {
 			plan = ShowPlan(terraformProvisionDir, buildVars(defaultVars, map[string]any{
@@ -162,4 +183,5 @@ var _ = Describe("storage", Label("storage-terraform"), Ordered, func() {
 			}))
 		})
 	})
+
 })
