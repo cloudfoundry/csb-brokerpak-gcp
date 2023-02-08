@@ -58,10 +58,28 @@ var _ = Describe("Storage Bucket", Label("storage"), func() {
 	})
 
 	Describe("provisioning", func() {
-		It("should check region constraints", func() {
-			_, err := broker.Provision(storageServiceName, "public-read", map[string]any{"region": "-Asia-northeast1"})
-			Expect(err).To(MatchError(ContainSubstring("region: Does not match pattern '^[a-z][a-z0-9-]+$'")))
-		})
+		DescribeTable("should check property constraints",
+			func(params map[string]any, expectedErrorMsg string) {
+				_, err := broker.Provision(storageServiceName, "public-read", params)
+
+				Expect(err).To(MatchError(ContainSubstring(expectedErrorMsg)))
+			},
+			Entry(
+				"invalid region",
+				map[string]any{"region": "-Asia-northeast1"},
+				"region: Does not match pattern '^[a-z][a-z0-9-]+$'",
+			),
+			Entry(
+				"name minimum length is 3 characters",
+				map[string]any{"name": stringOfLen(2)},
+				"name: Does not match pattern '^[a-z0-9][a-z0-9_.-]{1,220}[a-z0-9]$'",
+			),
+			Entry(
+				"instance name invalid characters",
+				map[string]any{"name": ".aaaaa"},
+				"name: Does not match pattern '^[a-z0-9][a-z0-9_.-]{1,220}[a-z0-9]$'",
+			),
+		)
 
 		It("should provision a plan", func() {
 			instanceID, err := broker.Provision(storageServiceName, "private", map[string]any{})
@@ -150,6 +168,7 @@ var _ = Describe("Storage Bucket", Label("storage"), func() {
 				Entry("region", "region", "no-matter-what-region"),
 				Entry("placement_dual_region_data_locations", "placement_dual_region_data_locations", []string{"us-west1", "us-west2"}),
 				Entry("autoclass", "autoclass", true),
+				Entry("name", "name", "no-matter-what-name"),
 			)
 		})
 	})
