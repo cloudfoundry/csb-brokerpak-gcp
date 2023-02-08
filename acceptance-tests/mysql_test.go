@@ -45,13 +45,13 @@ var _ = Describe("MySQL", Label("mysql"), func() {
 
 		testPath := path.Dir(testExecutable)
 		appManifest := path.Join(testPath, "apps", "jdbctestapp", "manifest.yml")
-		appOne := apps.Push(apps.WithApp(apps.JDBCTestAppMysql), apps.WithManifest(appManifest))
-		appTwo := apps.Push(apps.WithApp(apps.JDBCTestAppMysql), apps.WithManifest(appManifest))
+		appOne := apps.Push(apps.WithApp(apps.JDBCTestApp), apps.WithManifest(appManifest))
+		appTwo := apps.Push(apps.WithApp(apps.JDBCTestApp), apps.WithManifest(appManifest))
 		defer apps.Delete(appOne, appTwo)
 
 		By("binding the apps to the storage service instance")
 		binding := serviceInstance.Bind(appOne)
-		serviceInstance.BindWithParams(appTwo, `{"allow_insecure_connections": true}`)
+		serviceInstance.Bind(appTwo)
 
 		By("starting the apps")
 		apps.Start(appOne, appTwo)
@@ -82,14 +82,36 @@ var _ = Describe("MySQL", Label("mysql"), func() {
 
 		Expect(strings.ToLower(tlsCipher.Name)).To(Equal("ssl_cipher"))
 		Expect(tlsCipher.Value).NotTo(BeEmpty(), "Expected Mysql connection for app %s to be encrypted", appOne.Name)
+	})
 
-		By("verifying the second DB connection skips TLS")
-		got = appTwo.GET("mysql-ssl")
+	It("can create instances capable of accepting insecure connection requests", Label("mysql-no-autotls"), func() {
+		var tlsCipher mySQLOption
+
+		By("creating a service instance")
+		serviceInstance := services.CreateInstance("csb-google-mysql", "default",
+			services.WithParameters(`{"allow_insecure_connections": true}`))
+		defer serviceInstance.Delete()
+
+		By("pushing the unstarted app")
+		testExecutable, err := os.Executable()
+		Expect(err).NotTo(HaveOccurred())
+
+		testPath := path.Dir(testExecutable)
+		appManifest := path.Join(testPath, "apps", "jdbctestapp", "manifest-no-autotls.yml")
+		appOne := apps.Push(apps.WithApp(apps.JDBCTestApp), apps.WithManifest(appManifest))
+
+		By("binding and starting the app")
+		serviceInstance.Bind(appOne)
+
+		appOne.Start()
+
+		By("ensuring encryption wasn't used")
+		got := appOne.GET("mysql-ssl")
 		err = json.Unmarshal([]byte(got), &tlsCipher)
 		Expect(err).NotTo(HaveOccurred())
 
 		Expect(strings.ToLower(tlsCipher.Name)).To(Equal("ssl_cipher"))
-		Expect(tlsCipher.Value).To(BeEmpty(), "Expected Mysql connection for app %s not to be encrypted", appTwo.Name)
+		Expect(tlsCipher.Value).To(BeEmpty(), "Expected Mysql connection for app %s not to be encrypted", appOne.Name)
 	})
 
 	It("can create service keys with a public IP address", func() {

@@ -168,6 +168,11 @@ provision:
     default: ""
     constraints:
       pattern: ^[a-z]?$
+  - field_name: allow_insecure_connections
+    type: boolean
+    details: Allow insecure connections between the application and this service instance
+    default: false
+    prohibit_update: true
   computed_inputs:
   - name: labels
     default: ${json.marshal(request.default_labels)}
@@ -205,14 +210,12 @@ provision:
   - field_name: sslkey
     type: string
     details: Client private key for establishing a mutual TLS connection with the database instance.
-bind:
-  plan_inputs: []
-  user_inputs:
   - field_name: allow_insecure_connections
     type: boolean
-    details: Allow the binding to accept insecure connections
-    default: false
-    prohibit_update: true
+    details: Allow insecure connections between the application and this service instance
+bind:
+  plan_inputs: []
+  user_inputs: []
   computed_inputs:
   - name: mysql_db_name
     type: string
@@ -243,6 +246,10 @@ bind:
   - name: sslkey
     type: string
     default: ${instance.details["sslkey"]}
+  - name: allow_insecure_connections
+    type: boolean
+    default: ${instance.details["allow_insecure_connections"]}
+    prohibit_update: true
   template_refs:
     provider: terraform/cloudsql/mysql/bind/provider.tf
     versions: terraform/cloudsql/mysql/bind/versions.tf
