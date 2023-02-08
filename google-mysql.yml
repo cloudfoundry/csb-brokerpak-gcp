@@ -249,7 +249,6 @@ bind:
   - name: allow_insecure_connections
     type: boolean
     default: ${instance.details["allow_insecure_connections"]}
-    prohibit_update: true
   template_refs:
     provider: terraform/cloudsql/mysql/bind/provider.tf
     versions: terraform/cloudsql/mysql/bind/versions.tf

@@ -373,6 +373,7 @@ func provisionInstanceForBinding(
 		{Name: "sslcert", Type: "string", Value: fakeClientCert},
 		{Name: "sslkey", Type: "string", Value: fakeClientKey},
 		{Name: "private_ip", Type: "string", Value: fakePrivateIP},
+		{Name: "allow_insecure_connections", Type: "boolean", Value: false},
 	})
 	Expect(err).NotTo(HaveOccurred())
 
