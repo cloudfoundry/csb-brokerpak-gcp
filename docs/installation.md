@@ -155,7 +155,7 @@ csb-google-postgres         small, medium, large   PostgreSQL is a fully managed
 
 csb-google-redis            basic, ha              Cloud Memorystore for Redis is a fully managed Redis service for the Google Cloud Platform. 
 
-csb-google-storage-bucket   private, public-read   Google Cloud Storage that uses the Terraform back-end and grants service accounts IAM permissions directly on the bucket.      
+csb-google-storage-bucket   default                Google Cloud Storage that uses the Terraform back-end and grants service accounts IAM permissions directly on the bucket.      
 
 csb-google-bigquery         standard               A fast, economical and fully managed data warehouse for large-scale data analytics.   
 
