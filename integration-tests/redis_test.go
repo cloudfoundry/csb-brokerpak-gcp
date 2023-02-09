@@ -10,12 +10,11 @@ import (
 )
 
 const (
-	redisServiceName             = "csb-google-redis"
-	redisServiceID               = "0e86ad78-99b3-48b6-a986-b594e7995fd6"
-	redisServiceDescription      = "Beta - Cloud Memorystore for Redis is a fully managed Redis service for the Google Cloud Platform."
-	redisServiceDisplayName      = "Google Cloud Memorystore for Redis (Beta)"
-	redisServiceDocumentationURL = "https://cloud.google.com/memorystore/docs/redis/"
-	redisServiceSupportURL       = "https://cloud.google.com/support/"
+	redisServiceName        = "csb-google-redis"
+	redisServiceID          = "0e86ad78-99b3-48b6-a986-b594e7995fd6"
+	redisServiceDescription = "Beta - Cloud Memorystore for Redis is a fully managed Redis service for the Google Cloud Platform."
+	redisServiceDisplayName = "Google Cloud Memorystore for Redis (Beta)"
+	redisServiceSupportURL  = "https://cloud.google.com/support/"
 )
 
 var customRedisPlans = []map[string]any{
@@ -55,7 +54,8 @@ var _ = Describe("Redis", func() {
 		Expect(service.Tags).To(ConsistOf("gcp", "redis", "beta"))
 		Expect(service.Metadata.ImageUrl).To(ContainSubstring("data:image/png;base64,"))
 		Expect(service.Metadata.DisplayName).To(Equal(redisServiceDisplayName))
-		Expect(service.Metadata.DocumentationUrl).To(Equal(redisServiceDocumentationURL))
+		Expect(service.Metadata.DocumentationUrl).To(Equal(cloudServiceBrokerDocumentationURL))
+		Expect(service.Metadata.ProviderDisplayName).To(Equal(providerDisplayName))
 		Expect(service.Metadata.SupportUrl).To(Equal(redisServiceSupportURL))
 		Expect(service.Plans).To(
 			ConsistOf(

@@ -10,14 +10,13 @@ import (
 )
 
 const (
-	mySQLServiceName             = "csb-google-mysql"
-	mySQLServiceID               = "b9f3d4f3-8716-4179-8b7c-e80bd5bccb31"
-	mySQLServiceDisplayName      = "Google Cloud MySQL (Beta)"
-	mySQLServiceDocumentationURL = "https://cloud.google.com/sql/docs/mysql/"
-	mySQLServiceDescription      = "Beta - MySQL is a fully managed service for the Google Cloud Platform."
-	mySQLServiceSupportURL       = "https://cloud.google.com/support/"
-	mySQLCustomPlanName          = "custom-plan"
-	mySQLCustomPlanID            = "9daa07f1-78e8-4bda-9efe-91576102c30d"
+	mySQLServiceName        = "csb-google-mysql"
+	mySQLServiceID          = "b9f3d4f3-8716-4179-8b7c-e80bd5bccb31"
+	mySQLServiceDisplayName = "Google Cloud MySQL (Beta)"
+	mySQLServiceDescription = "Beta - MySQL is a fully managed service for the Google Cloud Platform."
+	mySQLServiceSupportURL  = "https://cloud.google.com/support/"
+	mySQLCustomPlanName     = "custom-plan"
+	mySQLCustomPlanID       = "9daa07f1-78e8-4bda-9efe-91576102c30d"
 )
 
 var customMySQLPlans = []map[string]any{
@@ -53,7 +52,8 @@ var _ = Describe("MySQL", Label("MySQL"), func() {
 		Expect(service.Tags).To(ConsistOf("gcp", "mysql", "beta"))
 		Expect(service.Metadata.ImageUrl).To(ContainSubstring("data:image/png;base64,"))
 		Expect(service.Metadata.DisplayName).To(Equal(mySQLServiceDisplayName))
-		Expect(service.Metadata.DocumentationUrl).To(Equal(mySQLServiceDocumentationURL))
+		Expect(service.Metadata.DocumentationUrl).To(Equal(cloudServiceBrokerDocumentationURL))
+		Expect(service.Metadata.ProviderDisplayName).To(Equal(providerDisplayName))
 		Expect(service.Metadata.SupportUrl).To(Equal(mySQLServiceSupportURL))
 		Expect(service.Plans).To(
 			ConsistOf(

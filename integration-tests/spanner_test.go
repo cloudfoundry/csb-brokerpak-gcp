@@ -8,18 +8,17 @@ import (
 )
 
 const (
-	spannerServiceName             = "csb-google-spanner"
-	spannerServiceID               = "528667ba-8e4e-11ea-954d-47e3237b9109"
-	spannerServiceDisplayName      = "Google Cloud Spanner (Beta)"
-	spannerServiceDocumentationURL = "https://cloud.google.com/spanner/docs"
-	spannerServiceDescription      = "Beta - Fully managed, scalable, relational database service for regional and global application data."
-	spannerServiceSupportURL       = "https://cloud.google.com/support/"
-	spannerSmallPlanName           = "small"
-	spannerSmallPlanID             = "706659ba-8e4f-11ea-a91e-4328fa08a19b"
-	spannerMediumPlanName          = "medium"
-	spannerMediumPlanID            = "7564d13a-8e4f-11ea-ac11-5b314921fb4c"
-	spannerLargePlanName           = "large"
-	spannerLargePlanID             = "7c172a64-8e4f-11ea-a471-731172c1c00f"
+	spannerServiceName        = "csb-google-spanner"
+	spannerServiceID          = "528667ba-8e4e-11ea-954d-47e3237b9109"
+	spannerServiceDisplayName = "Google Cloud Spanner (Beta)"
+	spannerServiceDescription = "Beta - Fully managed, scalable, relational database service for regional and global application data."
+	spannerServiceSupportURL  = "https://cloud.google.com/support/"
+	spannerSmallPlanName      = "small"
+	spannerSmallPlanID        = "706659ba-8e4f-11ea-a91e-4328fa08a19b"
+	spannerMediumPlanName     = "medium"
+	spannerMediumPlanID       = "7564d13a-8e4f-11ea-ac11-5b314921fb4c"
+	spannerLargePlanName      = "large"
+	spannerLargePlanID        = "7c172a64-8e4f-11ea-a471-731172c1c00f"
 )
 
 var _ = Describe("Spanner", func() {
@@ -41,7 +40,8 @@ var _ = Describe("Spanner", func() {
 		Expect(service.Tags).To(ConsistOf("gcp", "spanner", "beta"))
 		Expect(service.Metadata.ImageUrl).To(ContainSubstring("data:image/png;base64,"))
 		Expect(service.Metadata.DisplayName).To(Equal(spannerServiceDisplayName))
-		Expect(service.Metadata.DocumentationUrl).To(Equal(spannerServiceDocumentationURL))
+		Expect(service.Metadata.DocumentationUrl).To(Equal(cloudServiceBrokerDocumentationURL))
+		Expect(service.Metadata.ProviderDisplayName).To(Equal(providerDisplayName))
 		Expect(service.Metadata.SupportUrl).To(Equal(spannerServiceSupportURL))
 		Expect(service.Plans).To(
 			ConsistOf(

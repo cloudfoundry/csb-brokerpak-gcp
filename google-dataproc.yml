@@ -4,7 +4,8 @@ id: ebb35d15-8c7a-4c4e-8aa8-d8d751a9d8d3
 description: Beta - Dataproc is a fully-managed service for running Apache Spark and Apache Hadoop clusters in a simpler, more cost-efficient way.
 display_name: Google Cloud Dataproc (Beta)
 image_url: file://service-images/csb.png
-documentation_url: https://cloud.google.com/dataproc/docs
+documentation_url: https://docs.vmware.com/en/Cloud-Service-Broker-for-VMware-Tanzu/index.html
+provider_display_name: VMware
 support_url: https://cloud.google.com/dataproc/docs/support/getting-support
 tags: [gcp, dataproc, beta]
 plans:
