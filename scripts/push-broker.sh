@@ -91,7 +91,7 @@ fi
 echo "    GSB_SERVICE_CSB_GOOGLE_MYSQL_PLANS: $(echo "$GSB_SERVICE_CSB_GOOGLE_MYSQL_PLANS" | jq @json)" >>$cfmf
 
 if [[ -z "$GSB_SERVICE_CSB_GOOGLE_STORAGE_BUCKET_PLANS" ]]; then
-  GSB_SERVICE_CSB_GOOGLE_STORAGE_BUCKET_PLANS='[{"name": "default","id": "2875f0f0-a69f-4fe6-a5ec-5ed7f6e89a01","description": "Cloud Storage Bucket service with default configuration","display_name": "default"}]'
+  GSB_SERVICE_CSB_GOOGLE_STORAGE_BUCKET_PLANS='[{"name": "default","id": "2875f0f0-a69f-4fe6-a5ec-5ed7f6e89a01","description": "Cloud Storage Bucket service with default configuration","metadata":{"display_name": "default"}}]'
 fi
 echo "    GSB_SERVICE_CSB_GOOGLE_STORAGE_BUCKET_PLANS: $(echo "$GSB_SERVICE_CSB_GOOGLE_STORAGE_BUCKET_PLANS" | jq @json)" >>$cfmf
 
