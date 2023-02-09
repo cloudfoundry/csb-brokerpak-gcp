@@ -21,15 +21,7 @@ image_url: file://service-images/csb.png
 documentation_url: https://cloud.google.com/storage/docs/overview
 support_url: https://cloud.google.com/support/
 tags: [gcp, storage, beta]
-plans:
-- name: private
-  id: bbc4853e-8a63-11ea-a54e-670ca63cee0b
-  description: 'Beta - Private Storage bucket'
-  display_name: 'Private (Beta)'
-- name: public-read
-  id: c07f21a6-8a63-11ea-bc1b-d38b123189cb
-  description: 'Beta - Public-read Storage bucket'
-  display_name: 'Public Read (Beta)'
+plans: []
 provision:
   plan_inputs: []
   user_inputs:
@@ -263,13 +255,8 @@ bind:
     type: string
     details: Credentials of the service account.
 examples:
-- name: gcp-bucket-public-read
-  description: Public Read S3 Bucket
-  plan_id: c07f21a6-8a63-11ea-bc1b-d38b123189cb
-  provision_params: { "storage_class": "STANDARD", "predefined_acl": "publicRead", "public_access_prevention": "inherited" }
-  bind_params: { "role": "storage.objectAdmin" }
 - name: gcp-bucket-dual-region
   description: Dual Region Bucket
-  plan_id: bbc4853e-8a63-11ea-a54e-670ca63cee0b
+  plan_id: 2875f0f0-a69f-4fe6-a5ec-5ed7f6e89a01
   provision_params: { "storage_class": "NEARLINE", "placement_dual_region_data_locations": ["us-east1","us-east4"], "region": "us" }
   bind_params: { "role": "storage.objectAdmin" }
