@@ -22,7 +22,7 @@ var _ = Describe("Without CredHub", Label("withoutcredhub"), func() {
 		By("creating a service instance")
 		serviceInstance := services.CreateInstance(
 			"csb-google-storage-bucket",
-			"private",
+			"default",
 			services.WithBroker(broker),
 		)
 
