@@ -14,7 +14,7 @@ func ResourceCreationForType(plan tfjson.Plan, resourceType string) []tfjson.Res
 	return result
 }
 
-func AfterValuesForType(plan tfjson.Plan, resourceType string) interface{} {
+func AfterValuesForType(plan tfjson.Plan, resourceType string) any {
 	for _, change := range plan.ResourceChanges {
 		if change.Type == resourceType {
 			return change.Change.After
@@ -23,7 +23,17 @@ func AfterValuesForType(plan tfjson.Plan, resourceType string) interface{} {
 	return nil
 }
 
-func UnknownValuesForType(plan tfjson.Plan, resourceType string) interface{} {
+func AfterOutput(plan tfjson.Plan, outputName string) any {
+	for name, change := range plan.OutputChanges {
+		if name != outputName {
+			continue
+		}
+		return change.After
+	}
+	return nil
+}
+
+func UnknownValuesForType(plan tfjson.Plan, resourceType string) any {
 	for _, change := range plan.ResourceChanges {
 		if change.Type == resourceType {
 			return change.Change.AfterUnknown
