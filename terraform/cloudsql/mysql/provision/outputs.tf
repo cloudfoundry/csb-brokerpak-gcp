@@ -14,3 +14,4 @@ output "sslkey" {
   value     = google_sql_ssl_cert.client_cert.private_key
   sensitive = true
 }
+output "allow_insecure_connections" { value = var.allow_insecure_connections }

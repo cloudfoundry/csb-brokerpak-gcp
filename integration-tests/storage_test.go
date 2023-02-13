@@ -10,16 +10,30 @@ import (
 )
 
 const (
-	storageServiceName        = "csb-google-storage-bucket"
-	storageServiceID          = "b247fcde-8a63-11ea-b945-cb26f061f70f"
-	storageServiceDisplayName = "Google Cloud Storage (Beta)"
-	storageServiceDescription = "Beta - Google Cloud Storage that uses the Terraform back-end and grants service accounts IAM permissions directly on the bucket."
-	storageServiceSupportURL  = "https://cloud.google.com/support/"
-	storagePrivatePlanName    = "private"
-	storagePrivatePlanID      = "bbc4853e-8a63-11ea-a54e-670ca63cee0b"
-	storagePublicPlanName     = "public-read"
-	storagePublicPlanID       = "c07f21a6-8a63-11ea-bc1b-d38b123189cb"
+	storageServiceName             = "csb-google-storage-bucket"
+	storageServiceID               = "b247fcde-8a63-11ea-b945-cb26f061f70f"
+	storageServiceDisplayName      = "Google Cloud Storage (Beta)"
+	storageServiceDescription      = "Beta - Google Cloud Storage that uses the Terraform back-end and grants service accounts IAM permissions directly on the bucket."
+	storageServiceSupportURL       = "https://cloud.google.com/support/"
+	storageDefaultPlanName         = "default"
+	storageDefaultPlanID           = "2875f0f0-a69f-4fe6-a5ec-5ed7f6e89a01"
 )
+
+var customCloudStoragePlans = []map[string]any{
+	customCloudStoragePlan,
+}
+
+var customCloudStoragePlan = map[string]any{
+	"name": storageDefaultPlanName,
+	"id":   storageDefaultPlanID,
+	"metadata": map[string]any{
+		"displayName": storageServiceDisplayName,
+	},
+	"labels": map[string]any{
+		"label1": "label1",
+		"label2": "label2",
+	},
+}
 
 var _ = Describe("Storage Bucket", Label("storage"), func() {
 	BeforeEach(func() {
@@ -46,12 +60,8 @@ var _ = Describe("Storage Bucket", Label("storage"), func() {
 		Expect(service.Plans).To(
 			ConsistOf(
 				MatchFields(IgnoreExtras, Fields{
-					ID:   Equal(storagePrivatePlanID),
-					Name: Equal(storagePrivatePlanName),
-				}),
-				MatchFields(IgnoreExtras, Fields{
-					ID:   Equal(storagePublicPlanID),
-					Name: Equal(storagePublicPlanName),
+					ID:   Equal(storageDefaultPlanID),
+					Name: Equal(storageDefaultPlanName),
 				}),
 			),
 		)
@@ -60,7 +70,7 @@ var _ = Describe("Storage Bucket", Label("storage"), func() {
 	Describe("provisioning", func() {
 		DescribeTable("should check property constraints",
 			func(params map[string]any, expectedErrorMsg string) {
-				_, err := broker.Provision(storageServiceName, "public-read", params)
+				_, err := broker.Provision(storageServiceName, storageDefaultPlanName, params)
 
 				Expect(err).To(MatchError(ContainSubstring(expectedErrorMsg)))
 			},
@@ -82,7 +92,7 @@ var _ = Describe("Storage Bucket", Label("storage"), func() {
 		)
 
 		It("should provision a plan", func() {
-			instanceID, err := broker.Provision(storageServiceName, "private", map[string]any{})
+			instanceID, err := broker.Provision(storageServiceName, storageDefaultPlanName, map[string]any{})
 			Expect(err).NotTo(HaveOccurred())
 
 			Expect(mockTerraform.FirstTerraformInvocationVars()).To(
@@ -107,7 +117,7 @@ var _ = Describe("Storage Bucket", Label("storage"), func() {
 		})
 
 		It("should allow properties to be set on provision", func() {
-			_, err := broker.Provision(storageServiceName, "private", map[string]any{
+			_, err := broker.Provision(storageServiceName, storageDefaultPlanName, map[string]any{
 				"name":                                 "bucket-name",
 				"storage_class":                        "STANDARD",
 				"region":                               "us",
@@ -146,7 +156,7 @@ var _ = Describe("Storage Bucket", Label("storage"), func() {
 
 			BeforeEach(func() {
 				var err error
-				instanceID, err = broker.Provision(storageServiceName, "public-read", nil)
+				instanceID, err = broker.Provision(storageServiceName, storageDefaultPlanName, nil)
 
 				Expect(err).NotTo(HaveOccurred())
 			})
@@ -154,7 +164,7 @@ var _ = Describe("Storage Bucket", Label("storage"), func() {
 			DescribeTable(
 				"preventing updates with `prohibit_update` as it can force resource replacement or re-creation",
 				func(prop string, value any) {
-					err := broker.Update(instanceID, storageServiceName, "public-read", map[string]any{prop: value})
+					err := broker.Update(instanceID, storageServiceName, storageDefaultPlanName, map[string]any{prop: value})
 
 					Expect(err).To(MatchError(
 						ContainSubstring(

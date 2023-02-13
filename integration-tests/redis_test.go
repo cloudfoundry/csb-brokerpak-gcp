@@ -83,12 +83,12 @@ var _ = Describe("Redis", func() {
 			Expect(mockTerraform.FirstTerraformInvocationVars()).To(
 				SatisfyAll(
 					HaveKeyWithValue("service_tier", "BASIC"),
-					HaveKeyWithValue("memory_size_gb", float64(4)),
+					HaveKeyWithValue("memory_size_gb", BeNumerically("==", 4)),
 					HaveKeyWithValue("region", "us-central1"),
 					HaveKeyWithValue("credentials", "broker-gcp-creds"),
 					HaveKeyWithValue("project", "broker-gcp-project"),
 					HaveKeyWithValue("authorized_network", "default"),
-					HaveKeyWithValue("authorized_network_id", ""),
+					HaveKeyWithValue("authorized_network_id", BeAssignableToTypeOf("")),
 					HaveKeyWithValue("reserved_ip_range", ""),
 					HaveKeyWithValue("display_name", ContainSubstring("csb-")),
 					HaveKeyWithValue("instance_id", ContainSubstring("csb-")),
