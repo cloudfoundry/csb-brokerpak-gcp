@@ -1,12 +1,13 @@
 package services
 
 import (
-	"csbbrokerpakgcp/acceptance-tests/helpers/cf"
 	"encoding/json"
 	"fmt"
 
 	. "github.com/onsi/gomega"
 	. "github.com/onsi/gomega/gexec"
+
+	"csbbrokerpakgcp/acceptance-tests/helpers/cf"
 )
 
 func (s *ServiceInstance) Upgrade() {
