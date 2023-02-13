@@ -18,7 +18,8 @@ id: 528667ba-8e4e-11ea-954d-47e3237b9109
 description: Beta - Fully managed, scalable, relational database service for regional and global application data.
 display_name: Google Cloud Spanner (Beta)
 image_url: file://service-images/csb.png
-documentation_url: https://cloud.google.com/spanner/docs
+documentation_url: https://docs.vmware.com/en/Cloud-Service-Broker-for-VMware-Tanzu/index.html
+provider_display_name: VMware
 support_url: https://cloud.google.com/support/
 tags: [gcp, spanner, beta]
 plans:

@@ -8,14 +8,13 @@ import (
 )
 
 const (
-	bigqueryServiceName             = "csb-google-bigquery"
-	bigqueryServiceID               = "3d4b5b0c-931d-11ea-a02b-cb6a223f4ab2"
-	bigqueryServiceDisplayName      = "Google Big Query (Beta)"
-	bigqueryServiceDocumentationURL = "https://cloud.google.com/bigquery/docs/"
-	bigqueryServiceDescription      = "Beta - A fast, economical and fully managed data warehouse for large-scale data analytics."
-	bigqueryServiceSupportURL       = "https://cloud.google.com/support/"
-	bigqueryStandardPlanName        = "standard"
-	bigqueryStandardPlanID          = "481212b0-931d-11ea-b054-535fa8f91417"
+	bigqueryServiceName        = "csb-google-bigquery"
+	bigqueryServiceID          = "3d4b5b0c-931d-11ea-a02b-cb6a223f4ab2"
+	bigqueryServiceDisplayName = "Google Big Query (Beta)"
+	bigqueryServiceDescription = "Beta - A fast, economical and fully managed data warehouse for large-scale data analytics."
+	bigqueryServiceSupportURL  = "https://cloud.google.com/support/"
+	bigqueryStandardPlanName   = "standard"
+	bigqueryStandardPlanID     = "481212b0-931d-11ea-b054-535fa8f91417"
 )
 
 var _ = Describe("BigQuery", func() {
@@ -37,7 +36,8 @@ var _ = Describe("BigQuery", func() {
 		Expect(service.Tags).To(ConsistOf("gcp", "bigquery", "beta"))
 		Expect(service.Metadata.ImageUrl).To(ContainSubstring("data:image/png;base64,"))
 		Expect(service.Metadata.DisplayName).To(Equal(bigqueryServiceDisplayName))
-		Expect(service.Metadata.DocumentationUrl).To(Equal(bigqueryServiceDocumentationURL))
+		Expect(service.Metadata.DocumentationUrl).To(Equal(cloudServiceBrokerDocumentationURL))
+		Expect(service.Metadata.ProviderDisplayName).To(Equal(providerDisplayName))
 		Expect(service.Metadata.SupportUrl).To(Equal(bigqueryServiceSupportURL))
 		Expect(service.Plans).To(
 			ConsistOf(

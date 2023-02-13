@@ -18,7 +18,8 @@ id: bfb9c232-2b16-4d4c-8958-221ce1107406
 description: Beta - Distributed tracing service
 display_name: Stack driver trace (Beta)
 image_url: file://service-images/csb.png
-documentation_url: https://cloud.google.com/trace/docs
+documentation_url: https://docs.vmware.com/en/Cloud-Service-Broker-for-VMware-Tanzu/index.html
+provider_display_name: VMware
 support_url: https://cloud.google.com/support/
 tags: [gcp, tracing, stackdriver, beta]
 plans:

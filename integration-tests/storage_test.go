@@ -10,14 +10,13 @@ import (
 )
 
 const (
-	storageServiceName             = "csb-google-storage-bucket"
-	storageServiceID               = "b247fcde-8a63-11ea-b945-cb26f061f70f"
-	storageServiceDisplayName      = "Google Cloud Storage (Beta)"
-	storageServiceDocumentationURL = "https://cloud.google.com/storage/docs/overview"
-	storageServiceDescription      = "Beta - Google Cloud Storage that uses the Terraform back-end and grants service accounts IAM permissions directly on the bucket."
-	storageServiceSupportURL       = "https://cloud.google.com/support/"
-	storageDefaultPlanName         = "default"
-	storageDefaultPlanID           = "2875f0f0-a69f-4fe6-a5ec-5ed7f6e89a01"
+	storageServiceName        = "csb-google-storage-bucket"
+	storageServiceID          = "b247fcde-8a63-11ea-b945-cb26f061f70f"
+	storageServiceDisplayName = "Google Cloud Storage (Beta)"
+	storageServiceDescription = "Beta - Google Cloud Storage that uses the Terraform back-end and grants service accounts IAM permissions directly on the bucket."
+	storageServiceSupportURL  = "https://cloud.google.com/support/"
+	storageDefaultPlanName    = "default"
+	storageDefaultPlanID      = "2875f0f0-a69f-4fe6-a5ec-5ed7f6e89a01"
 )
 
 var customCloudStoragePlans = []map[string]any{
@@ -55,7 +54,8 @@ var _ = Describe("Storage Bucket", Label("storage"), func() {
 		Expect(service.Tags).To(ConsistOf("gcp", "storage", "beta"))
 		Expect(service.Metadata.ImageUrl).To(ContainSubstring("data:image/png;base64,"))
 		Expect(service.Metadata.DisplayName).To(Equal(storageServiceDisplayName))
-		Expect(service.Metadata.DocumentationUrl).To(Equal(storageServiceDocumentationURL))
+		Expect(service.Metadata.DocumentationUrl).To(Equal(cloudServiceBrokerDocumentationURL))
+		Expect(service.Metadata.ProviderDisplayName).To(Equal(providerDisplayName))
 		Expect(service.Metadata.SupportUrl).To(Equal(storageServiceSupportURL))
 		Expect(service.Plans).To(
 			ConsistOf(
