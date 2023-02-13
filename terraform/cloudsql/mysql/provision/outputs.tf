@@ -14,7 +14,4 @@ output "sslkey" {
   value     = google_sql_ssl_cert.client_cert.private_key
   sensitive = true
 }
-output "status" { value = format("%s database created URL: https://console.cloud.google.com/sql/instances/%[1]s/overview?project=%s",
-  google_sql_database_instance.instance.name,
-  var.project
-) }
+output "status" { value = format("service %s created", google_sql_database_instance.instance.name) }
