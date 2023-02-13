@@ -27,7 +27,6 @@ var _ = Describe("mysql", Label("mysql-terraform"), Ordered, func() {
 		"instance_name":                          "test-instance-name-456",
 		"db_name":                                "test-db-name-987",
 		"region":                                 "us-central1",
-		"authorized_network":                     "default",
 		"authorized_network_id":                  "",
 		"authorized_networks_cidrs":              []string{},
 		"public_ip":                              false,
@@ -43,6 +42,7 @@ var _ = Describe("mysql", Label("mysql-terraform"), Ordered, func() {
 		"highly_available":                       false,
 		"location_preference_zone":               "",
 		"location_preference_secondary_zone":     "",
+		"allow_insecure_connections":             false,
 	}
 
 	BeforeAll(func() {
@@ -117,6 +117,9 @@ var _ = Describe("mysql", Label("mysql-terraform"), Ordered, func() {
 					"instance": Equal("test-instance-name-456"),
 				}),
 			)
+
+			Expect(AfterOutput(plan, "allow_insecure_connections")).NotTo(BeNil())
+			Expect(AfterOutput(plan, "allow_insecure_connections")).To(BeFalse())
 		})
 	})
 
@@ -192,6 +195,12 @@ var _ = Describe("mysql", Label("mysql-terraform"), Ordered, func() {
 			Expect(AfterValuesForType(plan, "google_sql_ssl_cert")).To(MatchKeys(IgnoreExtras, Keys{
 				"instance": Equal("test-instance-name-456"),
 			}))
+		})
+
+		It("passes the change to allow insecure connections", func() {
+			plan = ShowPlan(terraformProvisionDir, buildVars(defaultVars, map[string]any{"allow_insecure_connections": true}))
+
+			Expect(AfterOutput(plan, "allow_insecure_connections")).To(BeTrue())
 		})
 	})
 

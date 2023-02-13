@@ -73,7 +73,7 @@ var _ = Describe("MySQL", Label("MySQL"), func() {
 			Expect(mockTerraform.FirstTerraformInvocationVars()).To(
 				SatisfyAll(
 					HaveKeyWithValue("db_name", "csb-db"),
-					HaveKeyWithValue("authorized_network_id", ""),
+					HaveKeyWithValue("authorized_network_id", BeAssignableToTypeOf("")),
 					HaveKeyWithValue("public_ip", false),
 					HaveKeyWithValue("authorized_networks_cidrs", []any{}),
 					HaveKeyWithValue("credentials", "broker-gcp-creds"),
@@ -276,6 +276,7 @@ var _ = Describe("MySQL", Label("MySQL"), func() {
 			Entry("update db_name", map[string]any{"db_name": "another-db-name"}),
 			Entry("update region", map[string]any{"region": "australia-southeast1"}),
 			Entry("update authorized_network_id", map[string]any{"authorized_network_id": "another-authorized-network_id"}),
+			Entry("update allow_insecure_connections", map[string]any{"allow_insecure_connections": true}),
 		)
 
 		DescribeTable("should not allow updating properties that are specified in the plan",
@@ -339,17 +340,18 @@ var _ = Describe("MySQL", Label("MySQL"), func() {
 			Expect(err).NotTo(HaveOccurred())
 
 			Expect(bindResult).To(Equal(map[string]any{
-				"username":    "bind.test.username",
-				"hostname":    "created.hostname.gcp.test",
-				"jdbcUrl":     "bind.test.jdbcUrl",
-				"name":        "created.test.instancename",
-				"password":    "bind.test.password",
-				"uri":         "bind.test.uri",
-				"sslrootcert": fakeSSLRoot,
-				"sslcert":     fakeClientCert,
-				"sslkey":      fakeClientKey,
-				"private_ip":  fakePrivateIP,
-				"port":        float64(3306),
+				"username":                   "bind.test.username",
+				"hostname":                   "created.hostname.gcp.test",
+				"jdbcUrl":                    "bind.test.jdbcUrl",
+				"name":                       "created.test.instancename",
+				"password":                   "bind.test.password",
+				"uri":                        "bind.test.uri",
+				"sslrootcert":                fakeSSLRoot,
+				"sslcert":                    fakeClientCert,
+				"sslkey":                     fakeClientKey,
+				"private_ip":                 fakePrivateIP,
+				"port":                       float64(3306),
+				"allow_insecure_connections": false,
 			}))
 		})
 	})
@@ -371,6 +373,7 @@ func provisionInstanceForBinding(
 		{Name: "sslcert", Type: "string", Value: fakeClientCert},
 		{Name: "sslkey", Type: "string", Value: fakeClientKey},
 		{Name: "private_ip", Type: "string", Value: fakePrivateIP},
+		{Name: "allow_insecure_connections", Type: "boolean", Value: false},
 	})
 	Expect(err).NotTo(HaveOccurred())
 

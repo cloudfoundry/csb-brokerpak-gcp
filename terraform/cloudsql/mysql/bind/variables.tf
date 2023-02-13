@@ -13,3 +13,4 @@ variable "sslkey" {
   sensitive = true
   type      = string
 }
+variable "allow_insecure_connections" { type = bool }

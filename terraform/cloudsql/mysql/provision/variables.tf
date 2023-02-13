@@ -28,3 +28,4 @@ variable "backups_transaction_log_retention_days" { type = number }
 variable "highly_available" { type = bool }
 variable "location_preference_zone" { type = string }
 variable "location_preference_secondary_zone" { type = string }
+variable "allow_insecure_connections" { type = bool }
