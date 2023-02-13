@@ -6,13 +6,13 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"strings"
 
 	dataproc "cloud.google.com/go/dataproc/apiv1"
-	"github.com/gorilla/mux"
 	"google.golang.org/api/option"
 )
 
-func App(creds credentials.DataprocCredentials) *mux.Router {
+func App(creds credentials.DataprocCredentials) http.HandlerFunc {
 	endpoint := fmt.Sprintf("%s-dataproc.googleapis.com:443", creds.Region)
 	client, err := dataproc.NewJobControllerClient(
 		context.Background(),
@@ -21,13 +21,22 @@ func App(creds credentials.DataprocCredentials) *mux.Router {
 	if err != nil {
 		log.Fatalf("error creating the cluster client: %s\n", err)
 	}
-	r := mux.NewRouter()
 
-	r.HandleFunc("/", aliveness).Methods("HEAD", "GET")
-	r.HandleFunc("/{job}", handleRunJob(*client, creds)).Methods("PUT")
-	r.HandleFunc("/{job}", handleGetJob(*client, creds)).Methods("GET")
-	r.HandleFunc("/{job}", handleDeleteJob(*client, creds)).Methods("DELETE")
-	return r
+	return func(w http.ResponseWriter, r *http.Request) {
+		job := strings.Trim(r.URL.Path, "/")
+		switch r.Method {
+		case http.MethodHead:
+			aliveness(w, r)
+		case http.MethodGet:
+			handleGetJob(w, job, client, creds)
+		case http.MethodPut:
+			handleRunJob(w, job, client, creds)
+		case http.MethodDelete:
+			handleDeleteJob(w, job, client, creds)
+		default:
+			fail(w, http.StatusMethodNotAllowed, http.StatusText(http.StatusMethodNotAllowed))
+		}
+	}
 }
 
 func aliveness(w http.ResponseWriter, r *http.Request) {
