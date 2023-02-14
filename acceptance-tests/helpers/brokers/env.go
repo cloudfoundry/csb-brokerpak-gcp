@@ -68,7 +68,6 @@ func (b Broker) releasedEnv() []apps.EnvVar {
 
 func (b Broker) latestEnv() []apps.EnvVar {
 	return []apps.EnvVar{
-		{Name: "GSB_COMPATIBILITY_ENABLE_BUILTIN_BROKERPAKS", Value: true},
 		{Name: plansPostgreSQLVar, Value: plansPostgreSQL},
 		{Name: plansMySQLVar, Value: plansMySQL},
 		{Name: plansStorageVar, Value: oldPlansStorage},
