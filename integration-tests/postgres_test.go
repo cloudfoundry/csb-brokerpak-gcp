@@ -8,12 +8,11 @@ import (
 )
 
 const (
-	postgresServiceName             = "csb-google-postgres"
-	postgresServiceID               = "40501b82-cb90-11ec-b1c2-e3a703778055"
-	postgresServiceDescription      = "PostgreSQL is a fully managed service for the Google Cloud Platform."
-	postgresServiceDisplayName      = "Google Cloud PostgreSQL"
-	postgresServiceDocumentationURL = "https://cloud.google.com/sql/docs/postgres"
-	postgresServiceSupportURL       = "https://cloud.google.com/support/"
+	postgresServiceName        = "csb-google-postgres"
+	postgresServiceID          = "40501b82-cb90-11ec-b1c2-e3a703778055"
+	postgresServiceDescription = "PostgreSQL is a fully managed service for the Google Cloud Platform."
+	postgresServiceDisplayName = "Google Cloud PostgreSQL"
+	postgresServiceSupportURL  = "https://cloud.google.com/support/"
 )
 
 var postgresNoOverridesPlan = map[string]any{
@@ -62,7 +61,8 @@ var _ = Describe("postgres", Label("postgres"), func() {
 		Expect(service.Tags).To(ConsistOf("gcp", "postgresql", "postgres"))
 		Expect(service.Metadata.ImageUrl).To(ContainSubstring("data:image/png;base64,"))
 		Expect(service.Metadata.DisplayName).To(Equal(postgresServiceDisplayName))
-		Expect(service.Metadata.DocumentationUrl).To(Equal(postgresServiceDocumentationURL))
+		Expect(service.Metadata.DocumentationUrl).To(Equal(cloudServiceBrokerDocumentationURL))
+		Expect(service.Metadata.ProviderDisplayName).To(Equal(providerDisplayName))
 		Expect(service.Metadata.SupportUrl).To(Equal(postgresServiceSupportURL))
 		Expect(service.Plans).To(
 			ConsistOf(

@@ -21,10 +21,12 @@ var (
 )
 
 const (
-	brokerGCPProject = "broker-gcp-project"
-	brokerGCPCreds   = "broker-gcp-creds"
-	Name             = "Name"
-	ID               = "ID"
+	cloudServiceBrokerDocumentationURL = "https://docs.vmware.com/en/Cloud-Service-Broker-for-VMware-Tanzu/index.html"
+	providerDisplayName                = "VMware"
+	brokerGCPProject                   = "broker-gcp-project"
+	brokerGCPCreds                     = "broker-gcp-creds"
+	Name                               = "Name"
+	ID                                 = "ID"
 )
 
 var _ = BeforeSuite(func() {
