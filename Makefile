@@ -17,10 +17,8 @@ GO_OK :=  $(or $(USE_GO_CONTAINERS), $(shell which go 1>/dev/null 2>/dev/null; e
 DOCKER_OK := $(shell which docker 1>/dev/null 2>/dev/null; echo $$?)
 
 ####### broker environment variables
-PAK_CACHE=/tmp/.pak-cache
 SECURITY_USER_NAME := $(or $(SECURITY_USER_NAME), aws-broker)
 SECURITY_USER_PASSWORD := $(or $(SECURITY_USER_PASSWORD), aws-broker-pw)
-GSB_COMPATIBILITY_ENABLE_BETA_SERVICES := $(or $(GSB_COMPATIBILITY_ENABLE_BETA_SERVICES), true)
 GSB_PROVISION_DEFAULTS := $(or $(GSB_PROVISION_DEFAULTS), {"authorized_network_id": "https://www.googleapis.com/compute/v1/projects/$GOOGLE_PROJECT/global/networks/$GCP_PAS_NETWORK"})
 
 ifeq ($(GO_OK), 0) # use local go binary
@@ -33,7 +31,7 @@ BROKER_GO_OPTS=PORT=8080 \
 				SECURITY_USER_PASSWORD=$(SECURITY_USER_PASSWORD) \
 				GOOGLE_CREDENTIALS='$(GOOGLE_CREDENTIALS)' \
 				GOOGLE_PROJECT=$(GOOGLE_PROJECT) \
- 				PAK_BUILD_CACHE_PATH=$(PAK_CACHE) \
+				PAK_BUILD_CACHE_PATH=$(PAK_BUILD_CACHE_PATH) \
  				GSB_PROVISION_DEFAULTS='$(GSB_PROVISION_DEFAULTS)' \
  				GSB_SERVICE_CSB_GOOGLE_POSTGRES_PLANS='$(GSB_SERVICE_CSB_GOOGLE_POSTGRES_PLANS)' \
  				GSB_SERVICE_CSB_GOOGLE_MYSQL_PLANS='$(GSB_SERVICE_CSB_GOOGLE_MYSQL_PLANS)' \
@@ -45,7 +43,7 @@ RUN_CSB=$(BROKER_GO_OPTS) go run github.com/cloudfoundry/cloud-service-broker
 LDFLAGS="-X github.com/cloudfoundry/cloud-service-broker/utils.Version=$(CSB_VERSION)"
 GET_CSB="env CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -ldflags $(LDFLAGS) github.com/cloudfoundry/cloud-service-broker"
 else ifeq ($(DOCKER_OK), 0) ## running the broker and go with docker
-BROKER_DOCKER_OPTS=--rm -v $(PAK_CACHE):$(PAK_CACHE) -v $(PWD):/brokerpak -w /brokerpak --network=host \
+BROKER_DOCKER_OPTS=--rm -v $(PAK_BUILD_CACHE_PATH):$(PAK_BUILD_CACHE_PATH) -v $(PWD):/brokerpak -w /brokerpak --network=host \
   -p 8080:8080 \
 	-e SECURITY_USER_NAME \
 	-e SECURITY_USER_PASSWORD \
@@ -53,7 +51,7 @@ BROKER_DOCKER_OPTS=--rm -v $(PAK_CACHE):$(PAK_CACHE) -v $(PWD):/brokerpak -w /br
 	-e GOOGLE_PROJECT \
 	-e "DB_TYPE=sqlite3" \
 	-e "DB_PATH=/tmp/csb-db" \
-	-e PAK_BUILD_CACHE_PATH=$(PAK_CACHE) \
+	-e PAK_BUILD_CACHE_PATH=$(PAK_BUILD_CACHE_PATH) \
 	-e GSB_PROVISION_DEFAULTS \
 	-e GSB_SERVICE_CSB_GOOGLE_POSTGRES_PLANS \
 	-e GSB_SERVICE_CSB_GOOGLE_MYSQL_PLANS \
@@ -66,7 +64,7 @@ RUN_CSB=docker run $(BROKER_DOCKER_OPTS) $(CSB_DOCKER_IMAGE)
 # path inside the container
 PAK_PATH=/brokerpak
 
-GO_DOCKER_OPTS=--rm -v $(PAK_CACHE):$(PAK_CACHE) -v $(PWD):/brokerpak -w /brokerpak --network=host
+GO_DOCKER_OPTS=--rm -v $(PAK_BUILD_CACHE_PATH):$(PAK_BUILD_CACHE_PATH) -v $(PWD):/brokerpak -w /brokerpak --network=host
 GO=docker run $(GO_DOCKER_OPTS) golang:latest go
 GOFMT=docker run $(GO_DOCKER_OPTS) golang:latest gofmt
 
@@ -90,7 +88,7 @@ endif
 .PHONY: build
 build: deps-go-binary $(IAAS)-services-*.brokerpak ## build brokerpak
 
-$(IAAS)-services-*.brokerpak: *.yml terraform/*/*/*.tf | $(PAK_CACHE)
+$(IAAS)-services-*.brokerpak: *.yml terraform/*/*/*.tf | $(PAK_BUILD_CACHE_PATH)
 	$(RUN_CSB) pak build
 
 .PHONY: run
@@ -170,8 +168,8 @@ clean: ## clean up build artifacts
 	- rm -f ./cloud-service-broker
 	- rm -f ./brokerpak-user-docs.md
 
-$(PAK_CACHE):
-	@echo "Folder $(PAK_CACHE) does not exist. Creating it..."
+$(PAK_BUILD_CACHE_PATH):
+	@echo "Folder $(PAK_BUILD_CACHE_PATH) does not exist. Creating it..."
 	mkdir -p $@
 	
 .PHONY: latest-csb
