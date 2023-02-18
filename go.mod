@@ -9,7 +9,7 @@ require (
 	github.com/cloudfoundry/cloud-service-broker v0.17.0
 	github.com/hashicorp/terraform-json v0.15.0
 	github.com/onsi/ginkgo/v2 v2.8.2
-	github.com/onsi/gomega v1.27.0
+	github.com/onsi/gomega v1.27.1
 	github.com/otiai10/copy v1.9.0
 	golang.org/x/exp v0.0.0-20221126150942-6ab00d035af9
 	golang.org/x/tools v0.6.0
@@ -96,7 +96,7 @@ require (
 	golang.org/x/crypto v0.6.0 // indirect
 	golang.org/x/exp/typeparams v0.0.0-20221208152030-732eee02a75a // indirect
 	golang.org/x/mod v0.8.0 // indirect
-	golang.org/x/net v0.6.0 // indirect
+	golang.org/x/net v0.7.0 // indirect
 	golang.org/x/oauth2 v0.1.0 // indirect
 	golang.org/x/sys v0.5.0 // indirect
 	golang.org/x/text v0.7.0 // indirect
