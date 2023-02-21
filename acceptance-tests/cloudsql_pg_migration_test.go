@@ -65,8 +65,7 @@ $$
 	disableBindingUserGroupLoginSQL = `alter role "binding_user_group" with nologin`
 )
 
-var _ = Describe("Postgres service instance migration", func() {
-
+var _ = Describe("Postgres service instance migration", Label("postgresql-data-migration"), func() {
 	It("allows access and reorganisation of migrated data structures", func() {
 		By("asynchronously starting the target service instance creation")
 		databaseName := random.Name(random.WithPrefix("migrate-database"))
