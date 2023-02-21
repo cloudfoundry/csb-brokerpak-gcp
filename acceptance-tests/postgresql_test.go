@@ -14,8 +14,8 @@ import (
 	"csbbrokerpakgcp/acceptance-tests/helpers/services"
 )
 
-var _ = Describe("PostgreSQL", Label("postgresql"), func() {
-	It("can be accessed by an app", func() {
+var _ = Describe("PostgreSQL", func() {
+	It("can be accessed by an app", Label("postgresql"), func() {
 		By("creating a service broker with Beta services disabled")
 		broker := brokers.Create(
 			brokers.WithPrefix("csb-postgresql"),
@@ -75,7 +75,7 @@ var _ = Describe("PostgreSQL", Label("postgresql"), func() {
 		appTwo.DELETE(schema)
 	})
 
-	It("can create service keys with a public IP address", func() {
+	It("can create service keys with a public IP address", Label("postgresql-public-ip"), func() {
 		By("creating a service instance with a public IP address")
 		publicIPParams := services.WithParameters(map[string]any{"public_ip": true})
 		serviceInstance := services.CreateInstance("csb-google-postgres", "small", publicIPParams)
@@ -100,5 +100,4 @@ var _ = Describe("PostgreSQL", Label("postgresql"), func() {
 		Expect(uriIP).NotTo(BeNil())
 		Expect(uriIP.IsPrivate()).To(BeFalse())
 	})
-
 })
