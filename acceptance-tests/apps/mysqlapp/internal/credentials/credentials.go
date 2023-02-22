@@ -10,7 +10,6 @@ import (
 	"github.com/cloudfoundry-community/go-cfenv"
 	"github.com/go-sql-driver/mysql"
 	"github.com/mitchellh/mapstructure"
-	"go.uber.org/multierr"
 )
 
 const (
@@ -30,15 +29,24 @@ func Read() (string, error) {
 		return "", fmt.Errorf("error reading MySQL service details")
 	}
 
+	switch svs[0].Label {
+	case "google-cloudsql-mysql-vpc":
+		return readLegacyBrokerBinding(svs[0].Credentials)
+	default:
+		return readBinding(svs[0].Credentials)
+	}
+}
+
+func readBinding(creds any) (string, error) {
 	var m binding
-	if err := mapstructure.Decode(svs[0].Credentials, &m); err != nil {
+	if err := mapstructure.Decode(creds, &m); err != nil {
 		return "", fmt.Errorf("failed to decode credentials: %w", err)
 	}
 
 	m.isNewBindingFormat = os.Getenv(newBindingFormatFeatureFlag) == enabled
 
 	if err := m.validate(); err != nil {
-		return "", fmt.Errorf("parsed credentials are not valid %s", err.Error())
+		return "", fmt.Errorf("parsed credentials are not valid: %w", err)
 	}
 
 	c := mysql.NewConfig()
@@ -53,65 +61,37 @@ func Read() (string, error) {
 		log.Println("registering custom CA")
 		c.TLSConfig = customCaConfigName
 		if err := registerCustomCA(m.SSLRootCert, m.SSLKey, m.SSLCert); err != nil {
-			return "", fmt.Errorf("failed to register custom certificate %s", err.Error())
+			return "", fmt.Errorf("failed to register custom certificate: %w", err)
 		}
 	}
 
 	return c.FormatDSN(), nil
 }
 
-type binding struct {
-	Host               string `mapstructure:"hostname"`
-	Database           string `mapstructure:"name"`
-	Username           string `mapstructure:"username"`
-	Password           string `mapstructure:"password"`
-	Port               int    `mapstructure:"port"`
-	SSLCert            string `mapstructure:"sslcert"`
-	SSLKey             string `mapstructure:"sslkey"`
-	SSLRootCert        string `mapstructure:"sslrootcert"`
-	isNewBindingFormat bool
-}
-
-func (b binding) validate() error {
-	var err error
-
-	if b.Host == "" {
-		err = multierr.Append(err, fmt.Errorf("empty host"))
+func readLegacyBrokerBinding(creds any) (string, error) {
+	var m legacyBrokerBinding
+	if err := mapstructure.Decode(creds, &m); err != nil {
+		return "", err
 	}
 
-	if b.Username == "" {
-		err = multierr.Append(err, fmt.Errorf("empty username"))
+	if err := m.validate(); err != nil {
+		return "", fmt.Errorf("parsed legacy broker credentials are not valid: %w", err)
 	}
 
-	if b.Password == "" {
-		err = multierr.Append(err, fmt.Errorf("empty password"))
+	c := mysql.NewConfig()
+	c.TLSConfig = "false"
+	c.Net = "tcp"
+	c.Addr = fmt.Sprintf("%s:3306", m.Host)
+	c.User = m.Username
+	c.Passwd = m.Password
+	c.DBName = m.Database
+
+	c.TLSConfig = customCaConfigName
+	if err := registerCustomCA(m.SSLRootCert, m.SSLKey, m.SSLCert); err != nil {
+		return "", fmt.Errorf("failed to register custom certificate: %w", err)
 	}
 
-	if b.Database == "" {
-		err = multierr.Append(err, fmt.Errorf("empty database"))
-	}
-
-	if b.Port == 0 {
-		err = multierr.Append(err, fmt.Errorf("invalid port"))
-	}
-
-	if !b.isNewBindingFormat {
-		return err
-	}
-
-	if b.SSLCert == "" {
-		err = multierr.Append(err, fmt.Errorf("empty cert"))
-	}
-
-	if b.SSLKey == "" {
-		err = multierr.Append(err, fmt.Errorf("empty key"))
-	}
-
-	if b.SSLRootCert == "" {
-		err = multierr.Append(err, fmt.Errorf("empty root cert"))
-	}
-
-	return err
+	return c.FormatDSN(), nil
 }
 
 func registerCustomCA(rootCert, key, cert string) error {
