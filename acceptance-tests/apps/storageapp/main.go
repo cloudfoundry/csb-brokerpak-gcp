@@ -5,7 +5,6 @@ import (
 	"log"
 	"net/http"
 	"os"
-
 	"storageapp/internal/app"
 	"storageapp/internal/credentials"
 )
@@ -21,7 +20,7 @@ func main() {
 
 	port := port()
 	log.Printf("Listening on port: %s", port)
-	http.Handle("/", app.App(creds))
+	http.HandleFunc("/", app.App(creds))
 	http.ListenAndServe(port, nil)
 }
 

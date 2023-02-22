@@ -5,9 +5,8 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"strings"
 	"time"
-
-	"github.com/gorilla/mux"
 )
 
 const (
@@ -16,14 +15,39 @@ const (
 	valueColumn = "valuedata"
 )
 
-func App(uri string) *mux.Router {
+func App(uri string) http.Handler {
 	db := connect(uri)
 
-	r := mux.NewRouter()
-	r.HandleFunc("/", aliveness).Methods("HEAD", "GET")
-	r.HandleFunc("/key-value/{key}", handleSet(db)).Methods("PUT")
-	r.HandleFunc("/key-value/{key}", handleGet(db)).Methods("GET")
-	r.HandleFunc("/admin/ssl", handleGetSSLCipher(db)).Methods("GET")
+	r := http.NewServeMux()
+	r.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
+		switch {
+		case r.Method == http.MethodHead && strings.Trim(r.URL.Path, "/") == "":
+			aliveness(w, r)
+		default:
+			methodNotAllowed(w)
+		}
+	})
+
+	r.HandleFunc("/key-value/", func(w http.ResponseWriter, r *http.Request) {
+		key := strings.Trim(r.URL.Path, "/")
+		switch r.Method {
+		case http.MethodGet:
+			handleGet(w, key, db)
+		case http.MethodPut:
+			handleSet(w, r, key, db)
+		default:
+			methodNotAllowed(w)
+		}
+	})
+
+	r.HandleFunc("/admin/ssl/", func(w http.ResponseWriter, r *http.Request) {
+		switch {
+		case r.Method == http.MethodGet:
+			handleGetSSLCipher(w, db)
+		default:
+			methodNotAllowed(w)
+		}
+	})
 
 	return r
 }
@@ -54,4 +78,8 @@ func fail(w http.ResponseWriter, code int, format string, a ...any) {
 	msg := fmt.Sprintf(format, a...)
 	log.Println(msg)
 	http.Error(w, msg, code)
+}
+
+func methodNotAllowed(w http.ResponseWriter) {
+	fail(w, http.StatusMethodNotAllowed, http.StatusText(http.StatusMethodNotAllowed))
 }

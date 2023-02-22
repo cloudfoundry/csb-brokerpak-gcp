@@ -5,25 +5,32 @@ import (
 	"fmt"
 	"log"
 	"net/http"
+	"strings"
 
 	"cloud.google.com/go/storage"
-	"github.com/gorilla/mux"
 	"google.golang.org/api/option"
 
 	"storageapp/internal/credentials"
 )
 
-func App(creds credentials.StorageCredentials) *mux.Router {
+func App(creds credentials.StorageCredentials) http.HandlerFunc {
 	client, _ := storage.NewClient(context.Background(), option.WithCredentialsJSON([]byte(creds.Credentials)))
 
-	r := mux.NewRouter()
-
-	r.HandleFunc("/", aliveness).Methods("HEAD", "GET")
-	r.HandleFunc("/{fileName}", handleUpload(client, creds.BucketName)).Methods("PUT")
-	r.HandleFunc("/{fileName}", handleDownload(client, creds.BucketName)).Methods("GET")
-	r.HandleFunc("/{fileName}", handleDelete(client, creds.BucketName)).Methods("DELETE")
-
-	return r
+	return func(w http.ResponseWriter, r *http.Request) {
+		fileName := strings.Trim(r.URL.Path, "/")
+		switch r.Method {
+		case http.MethodHead:
+			aliveness(w, r)
+		case http.MethodGet:
+			handleDownload(w, r, fileName, client, creds.BucketName)
+		case http.MethodPut:
+			handleUpload(w, r, fileName, client, creds.BucketName)
+		case http.MethodDelete:
+			handleDelete(w, r, fileName, client, creds.BucketName)
+		default:
+			fail(w, http.StatusMethodNotAllowed, http.StatusText(http.StatusMethodNotAllowed))
+		}
+	}
 }
 
 func aliveness(w http.ResponseWriter, r *http.Request) {

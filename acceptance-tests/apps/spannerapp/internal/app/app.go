@@ -6,12 +6,11 @@ import (
 	"log"
 	"net/http"
 	"spannerapp/internal/credentials"
-
-	"google.golang.org/api/iterator"
+	"strings"
 
 	"cloud.google.com/go/spanner"
 	database "cloud.google.com/go/spanner/admin/database/apiv1"
-	"github.com/gorilla/mux"
+	"google.golang.org/api/iterator"
 	"google.golang.org/api/option"
 	adminpb "google.golang.org/genproto/googleapis/spanner/admin/database/v1"
 )
@@ -22,19 +21,25 @@ const (
 	valueColumn = "data"
 )
 
-func App(creds credentials.SpannerCredentials) *mux.Router {
+func App(creds credentials.SpannerCredentials) http.HandlerFunc {
 	client, err := connect(creds)
 	if err != nil {
 		log.Printf(" Error creating client: %s", err)
 	}
 
-	r := mux.NewRouter()
-
-	r.HandleFunc("/", aliveness).Methods("HEAD", "GET")
-	r.HandleFunc("/{key}", handleSet(*client)).Methods("PUT")
-	r.HandleFunc("/{key}", handleGet(*client)).Methods("GET")
-
-	return r
+	return func(w http.ResponseWriter, r *http.Request) {
+		key := strings.Trim(r.URL.Path, "/")
+		switch r.Method {
+		case http.MethodHead:
+			aliveness(w, r)
+		case http.MethodGet:
+			handleGet(w, key, client)
+		case http.MethodPut:
+			handleSet(w, r, key, client)
+		default:
+			fail(w, http.StatusMethodNotAllowed, http.StatusText(http.StatusMethodNotAllowed))
+		}
+	}
 }
 
 func connect(creds credentials.SpannerCredentials) (*spanner.Client, error) {
