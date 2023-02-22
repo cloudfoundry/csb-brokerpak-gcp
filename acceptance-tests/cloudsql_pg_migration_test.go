@@ -8,7 +8,6 @@ import (
 	. "github.com/onsi/gomega"
 
 	"csbbrokerpakgcp/acceptance-tests/helpers/apps"
-	"csbbrokerpakgcp/acceptance-tests/helpers/brokers"
 	"csbbrokerpakgcp/acceptance-tests/helpers/gsql"
 	"csbbrokerpakgcp/acceptance-tests/helpers/legacybindings"
 	"csbbrokerpakgcp/acceptance-tests/helpers/random"
@@ -71,7 +70,7 @@ var _ = Describe("Postgres service instance migration", Label("postgresql-data-m
 		databaseName := random.Name(random.WithPrefix("migrate-database"))
 		targetServiceInstance := services.CreateInstance(
 			"csb-google-postgres",
-			"default",
+			"small",
 			services.WithParameters(map[string]any{
 				"postgres_version":      "POSTGRES_11",
 				"db_name":               databaseName,
@@ -87,7 +86,7 @@ var _ = Describe("Postgres service instance migration", Label("postgresql-data-m
 		sourceServiceInstance := services.CreateInstance(
 			sourceServiceOffering,
 			sourceServicePlan,
-			services.WithBroker(&brokers.Broker{Name: legacyBrokerName}),
+			services.WithBrokerName(legacyBrokerName),
 			services.WithParameters(map[string]any{
 				"tier":            legacyDBTier,
 				"private_network": os.Getenv("GCP_PAS_NETWORK"),
