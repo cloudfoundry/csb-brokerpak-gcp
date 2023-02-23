@@ -45,24 +45,23 @@ func readBinding(creds any) (StorageCredentials, error) {
 }
 
 func readLegacyBrokerBinding(creds any) (StorageCredentials, error) {
-	type legacyBindingData struct {
+	var legacyBindingData struct {
 		BucketName     string `mapstructure:"bucket_name"`
 		PrivateKeyData string `mapstructure:"PrivateKeyData"`
 	}
 	var (
 		r StorageCredentials
-		l legacyBindingData
 	)
-	if err := mapstructure.Decode(creds, &l); err != nil {
+	if err := mapstructure.Decode(creds, &legacyBindingData); err != nil {
 		return r, err
 	}
 
-	v, err := base64.StdEncoding.DecodeString(l.PrivateKeyData)
+	v, err := base64.StdEncoding.DecodeString(legacyBindingData.PrivateKeyData)
 	if err != nil {
 		return r, fmt.Errorf("error decoding private key in JSON format, base64 encoded: %s", err.Error())
 	}
 
-	r.BucketName = l.BucketName
+	r.BucketName = legacyBindingData.BucketName
 	r.Credentials = string(v)
 	return r, nil
 }
