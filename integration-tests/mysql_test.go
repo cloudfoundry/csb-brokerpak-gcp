@@ -11,9 +11,9 @@ import (
 
 const (
 	mySQLServiceName        = "csb-google-mysql"
-	mySQLServiceID          = "b9f3d4f3-8716-4179-8b7c-e80bd5bccb31"
-	mySQLServiceDisplayName = "Google Cloud MySQL (Beta)"
-	mySQLServiceDescription = "Beta - MySQL is a fully managed service for the Google Cloud Platform."
+	mySQLServiceID          = "fe6a86d5-ce06-4c58-96f8-43aef1ac8a31"
+	mySQLServiceDisplayName = "Google Cloud MySQL"
+	mySQLServiceDescription = "MySQL is a fully managed service for the Google Cloud Platform."
 	mySQLServiceSupportURL  = "https://cloud.google.com/support/"
 	mySQLCustomPlanName     = "custom-plan"
 	mySQLCustomPlanID       = "9daa07f1-78e8-4bda-9efe-91576102c30d"
@@ -49,7 +49,7 @@ var _ = Describe("MySQL", Label("MySQL"), func() {
 		service := testframework.FindService(catalog, mySQLServiceName)
 		Expect(service.ID).To(Equal(mySQLServiceID))
 		Expect(service.Description).To(Equal(mySQLServiceDescription))
-		Expect(service.Tags).To(ConsistOf("gcp", "mysql", "beta"))
+		Expect(service.Tags).To(ConsistOf("gcp", "mysql"))
 		Expect(service.Metadata.ImageUrl).To(ContainSubstring("data:image/png;base64,"))
 		Expect(service.Metadata.DisplayName).To(Equal(mySQLServiceDisplayName))
 		Expect(service.Metadata.DocumentationUrl).To(Equal(cloudServiceBrokerDocumentationURL))
