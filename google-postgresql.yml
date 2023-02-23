@@ -161,13 +161,13 @@ provision:
     details: Using TLS for connection
   - field_name: sslcert
     type: string
-    details: The client CA Cert to authenticate with SQL instance
+    details: The client TLS certificate for connection authorization
   - field_name: sslkey
     type: string
-    details: The client CA Cert to authenticate with SQL instance
+    details: The client TLS key for connection authorization
   - field_name: sslrootcert
     type: string
-    details: The CA Certificate used to connect to the SQL instance via TLS
+    details: The SQL instance TLS CA Certificate
   - field_name: private_ip
     type: string
     details: Private IP address of the mysql endpoint used internally to manage bindings
@@ -233,6 +233,15 @@ bind:
   - field_name: jdbcUrl
     type: string
     details: The jdbc url to connect to the database instance and database.
+  - field_name: sslcert
+    type: string
+    details: The client TLS certificate to authenticate with SQL instance
+  - field_name: sslkey
+    type: string
+    details: The client TLS key to authenticate with SQL instance
+  - field_name: sslrootcert
+    type: string
+    details: The CA Certificate used to connect to the SQL instance via TLS
 examples:
 - name: small configuration
   description: Create a small postgres instance

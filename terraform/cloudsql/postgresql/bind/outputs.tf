@@ -25,3 +25,10 @@ output "jdbcUrl" {
     var.require_ssl,
   )
 }
+
+output "sslrootcert" { value = var.sslrootcert }
+output "sslcert" { value = var.sslcert }
+output "sslkey" {
+  sensitive = true
+  value     = var.sslkey
+}

@@ -269,6 +269,9 @@ var _ = Describe("postgres", Label("postgres"), func() {
 				{Name: "password", Type: "string", Value: "bind.test.password"},
 				{Name: "uri", Type: "string", Value: "bind.test.uri"},
 				{Name: "jdbcUrl", Type: "string", Value: "bind.test.jdbcUrl"},
+				{Name: "sslrootcert", Type: "string", Value: fakeSSLRoot},
+				{Name: "sslcert", Type: "string", Value: fakeClientCert},
+				{Name: "sslkey", Type: "string", Value: fakeClientKey},
 			})
 			Expect(err).NotTo(HaveOccurred())
 			bindResult, err := broker.Bind("csb-google-postgres", postgresAllOverridesPlan["name"].(string), instanceID, nil)
