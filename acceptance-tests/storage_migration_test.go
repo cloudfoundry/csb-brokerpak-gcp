@@ -7,7 +7,6 @@ import (
 	. "github.com/onsi/gomega"
 
 	"csbbrokerpakgcp/acceptance-tests/helpers/apps"
-	"csbbrokerpakgcp/acceptance-tests/helpers/brokers"
 	"csbbrokerpakgcp/acceptance-tests/helpers/gcloud"
 	"csbbrokerpakgcp/acceptance-tests/helpers/random"
 	"csbbrokerpakgcp/acceptance-tests/helpers/services"
@@ -22,7 +21,7 @@ var _ = Describe("Storage Migration", Label("storage-migration"), func() {
 		legacyServiceInstance := services.CreateInstance(
 			"google-storage",
 			"multiregional",
-			services.WithBroker(&brokers.Broker{Name: legacyBrokerName}),
+			services.WithBrokerName(legacyBrokerName),
 			services.WithParameters(
 				map[string]any{
 					"name":         sourceBucketName,
