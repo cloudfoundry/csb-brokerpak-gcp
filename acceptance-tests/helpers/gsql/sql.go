@@ -3,13 +3,12 @@ package gsql
 
 import (
 	"crypto/sha256"
+	"csbbrokerpakgcp/acceptance-tests/helpers/gcloud"
 	"encoding/json"
 	"fmt"
 	"os"
 
 	. "github.com/onsi/gomega"
-
-	"csbbrokerpakgcp/acceptance-tests/helpers/gcloud"
 )
 
 // CreateBackupBucket creates storage buckets for google sql import export procedure
@@ -18,12 +17,10 @@ func CreateBackupBucket(bucketName string) {
 		"mb",
 		fmt.Sprintf("gs://%s", bucketName),
 	)
-
 }
 
 // DeleteBucket deletes a bucket, along with all its contents
 func DeleteBucket(bucketName string) {
-
 	gcloud.GSUtil(
 		"rm",
 		"-r",
@@ -36,7 +33,6 @@ func DeleteBucket(bucketName string) {
 }
 
 func getInstanceServiceAccountName(instanceID string) string {
-
 	response := map[string]any{}
 
 	instanceDataBytes := gcloud.GCP(
@@ -55,12 +51,10 @@ func getInstanceServiceAccountName(instanceID string) string {
 	Expect(ok).To(BeTrue())
 
 	return instanceServiceAccountName
-
 }
 
 // CreateBackup creates an export based backup into a target bucket
 func CreateBackup(instanceID, dbName, bucketName string) string {
-
 	enableBucketWrite(getInstanceServiceAccountName(instanceID), bucketName)
 	dumpURI := fmt.Sprintf("gs://%s/%s.sql", bucketName, instanceID)
 	gcloud.GCP(
@@ -74,7 +68,6 @@ func CreateBackup(instanceID, dbName, bucketName string) string {
 	)
 
 	return dumpURI
-
 }
 
 func enableBucketWrite(serviceAccountEmail, bucketName string) {
@@ -146,8 +139,8 @@ func UploadTextFile(fileURL, contents string) {
 	gcloud.GSUtil("cp", tempFile.Name(), fileURL)
 }
 
-// RestoreBackup restores a CloudSQL database backup from a SQL file in a bucket
-func RestoreBackup(dumpURI, instanceID, databaseName string) {
+// RestoreBackupWithUser restores a CloudSQL database backup from a SQL file in a bucket
+func RestoreBackupWithUser(dumpURI, instanceID, databaseName, username string) {
 	instanceServiceAccountName := getInstanceServiceAccountName(instanceID)
 	enableFileRead(instanceServiceAccountName, dumpURI)
 
@@ -161,6 +154,23 @@ func RestoreBackup(dumpURI, instanceID, databaseName string) {
 		dumpURI,
 		"--quiet",
 		"--user",
-		"binding_user_group",
+		username,
+	)
+}
+
+// RestoreBackup restores a CloudSQL database backup from a SQL file in a bucket
+func RestoreBackup(dumpURI, instanceID, databaseName string) {
+	instanceServiceAccountName := getInstanceServiceAccountName(instanceID)
+	enableFileRead(instanceServiceAccountName, dumpURI)
+
+	gcloud.GCP(
+		"sql",
+		"import",
+		"sql",
+		instanceID,
+		dumpURI,
+		"-d",
+		databaseName,
+		"--quiet",
 	)
 }
