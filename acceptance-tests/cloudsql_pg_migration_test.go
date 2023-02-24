@@ -119,8 +119,7 @@ var _ = Describe("Postgres service instance migration", Label("postgresql-data-m
 
 		By("extracting a service key for the source service instance")
 		credentials := sourceInstanceBinding.Credential()
-		legacyBinding, err := legacybindings.ExtractPostgresBinding(credentials)
-		Expect(err).NotTo(HaveOccurred())
+		legacyBinding := legacybindings.ExtractLegacyBinding(credentials)
 
 		By("creating a bucket")
 		bucketName := "bucket-" + databaseName
@@ -138,7 +137,7 @@ var _ = Describe("Postgres service instance migration", Label("postgresql-data-m
 		gsql.PerformAdminSQL(createBindingUserGroupSQL, targetInstanceIaaSName, databaseName, bucketName)
 
 		By("restoring the backup onto the target service instance")
-		gsql.RestoreBackup(backupURI, targetInstanceIaaSName, databaseName)
+		gsql.RestoreBackupWithUser(backupURI, targetInstanceIaaSName, databaseName, "binding_user_group")
 
 		By("cleaning up after the restore")
 		gsql.PerformAdminSQL(disableBindingUserGroupLoginSQL, targetInstanceIaaSName, databaseName, bucketName)
