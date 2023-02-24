@@ -48,10 +48,12 @@ Enable the following services in **[APIs and services > Library](https://console
 The broker keeps service instance and binding information in a MySQL database. 
 
 #### Binding a MySQL Database
-If there is an existing broker in the foundation that can provision a MySQL instance use `cf create-service` to create a new MySQL instance. Then use `cf bind-service` to bind that instance to the service broker.
+If there is an existing broker in the foundation that can provision a MySQL instance use `cf create-service`
+to create a new MySQL instance. Then use `cf bind-service` to bind that instance to the service broker.
 
 #### Scripted
-Use [scripts/gcp-create-mysql-db.sh](../scripts/gcp-create-mysql-db.sh) to create a GCP mysql instance. It will report the DB_HOST (ip address) username, password and db name upon completion.
+Use [scripts/gcp-create-mysql-db.sh](../scripts/gcp-create-mysql-db.sh) to create a GCP mysql instance.
+It will report the DB_HOST (ip address) username, password and db name upon completion.
 
 It requires the [gcloud](https://cloud.google.com/sdk/gcloud) cli be installed.
 #### Manually Provisioning a MySQL Database
@@ -87,9 +89,13 @@ Add these to the `env` section of `manifest.yml`
 
 ### Create Private Service Connection in GCP
 
-To allow CF applications to connect to service instances created by CSB, follow [these instructions](https://cloud.google.com/vpc/docs/configure-private-services-access) to enable private service access to the VPC network that your foundation is running in.
+To allow CF applications to connect to service instances created by CSB, follow 
+[these instructions](https://cloud.google.com/vpc/docs/configure-private-services-access)
+to enable private service access to the VPC network that your foundation is running in.
 
-To peer the service network (that mysql and postgres instances are connected to) and your VPC, the following commands need to be run once. Note that the `prefix-length` value depends on how many databases are created. If you run out of available IP addresses then consider using a lower number.
+To peer the service network (that mysql and postgres instances are connected to) and your VPC, the following
+commands need to be run once. Note that the `prefix-length` (subnet mask) value depends on how many databases are created.
+If you run out of available IP addresses then consider using a lower number.
 
 ```bash
 VPC_NETWORK_NAME=[the name of your VCP network]
@@ -110,7 +116,8 @@ gcloud services vpc-peerings connect \
 > if you use *scripts/gcp-create-mysql-db.sh* to create the mysql metadata database for the broker, these steps are already done.
 
 ### Authorized Network ID
-When using private service connections, the ID for the VPC network must provided in the `authorized_network_id` parameter when creating service instances. To get the ID of the given network, use 
+When using private service connections, the ID for the VPC network must be provided in the `authorized_network_id`
+parameter when creating service instances. To get the ID of the given network, use 
 
 ```
 gcloud compute networks list --filter="name=$GCP_PAS_NETWORK" --uri
@@ -119,12 +126,26 @@ where GCP_PAS_NETWORK is the name of the network used when creating the private 
 
 ### Fetch A Broker and GCP Brokerpak
 
-Download a release from https://github.com/pivotal/cloud-service-broker/releases. Find the latest release matching the name pattern `sb-0.1.0-rc.XXX-gcp-0.0.1-rc.YY`. This will have a broker and brokerpak that have been tested together. Follow the hyperlink into that release and download `cloud-servic-broker` and `gcp-services-0.1.0-rc.YY.brokerpak` into the same directory on your workstation.
+Download a Cloud Service Broker release from https://github.com/pivotal/cloud-service-broker/releases. 
+Find the latest release matching the name pattern `vX.X.X`.
+Change filename `cloud-service-broker.linux` to `cloud-service-broker`.
+Add execution permissions `chmod +x cloud-service-broker`
+
+Download a GCP Brokerpak release from https://github.com/cloudfoundry/csb-brokerpak-gcp/releases.
+Find the latest release matching the name pattern `X.X.X`.
+
+Put the `cloud-service-broker` and `gcp-services-X.X.X.brokerpak` into the same directory on your workstation.
 
 ### Create a MySQL instance with GCP broker
+
+If there is an existing GCP broker in the foundation that can provision a MySQL instance use `cf create-service`
+to create a new MySQL instance.
+Then use `cf bind-service` to bind that instance to the service broker app.
+
 The following command will create a basic MySQL database instance named `csb-sql`
+
 ```bash
-cf create-service google-cloudsql-mysql basic csb-sql
+cf create-service <MySQL_SERVICE_OFFERING_NAME> <PLAN_NAME> csb-sql [-b <SERVICE_BROKER_NAME>] 
 ```
 
 ### Build Config File
@@ -138,32 +159,46 @@ gcp:
   google_project: Give your project a name 
 ```
 
+Add your custom plans to the `config.yml` file, for example, plans for MySQL
+
+```yaml
+service:
+  csb-google-mysql:
+    plans: '[{"name":"default","id":"eec62c9b-b25e-4e65-bad5-6b74d90274bf","description":"Default MySQL v8.0 10GB storage","metadata":{"displayName":"default"},"mysql_version":"MYSQL_8_0","storage_gb":10,"tier":"db-n1-standard-2"}]'
+```
+
 ### Push and Register the Broker
 
 Push the broker as a binary application:
 
 ```bash
-make push-broker
+SECURITY_USER_NAME=someusername
+SECURITY_USER_PASSWORD=somepassword
+APP_NAME=cloud-service-broker
+
+chmod +x cloud-service-broker
+cf push "${APP_NAME}" -c './cloud-service-broker serve --config config.yml' -b binary_buildpack --random-route --no-start
+```
+
+Bind the MySQL database and start the service broker:
+```bash
+cf bind-service cloud-service-broker csb-sql
+cf start "${APP_NAME}"
+```
+
+Register the service broker:
+```bash
+BROKER_NAME=csb-$USER
+
+cf create-service-broker "${BROKER_NAME}" "${SECURITY_USER_NAME}" "${SECURITY_USER_PASSWORD}" https://$(cf app "${APP_NAME}" | grep 'routes:' | cut -d ':' -f 2 | xargs) --space-scoped || cf update-service-broker "${BROKER_NAME}" "${SECURITY_USER_NAME}" "${SECURITY_USER_PASSWORD}" https://$(cf app "${APP_NAME}" | grep 'routes:' | cut -d ':' -f 2 | xargs)
 ```
 
 Once this completes, the output from `cf marketplace` should include:
 
 ```
-csb-google-mysql            small, medium, large   MySQL is a fully managed service for the Google Cloud Platform.
-
-csb-google-postgres         small, medium, large   PostgreSQL is a fully managed service for the Google Cloud Platform.
-
-csb-google-redis            basic, ha              Cloud Memorystore for Redis is a fully managed Redis service for the Google Cloud Platform. 
-
-csb-google-storage-bucket   default                Google Cloud Storage that uses the Terraform back-end and grants service accounts IAM permissions directly on the bucket.      
-
-csb-google-bigquery         standard               A fast, economical and fully managed data warehouse for large-scale data analytics.   
-
-csb-google-dataproc         standard, ha           Dataproc is a fully-managed service for running Apache Spark and Apache Hadoop clusters in a simpler, more cost-efficient way.   
-
-csb-google-spanner          small, medium, large   Fully managed, scalable, relational database service for regional and global application data.  
+csb-google-mysql    default   Default MySQL v8.0 10GB storage
+....  
 ```
-
 
 ## Step By Step From a Pre-built Release with a Manually Provisioned MySQL Instance
 
@@ -172,7 +207,10 @@ Fetch a pre-built broker and brokerpak and configure with a manually provisioned
 Requirements and assumptions are the same as above. Follow instructions above to [fetch the broker and brokerpak](#Fetch-A-Broker-and-GCP-Brokerpak)
 
 ### Create a MySQL Database
-Its an exercise for the reader to create a MySQL server somewhere that a `cf push`ed app can access. The database connection values (hostname, user name and password) will be needed in the next step. It is also necessary to create a database named `servicebroker` within that server (use your favorite tool to connect to the MySQL server and issue `CREATE DATABASE servicebroker;`).
+It's an exercise for the reader to create a MySQL server somewhere that a `cf push`ed app can access.
+The database connection values (hostname, username and password) will be needed in the next step.
+It is also necessary to create a database named `servicebroker` within that server (use your favorite tool to
+connect to the MySQL server and issue `CREATE DATABASE servicebroker;`).
 
 ### Build Config File
 To avoid putting any sensitive information in environment variables, a config file can be used.
@@ -182,7 +220,7 @@ Create a file named `config.yml` in the same directory the broker and brokerpak 
 ```yaml
 gcp:
   google_credentials: the string version of the credentials file created for the Owner level Service Account
-  google_project: Give your project a name
+  google_project: Give your project id name
 
 db:
   host: your mysql host
@@ -192,14 +230,30 @@ db:
 api:
   user: someusername
   password: somepassword
+
+service:
+  csb-google-mysql:
+    plans: '[{"name":"default","id":"eec62c9b-b25e-4e65-bad5-6b74d90274bf","description":"Default MySQL v8.0 10GB storage","metadata":{"displayName":"default"},"mysql_version":"MYSQL_8_0","storage_gb":10,"tier":"db-n1-standard-2"}]'
 ```
+
+Add your custom plans to the `config.yml` file, for example, plans for MySQL
 
 ### Push and Register the Broker
 
 Push the broker as a binary application and register it as a broker:
 
 ```bash
-make push-broker
+APP_NAME=cloud-service-broker
+
+chmod +x cloud-service-broker
+cf push "${APP_NAME}" -c './cloud-service-broker serve --config config.yml' -b binary_buildpack --random-route --no-start
+```
+
+Register the service broker:
+```bash
+BROKER_NAME=csb-$USER
+
+cf create-service-broker "${BROKER_NAME}" "${SECURITY_USER_NAME}" "${SECURITY_USER_PASSWORD}" https://$(cf app "${APP_NAME}" | grep 'routes:' | cut -d ':' -f 2 | xargs) --space-scoped || cf update-service-broker "${BROKER_NAME}" "${SECURITY_USER_NAME}" "${SECURITY_USER_PASSWORD}" https://$(cf app "${APP_NAME}" | grep 'routes:' | cut -d ':' -f 2 | xargs)
 ```
 
 Once these steps are complete, the output from `cf marketplace` should resemble the same as above.
@@ -210,8 +264,8 @@ Grab the source code, build and deploy.
 ### Requirements
 
 The following tools are needed on your workstation:
-- [go 1.18](https://golang.org/dl/)
-- make
+- [The latest GoLang version](https://golang.org/dl/)
+- [make](https://www.gnu.org/software/make/)
 - [cf cli](https://docs.cloudfoundry.org/cf-cli/install-go-cli.html)
 
 The Cloud Service Broker for GCP must be installed in your foundation.
@@ -231,7 +285,8 @@ cd cloud-service-broker
 
 Collect the GCP Service Account credentials for your account and set them as environment variables:
 ```bash
-export ROOT_SERVICE_ACCOUNT_JSON=the string version of the credentials file created for the Owner level Service Account
+export GOOGLE_CREDENTIALS=the string version of the credentials file created for the Owner level Service Account;
+export GOOGLE_PROJECT=your google project id
 
 ```
 Generate username and password for the broker - Cloud Foundry will use these credentials to authenticate API calls to the service broker.
@@ -242,12 +297,20 @@ export SECURITY_USER_PASSWORD=somepassword
 
 ### Create a MySQL instance
 
+It's an exercise for the reader to create a MySQL server somewhere that a `cf push`ed app can access.
+If there is an existing GCP broker in the foundation that can provision a MySQL instance use `cf create-service`
+to create a new MySQL instance.
+Then use `cf bind-service` to bind that instance to the service broker app.
+
 The following command will create a basic MySQL database instance named `csb-sql`
+
 ```bash
-cf create-service google-cloudsql-mysql basic csb-sql
+cf create-service <MySQL_SERVICE_OFFERING_NAME> <PLAN_NAME> csb-sql [-b <SERVICE_BROKER_NAME>] 
 ```
+
 ### Use the Makefile to Deploy the Broker
-There is a make target that will build the broker and brokerpak and deploy to and register with Cloud Foundry as a space scoped broker. This will be local and private to the org and space your `cf` CLI is targeting.
+There is a make target that will build the broker and brokerpak and deploy to and register with Cloud Foundry
+as a space scoped broker. This will be local and private to the org and space your `cf` CLI is targeting.
 
 ```bash
 make push-broker
@@ -255,25 +318,9 @@ make push-broker
 
 Once these steps are complete, the output from `cf marketplace` should resemble the same as above.
 
-## Step By Step Slightly Harder Way
-
-Requirements and assumptions are the same as above. Follow instructions for the first two steps above ([Clone the Repo](#Clone-the-Repo) and [Set Required Environment Variables](Set-Required-Environment-Variables))
-
-### Create a MySQL Database
-Its an exercise for the reader to create a MySQL server somewhere that a `cf push`ed app can access. It is also necessary to create a database named `servicebroker` within that server (use your favorite tool to connect to the MySQL server and issue `CREATE DATABASE servicebroker;`). Set the following environment variables with information about that MySQL instance:
-```bash
-export DB_HOST=mysql server host
-export DB_USERNAME=mysql server username
-export DB_PASSWORD=mysql server password
-```
-
-### Build the Broker and Brokerpak
-Use the makefile to build the broker executable and brokerpak.
-```bash
-make build-gcp-brokerpak
-```
 ## Uninstalling the Broker
-First, make sure there are all service instances created with `cf create-service` have been destroyed with `cf delete-service` otherwise removing the broker will fail.
+First, make sure there are all service instances created with `cf create-service` have been destroyed
+with `cf delete-service` otherwise removing the broker will fail.
 
 ### Unregister the Broker
 ```bash
