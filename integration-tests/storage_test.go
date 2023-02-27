@@ -89,6 +89,16 @@ var _ = Describe("Storage Bucket", Label("storage"), func() {
 				map[string]any{"name": ".aaaaa"},
 				"name: Does not match pattern '^[a-z0-9][a-z0-9_.-]{1,220}[a-z0-9]$'",
 			),
+			Entry(
+				"storage_class invalid value",
+				map[string]any{"storage_class": "WRONG_VALUE"},
+				"storage_class: storage_class must be one of the following:",
+			),
+			Entry(
+				"public_access_prevention invalid value",
+				map[string]any{"public_access_prevention": "WRONG VALUE"},
+				"public_access_prevention: public_access_prevention must be one of the following:",
+			),
 		)
 
 		It("should provision a plan", func() {
