@@ -126,7 +126,7 @@ where GCP_PAS_NETWORK is the name of the network used when creating the private 
 
 ### Fetch A Broker and GCP Brokerpak
 
-Download a Cloud Service Broker release from https://github.com/pivotal/cloud-service-broker/releases. 
+Download a Cloud Service Broker release from https://github.com/cloudfoundry/cloud-service-broker/releases. 
 Find the latest release matching the name pattern `vX.X.X`.
 Change filename `cloud-service-broker.linux` to `cloud-service-broker`.
 Add execution permissions `chmod +x cloud-service-broker`
@@ -156,7 +156,7 @@ Create a file named `config.yml` in the same directory the broker and brokerpak 
 ```yaml
 gcp:
   google_credentials: the string version of the credentials file created for the Owner level Service Account
-  google_project: Give your project a name 
+  google_project: Give your project id or name 
 ```
 
 Add your custom plans to the `config.yml` file, for example, plans for MySQL
@@ -190,7 +190,7 @@ Register the service broker:
 ```bash
 BROKER_NAME=csb-$USER
 
-cf create-service-broker "${BROKER_NAME}" "${SECURITY_USER_NAME}" "${SECURITY_USER_PASSWORD}" https://$(cf app "${APP_NAME}" | grep 'routes:' | cut -d ':' -f 2 | xargs) --space-scoped || cf update-service-broker "${BROKER_NAME}" "${SECURITY_USER_NAME}" "${SECURITY_USER_PASSWORD}" https://$(cf app "${APP_NAME}" | grep 'routes:' | cut -d ':' -f 2 | xargs)
+cf create-service-broker "${BROKER_NAME}" "${SECURITY_USER_NAME}" "${SECURITY_USER_PASSWORD}" https://$(LANG=EN cf app "${APP_NAME}" | grep 'routes:' | cut -d ':' -f 2 | xargs) --space-scoped || cf update-service-broker "${BROKER_NAME}" "${SECURITY_USER_NAME}" "${SECURITY_USER_PASSWORD}" https://$(LANG=EN cf app "${APP_NAME}" | grep 'routes:' | cut -d ':' -f 2 | xargs)
 ```
 
 Once this completes, the output from `cf marketplace` should include:
@@ -220,7 +220,7 @@ Create a file named `config.yml` in the same directory the broker and brokerpak 
 ```yaml
 gcp:
   google_credentials: the string version of the credentials file created for the Owner level Service Account
-  google_project: Give your project id name
+  google_project: Give your project id or name
 
 db:
   host: your mysql host
@@ -238,23 +238,7 @@ service:
 
 Add your custom plans to the `config.yml` file, for example, plans for MySQL
 
-### Push and Register the Broker
-
-Push the broker as a binary application and register it as a broker:
-
-```bash
-APP_NAME=cloud-service-broker
-
-chmod +x cloud-service-broker
-cf push "${APP_NAME}" -c './cloud-service-broker serve --config config.yml' -b binary_buildpack --random-route --no-start
-```
-
-Register the service broker:
-```bash
-BROKER_NAME=csb-$USER
-
-cf create-service-broker "${BROKER_NAME}" "${SECURITY_USER_NAME}" "${SECURITY_USER_PASSWORD}" https://$(cf app "${APP_NAME}" | grep 'routes:' | cut -d ':' -f 2 | xargs) --space-scoped || cf update-service-broker "${BROKER_NAME}" "${SECURITY_USER_NAME}" "${SECURITY_USER_PASSWORD}" https://$(cf app "${APP_NAME}" | grep 'routes:' | cut -d ':' -f 2 | xargs)
-```
+Push and Register the Broker, see [previous section](#Push-and-Register-the-Broker)
 
 Once these steps are complete, the output from `cf marketplace` should resemble the same as above.
 
