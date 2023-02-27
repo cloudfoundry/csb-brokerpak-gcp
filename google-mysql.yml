@@ -282,9 +282,15 @@ bind:
     type: string
     details: Client private key for establishing a mutual TLS connection.
 examples:
-- name: default configuration
+- name: gcp-mysql-default
   description: Create a mysql instance
   plan_id: eec62c9b-b25e-4e65-bad5-6b74d90274bf
   provision_params: {}
+  bind_params: {}
+  bind_can_fail: true
+- name: gcp-mysql-high-availability
+  description: Enable regional high availability for MySQL
+  plan_id: eec62c9b-b25e-4e65-bad5-6b74d90274bf
+  provision_params: { "highly_available": true, "location_preference_zone": "a", "backups_transaction_log_retention_days": 7 }
   bind_params: {}
   bind_can_fail: true
