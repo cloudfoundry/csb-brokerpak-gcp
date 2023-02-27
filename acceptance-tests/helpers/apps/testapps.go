@@ -3,6 +3,7 @@ package apps
 import (
 	"fmt"
 	"os"
+	"path/filepath"
 )
 
 type AppCode string
@@ -20,7 +21,7 @@ const (
 
 func (a AppCode) Dir() string {
 	for _, d := range []string{"apps", "../apps"} {
-		p := fmt.Sprintf("%s/%s", d, string(a))
+		p := filepath.Join(d, string(a))
 		_, err := os.Stat(p)
 		if err == nil {
 			return p
