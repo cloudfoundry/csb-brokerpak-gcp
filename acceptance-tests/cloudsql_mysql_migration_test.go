@@ -21,6 +21,7 @@ var _ = Describe("MySQL service instance migration", Label("mysql-data-migration
 
 		serviceBroker := brokers.Create(
 			brokers.WithPrefix("csb-mysql"),
+			brokers.WithLatestEnv(),
 			brokers.WithEnv(apps.EnvVar{Name: brokers.PlansMySQLVar, Value: mysql56plan}),
 		)
 		defer serviceBroker.Delete()
