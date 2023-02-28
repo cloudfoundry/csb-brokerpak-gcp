@@ -5,8 +5,6 @@ import (
 	"io"
 	"net"
 	"net/url"
-	"os"
-	"path"
 	"strings"
 
 	. "github.com/onsi/ginkgo/v2"
@@ -40,13 +38,8 @@ var _ = Describe("MySQL", Label("mysql"), func() {
 		defer serviceInstance.Delete()
 
 		By("pushing the unstarted app twice")
-		testExecutable, err := os.Executable()
-		Expect(err).NotTo(HaveOccurred())
-
-		testPath := path.Dir(testExecutable)
-		appManifest := path.Join(testPath, "apps", "jdbctestapp", "manifest.yml")
-		appOne := apps.Push(apps.WithApp(apps.JDBCTestApp), apps.WithManifest(appManifest))
-		appTwo := apps.Push(apps.WithApp(apps.JDBCTestApp), apps.WithManifest(appManifest))
+		appOne := apps.Push(apps.WithApp(apps.JDBCTestApp), apps.WithTestAppManifest(apps.MySQLTLSTestAppManifest))
+		appTwo := apps.Push(apps.WithApp(apps.JDBCTestApp), apps.WithTestAppManifest(apps.MySQLTLSTestAppManifest))
 		defer apps.Delete(appOne, appTwo)
 
 		By("binding the apps to the storage service instance")
@@ -93,12 +86,7 @@ var _ = Describe("MySQL", Label("mysql"), func() {
 		defer serviceInstance.Delete()
 
 		By("pushing the unstarted app")
-		testExecutable, err := os.Executable()
-		Expect(err).NotTo(HaveOccurred())
-
-		testPath := path.Dir(testExecutable)
-		appManifest := path.Join(testPath, "apps", "jdbctestapp", "manifest-no-autotls.yml")
-		appOne := apps.Push(apps.WithApp(apps.JDBCTestApp), apps.WithManifest(appManifest))
+		appOne := apps.Push(apps.WithApp(apps.JDBCTestApp), apps.WithTestAppManifest(apps.MySQLNoAutoTLSTestAppManifest))
 
 		By("binding and starting the app")
 		serviceInstance.Bind(appOne)
@@ -107,7 +95,7 @@ var _ = Describe("MySQL", Label("mysql"), func() {
 
 		By("ensuring encryption wasn't used")
 		got := appOne.GET("mysql-ssl")
-		err = json.Unmarshal([]byte(got), &tlsCipher)
+		err := json.Unmarshal([]byte(got), &tlsCipher)
 		Expect(err).NotTo(HaveOccurred())
 
 		Expect(strings.ToLower(tlsCipher.Name)).To(Equal("ssl_cipher"))
