@@ -19,6 +19,7 @@ var _ = Describe("PostgreSQL", func() {
 		By("creating a service broker with Beta services disabled")
 		broker := brokers.Create(
 			brokers.WithPrefix("csb-postgresql"),
+			brokers.WithLatestEnv(),
 			brokers.WithEnv(apps.EnvVar{Name: "GSB_COMPATIBILITY_ENABLE_BETA_SERVICES", Value: "false"}),
 		)
 		defer broker.Delete()
