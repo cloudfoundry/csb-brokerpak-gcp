@@ -45,12 +45,14 @@ provision:
     type: string
     details: |
       The Storage Class of the new bucket.
-      For more information about valid storage class values, see https://registry.terraform.io/providers/hashicorp/google/latest/docs/resources/storage_bucket#storage_class.
     default: MULTI_REGIONAL
-    constraints:
-      examples:
-        - STANDARD
-        - COLDLINE
+    enum:
+      STANDARD: STANDARD
+      MULTI_REGIONAL: MULTI_REGIONAL
+      REGIONAL: REGIONAL
+      NEARLINE: NEARLINE
+      COLDLINE: COLDLINE
+      ARCHIVE: ARCHIVE
   - field_name: region
     type: string
     details: |
@@ -87,6 +89,9 @@ provision:
     type: string
     details: Prevents public access to a bucket. Acceptable values are "inherited" or "enforced". Default is "enforced".
     default: "enforced"
+    enum:
+      enforced: enforced
+      inherited: inherited
   - field_name: uniform_bucket_level_access
     type: boolean
     details: |
