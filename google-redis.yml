@@ -133,13 +133,13 @@ bind:
   template: ''
   outputs: []
 examples:
-- name: Development Configuration
+- name: gcp-redis-development
   description: Create a default Redis instance for development.
   plan_id: 2ed1d5b7-b21b-41ec-8da4-397a6b124484
   provision_params: {"memory_size_gb": 1}
   bind_params: {}
-- name: HA Configuration
+- name: gcp-redis-ha
   description: Create a small, highly available Redis instance for production.
-  plan_id: 8c85c90c-f8e3-4337-9069-c03036243894
+  plan_id: 366b6758-11c0-4892-9aa1-6e4b7bd8b974
   provision_params: {"memory_size_gb": 1}
   bind_params: {}
