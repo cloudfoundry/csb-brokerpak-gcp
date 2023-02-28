@@ -45,7 +45,7 @@ var _ = Describe("UpgradeStorageTest", Label("storage"), func() {
 			appOne.PUT(blobDataOne, blobNameOne)
 
 			By("downloading the blob using the second app")
-			got := appTwo.GET(blobNameOne)
+			got := appTwo.GET(blobNameOne).String()
 			Expect(got).To(Equal(blobDataOne))
 
 			By("pushing the development version of the broker")
@@ -55,7 +55,7 @@ var _ = Describe("UpgradeStorageTest", Label("storage"), func() {
 			serviceInstance.Upgrade()
 
 			By("checking that previously written data is accessible")
-			got = appTwo.GET(blobNameOne)
+			got = appTwo.GET(blobNameOne).String()
 			Expect(got).To(Equal(blobDataOne))
 
 			By("re-applying the terraform for service instance")
@@ -71,14 +71,14 @@ var _ = Describe("UpgradeStorageTest", Label("storage"), func() {
 			apps.Restage(appOne, appTwo)
 
 			By("checking that previously written data is accessible")
-			got = appTwo.GET(blobNameOne)
+			got = appTwo.GET(blobNameOne).String()
 			Expect(got).To(Equal(blobDataOne))
 
 			By("checking that data can still be written and read")
 			blobNameTwo := random.Hexadecimal()
 			blobDataTwo := random.Hexadecimal()
 			appOne.PUT(blobDataTwo, blobNameTwo)
-			got = appTwo.GET(blobNameTwo)
+			got = appTwo.GET(blobNameTwo).String()
 			Expect(got).To(Equal(blobDataTwo))
 
 			appOne.DELETE(blobNameOne)

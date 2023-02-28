@@ -47,7 +47,7 @@ var _ = Describe("UpgradeMYSQLTest", Label("mysql"), func() {
 			appOne.PUT(value, "/key-value/%s", key)
 
 			By("getting the value using the second app")
-			Expect(appTwo.GET("/key-value/%s", key)).To(Equal(value))
+			Expect(appTwo.GET("/key-value/%s", key).String()).To(Equal(value))
 
 			By("pushing the development version of the broker")
 			serviceBroker.UpdateBroker(developmentBuildDir)
@@ -59,13 +59,13 @@ var _ = Describe("UpgradeMYSQLTest", Label("mysql"), func() {
 			appTwo.SetEnv(apps.EnvVar{Name: "NEW_BINDING_FORMAT_FEATURE_FLAG", Value: "ENABLED"})
 
 			By("getting the value using the second app")
-			Expect(appTwo.GET("/key-value/%s", key)).To(Equal(value))
+			Expect(appTwo.GET("/key-value/%s", key).String()).To(Equal(value))
 
 			By("updating the instance plan")
 			serviceInstance.Update("-p", "default")
 
 			By("getting the value using the second app")
-			Expect(appTwo.GET("/key-value/%s", key)).To(Equal(value))
+			Expect(appTwo.GET("/key-value/%s", key).String()).To(Equal(value))
 
 			By("deleting bindings created before the upgrade")
 			bindingOne.Unbind()
@@ -77,13 +77,13 @@ var _ = Describe("UpgradeMYSQLTest", Label("mysql"), func() {
 			apps.Restage(appOne, appTwo)
 
 			By("getting the value using the second app")
-			Expect(appTwo.GET("/key-value/%s", key)).To(Equal(value))
+			Expect(appTwo.GET("/key-value/%s", key).String()).To(Equal(value))
 
 			By("checking data can still be written and read")
 			keyTwo := random.Hexadecimal()
 			valueTwo := random.Hexadecimal()
 			appOne.PUT(valueTwo, "/key-value/%s", keyTwo)
-			Expect(appTwo.GET("/key-value/%s", keyTwo)).To(Equal(valueTwo))
+			Expect(appTwo.GET("/key-value/%s", keyTwo).String()).To(Equal(valueTwo))
 
 			By("verifying the DB connection utilises TLS")
 			var sslInfo struct {

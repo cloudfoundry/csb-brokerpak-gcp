@@ -150,7 +150,7 @@ var _ = Describe("Postgres service instance migration", Label("postgresql-data-m
 
 		By("performing the following actions against the target database:")
 		By("reading the data")
-		got := targetApp.GET("%s/%s", schema, key)
+		got := targetApp.GET("%s/%s", schema, key).String()
 		Expect(got).To(Equal(value))
 
 		By("creating a new schema")
@@ -163,7 +163,7 @@ var _ = Describe("Postgres service instance migration", Label("postgresql-data-m
 		targetApp.PUT(newValue, "%s/%s", newSchema, newKey)
 
 		By("reading the value back")
-		gotNewValue := targetApp.GET("%s/%s", newSchema, newKey)
+		gotNewValue := targetApp.GET("%s/%s", newSchema, newKey).String()
 		Expect(gotNewValue).To(Equal(newValue))
 
 		By("modifying the table structure")

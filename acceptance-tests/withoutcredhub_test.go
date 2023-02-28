@@ -23,7 +23,7 @@ var _ = Describe("Without CredHub", Label("withoutcredhub"), func() {
 		By("creating a service instance")
 		serviceInstance := services.CreateInstance(
 			"csb-google-storage-bucket",
-			"default",
+			"private",
 			services.WithBroker(broker),
 		)
 
@@ -48,7 +48,7 @@ var _ = Describe("Without CredHub", Label("withoutcredhub"), func() {
 		app.PUT(blobData, blobName)
 
 		By("downloading the blob")
-		got := app.GET(blobName)
+		got := app.GET(blobName).String()
 		Expect(got).To(Equal(blobData))
 
 		app.DELETE(blobName)
