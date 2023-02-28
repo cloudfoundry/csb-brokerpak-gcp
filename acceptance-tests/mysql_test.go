@@ -1,13 +1,14 @@
 package acceptance_test
 
 import (
+	"net"
+	"net/url"
+	"strings"
+
 	"csbbrokerpakgcp/acceptance-tests/helpers/apps"
 	"csbbrokerpakgcp/acceptance-tests/helpers/matchers"
 	"csbbrokerpakgcp/acceptance-tests/helpers/random"
 	"csbbrokerpakgcp/acceptance-tests/helpers/services"
-	"net"
-	"net/url"
-	"strings"
 
 	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
@@ -47,16 +48,16 @@ var _ = Describe("MySQL", Label("mysql"), func() {
 		By("setting a key-value using the first app")
 		value := random.Hexadecimal()
 		var userIn appResponseUser
-		appOne.POST("", "?name=%s", value).Parse(&userIn)
+		appOne.POST("", "?name=%s", value).ParseInto(&userIn)
 
 		By("getting the value using the second app")
 		var userOut appResponseUser
-		appTwo.GET("%d", userIn.ID).Parse(&userOut)
+		appTwo.GET("%d", userIn.ID).ParseInto(&userOut)
 		Expect(userOut.Name).To(Equal(value), "The first app stored [%s] as the value, the second app retrieved [%s]", value, userOut.Name)
 
 		By("verifying the first DB connection utilises TLS")
 		var tlsCipher mySQLOption
-		appOne.GET("mysql-ssl").Parse(&tlsCipher)
+		appOne.GET("mysql-ssl").ParseInto(&tlsCipher)
 
 		Expect(strings.ToLower(tlsCipher.Name)).To(Equal("ssl_cipher"))
 		Expect(tlsCipher.Value).NotTo(BeEmpty(), "Expected Mysql connection for app %s to be encrypted", appOne.Name)
@@ -78,7 +79,7 @@ var _ = Describe("MySQL", Label("mysql"), func() {
 
 		By("ensuring encryption wasn't used")
 		var tlsCipher mySQLOption
-		appOne.GET("mysql-ssl").Parse(&tlsCipher)
+		appOne.GET("mysql-ssl").ParseInto(&tlsCipher)
 
 		Expect(strings.ToLower(tlsCipher.Name)).To(Equal("ssl_cipher"))
 		Expect(tlsCipher.Value).To(BeEmpty(), "Expected Mysql connection for app %s not to be encrypted", appOne.Name)

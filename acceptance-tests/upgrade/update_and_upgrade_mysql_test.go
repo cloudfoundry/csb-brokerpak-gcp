@@ -90,7 +90,7 @@ var _ = Describe("UpgradeMYSQLTest", Label("mysql"), func() {
 				VariableName string `json:"variable_name"`
 				Value        string `json:"value"`
 			}
-			appOne.GET("/admin/ssl").Parse(&sslInfo)
+			appOne.GET("/admin/ssl").ParseInto(&sslInfo)
 
 			Expect(sslInfo.VariableName).To(Equal("Ssl_cipher"))
 			Expect(sslInfo.Value).To(Equal("ECDHE-RSA-AES128-GCM-SHA256"))

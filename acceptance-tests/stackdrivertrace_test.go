@@ -42,7 +42,7 @@ var _ = Describe("Stackdrivertrace", Label("stackdrivertrace"), func() {
 			ProjectID string `json:"ProjectId"`
 			TraceID   string `json:"TraceId"`
 		}
-		appOne.GET(customSpan).Parse(&traceResp)
+		appOne.GET(customSpan).ParseInto(&traceResp)
 
 		By("checking it got persisted in gcp")
 		ctx := context.Background()
