@@ -49,7 +49,7 @@ var _ = Describe("UpgradeRedisTest", Label("redis"), func() {
 			appOne.PUT(value1, key1)
 
 			By("getting the value using the second app")
-			Expect(appTwo.GET(key1)).To(Equal(value1))
+			Expect(appTwo.GET(key1).String()).To(Equal(value1))
 
 			By("pushing the development version of the broker")
 			serviceBroker.UpdateBroker(developmentBuildDir)
@@ -58,13 +58,13 @@ var _ = Describe("UpgradeRedisTest", Label("redis"), func() {
 			serviceInstance.Upgrade()
 
 			By("getting the value using the second app")
-			Expect(appTwo.GET(key1)).To(Equal(value1))
+			Expect(appTwo.GET(key1).String()).To(Equal(value1))
 
 			By("updating the instance plan")
 			serviceInstance.Update("-c", `{"memory_size_gb":6}`)
 
 			By("getting the value using the second app")
-			Expect(appTwo.GET(key1)).To(Equal(value1))
+			Expect(appTwo.GET(key1).String()).To(Equal(value1))
 
 			By("deleting bindings created before the upgrade")
 			bindingOne.Unbind()
@@ -77,10 +77,10 @@ var _ = Describe("UpgradeRedisTest", Label("redis"), func() {
 			key2 := random.Hexadecimal()
 			value2 := random.Hexadecimal()
 			appOne.PUT(value2, key2)
-			Expect(appTwo.GET(key2)).To(Equal(value2))
+			Expect(appTwo.GET(key2).String()).To(Equal(value2))
 
 			By("getting the value using the second app")
-			Expect(appTwo.GET(key1)).To(Equal(value1))
+			Expect(appTwo.GET(key1).String()).To(Equal(value1))
 		})
 	})
 })
