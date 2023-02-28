@@ -1,8 +1,6 @@
 package upgrade_test
 
 import (
-	"encoding/json"
-
 	"csbbrokerpakgcp/acceptance-tests/helpers/apps"
 	"csbbrokerpakgcp/acceptance-tests/helpers/brokers"
 	"csbbrokerpakgcp/acceptance-tests/helpers/matchers"
@@ -88,16 +86,14 @@ var _ = Describe("UpgradeMYSQLTest", Label("mysql"), func() {
 			Expect(appTwo.GET("/key-value/%s", keyTwo)).To(Equal(valueTwo))
 
 			By("verifying the DB connection utilises TLS")
-			got := appOne.GET("/admin/ssl")
 			var sslInfo struct {
 				VariableName string `json:"variable_name"`
 				Value        string `json:"value"`
 			}
-			err := json.Unmarshal([]byte(got), &sslInfo)
-			Expect(err).NotTo(HaveOccurred())
+			appOne.GET("/admin/ssl").ParseInto(&sslInfo)
 
-			Expect("Ssl_cipher").To(Equal(sslInfo.VariableName))
-			Expect("ECDHE-RSA-AES128-GCM-SHA256").To(Equal(sslInfo.Value))
+			Expect(sslInfo.VariableName).To(Equal("Ssl_cipher"))
+			Expect(sslInfo.Value).To(Equal("ECDHE-RSA-AES128-GCM-SHA256"))
 		})
 	})
 })
