@@ -51,7 +51,7 @@ var _ = Describe("UpgradeDataprocTest", Label("dataproc"), func() {
 			appOne.PUT("", jobName)
 
 			By("getting the job status")
-			status := appOne.GET(jobName)
+			status := appOne.GET(jobName).String()
 			Expect(status).To(Equal("DONE"))
 
 			By("pushing the development version of the broker")
@@ -61,13 +61,13 @@ var _ = Describe("UpgradeDataprocTest", Label("dataproc"), func() {
 			serviceInstance.Upgrade()
 
 			By("checking the job status is still accessible")
-			Expect(appOne.GET(jobName)).To(Equal("DONE"))
+			Expect(appOne.GET(jobName).String()).To(Equal("DONE"))
 
 			By("updating the instance config params")
 			serviceInstance.Update("-c", `{"worker_count":3}`)
 
 			By("checking the job status is still accessible")
-			Expect(appOne.GET(jobName)).To(Equal("DONE"))
+			Expect(appOne.GET(jobName).String()).To(Equal("DONE"))
 
 			By("deleting the job")
 			appOne.DELETE(jobName)

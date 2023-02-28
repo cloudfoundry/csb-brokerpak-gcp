@@ -45,7 +45,7 @@ var _ = Describe("UpgradeSpannerTest", Label("spanner"), func() {
 			appOne.PUT(value, key)
 
 			By("getting the value using the same app")
-			Expect(appOne.GET(key)).To(Equal(value))
+			Expect(appOne.GET(key).String()).To(Equal(value))
 
 			By("pushing the development version of the broker")
 			serviceBroker.UpdateBroker(developmentBuildDir)
@@ -54,7 +54,7 @@ var _ = Describe("UpgradeSpannerTest", Label("spanner"), func() {
 			serviceInstance.Upgrade()
 
 			By("checking previously written data still accessible")
-			Expect(appOne.GET(key)).To(Equal(value))
+			Expect(appOne.GET(key).String()).To(Equal(value))
 		})
 	})
 })

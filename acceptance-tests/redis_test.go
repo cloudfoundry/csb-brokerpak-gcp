@@ -37,7 +37,7 @@ var _ = Describe("Redis", Label("redis"), func() {
 		appOne.PUT(value, key)
 
 		By("getting the value using the second app")
-		got := appTwo.GET(key)
+		got := appTwo.GET(key).String()
 		Expect(got).To(Equal(value))
 	})
 })

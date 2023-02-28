@@ -35,7 +35,7 @@ var _ = Describe("Spanner", Label("spanner"), func() {
 		appOne.PUT(value, key)
 
 		By("getting the value using the same app")
-		got := appOne.GET(key)
+		got := appOne.GET(key).String()
 		Expect(got).To(Equal(value))
 	})
 })

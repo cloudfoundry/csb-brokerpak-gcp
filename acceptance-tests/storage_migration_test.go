@@ -47,7 +47,7 @@ var _ = Describe("Storage Migration", Label("storage-migration"), func() {
 		appOne.PUT(blobDataOne, blobNameOne)
 
 		By("downloading the blob using the app")
-		got := appOne.GET(blobNameOne)
+		got := appOne.GET(blobNameOne).String()
 		Expect(got).To(Equal(blobDataOne))
 
 		By("creating a new bucket using the CSB broker")
@@ -80,7 +80,7 @@ var _ = Describe("Storage Migration", Label("storage-migration"), func() {
 		apps.Restart(appOne)
 
 		By("checking existing data can be accessed using the new instance")
-		Expect(appOne.GET(blobNameOne)).To(Equal(blobDataOne))
+		Expect(appOne.GET(blobNameOne).String()).To(Equal(blobDataOne))
 
 		By("deleting the blob from bucket")
 		appOne.DELETE(blobNameOne)
