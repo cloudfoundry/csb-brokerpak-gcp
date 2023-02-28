@@ -2,7 +2,6 @@ package acceptance_test
 
 import (
 	"context"
-	"encoding/json"
 	"fmt"
 	"time"
 
@@ -39,13 +38,11 @@ var _ = Describe("Stackdrivertrace", Label("stackdrivertrace"), func() {
 
 		By("triggering trace flush")
 		customSpan := random.Hexadecimal()
-		got := appOne.GET(customSpan)
 		var traceResp struct {
 			ProjectID string `json:"ProjectId"`
 			TraceID   string `json:"TraceId"`
 		}
-		err := json.Unmarshal([]byte(got), &traceResp)
-		Expect(err).NotTo(HaveOccurred())
+		appOne.GET(customSpan).Parse(&traceResp)
 
 		By("checking it got persisted in gcp")
 		ctx := context.Background()

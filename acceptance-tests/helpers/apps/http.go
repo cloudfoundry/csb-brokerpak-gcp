@@ -10,7 +10,7 @@ import (
 	. "github.com/onsi/gomega"
 )
 
-func (a *App) GET(format string, s ...any) string {
+func (a *App) GET(format string, s ...any) Payload {
 	url := a.urlf(format, s...)
 	fmt.Fprintf(GinkgoWriter, "HTTP GET: %s\n", url)
 	response, err := http.Get(url)
@@ -22,7 +22,7 @@ func (a *App) GET(format string, s ...any) string {
 	Expect(err).NotTo(HaveOccurred())
 
 	fmt.Fprintf(GinkgoWriter, "Recieved: %s\n", string(data))
-	return string(data)
+	return Payload(data)
 }
 
 func (a *App) PUT(data, format string, s ...any) {
@@ -37,7 +37,7 @@ func (a *App) PUT(data, format string, s ...any) {
 	Expect(response).To(HaveHTTPStatus(http.StatusCreated, http.StatusOK))
 }
 
-func (a *App) POST(data, format string, s ...any) *http.Response {
+func (a *App) POST(data, format string, s ...any) Payload {
 	url := a.urlf(format, s...)
 	fmt.Fprintf(GinkgoWriter, "HTTP POST: %s\n", url)
 	fmt.Fprintf(GinkgoWriter, "Sending data: %s\n", data)
@@ -47,7 +47,11 @@ func (a *App) POST(data, format string, s ...any) *http.Response {
 	response, err := http.DefaultClient.Do(request)
 	Expect(err).NotTo(HaveOccurred())
 	Expect(response).To(HaveHTTPStatus(http.StatusCreated, http.StatusOK))
-	return response
+
+	responseBody, err := io.ReadAll(response.Body)
+	defer response.Body.Close()
+	Expect(err).NotTo(HaveOccurred())
+	return Payload(responseBody)
 }
 
 func (a *App) DELETETestTable() {

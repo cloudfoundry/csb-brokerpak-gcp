@@ -2,7 +2,6 @@ package upgrade_test
 
 import (
 	"context"
-	"encoding/json"
 	"fmt"
 	"time"
 
@@ -49,14 +48,11 @@ var _ = Describe("UpgradeStackdrivertraceTest", Label("stackdrivertrace"), func(
 
 			By("triggering trace flush")
 			customSpan := random.Hexadecimal()
-			response := appOne.GET(customSpan)
-
 			var traceResp struct {
 				ProjectID string `json:"ProjectId"`
 				TraceID   string `json:"TraceId"`
 			}
-			err := json.Unmarshal([]byte(response), &traceResp)
-			Expect(err).NotTo(HaveOccurred())
+			appOne.GET(customSpan).Parse(&traceResp)
 
 			By("checking it got persisted in gcp")
 			ctx := context.Background()
