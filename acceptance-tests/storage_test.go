@@ -37,7 +37,7 @@ var _ = Describe("Storage", Label("storage"), func() {
 		appOne.PUT(blobData, blobName)
 
 		By("downloading the blob using the second app")
-		got := appTwo.GET(blobName)
+		got := appTwo.GET(blobName).String()
 		Expect(got).To(Equal(blobData))
 
 		appOne.DELETE(blobName)
