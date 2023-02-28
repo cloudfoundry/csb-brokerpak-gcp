@@ -53,14 +53,14 @@ var _ = Describe("PostgreSQL", func() {
 		appOne.PUT(value, "%s/%s", schema, key)
 
 		By("getting the value using the second app")
-		got := appTwo.GET("%s/%s", schema, key)
+		got := appTwo.GET("%s/%s", schema, key).String()
 		Expect(got).To(Equal(value))
 
 		By("triggering ownership of schema to pass to provision user")
 		binding.Unbind()
 
 		By("getting the value again using the second app")
-		got2 := appTwo.GET("%s/%s", schema, key)
+		got2 := appTwo.GET("%s/%s", schema, key).String()
 		Expect(got2).To(Equal(value))
 
 		By("setting another value using the second app")
@@ -69,7 +69,7 @@ var _ = Describe("PostgreSQL", func() {
 		appTwo.PUT(value2, "%s/%s", schema, key2)
 
 		By("getting the other value using the second app")
-		got3 := appTwo.GET("%s/%s", schema, key2)
+		got3 := appTwo.GET("%s/%s", schema, key2).String()
 		Expect(got3).To(Equal(value2))
 
 		By("dropping the schema using the second app")

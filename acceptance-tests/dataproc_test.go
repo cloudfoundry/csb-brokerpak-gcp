@@ -34,7 +34,7 @@ var _ = Describe("Dataproc", Label("dataproc"), func() {
 		appOne.PUT("", jobName)
 
 		By("getting the job status")
-		status := appOne.GET(jobName)
+		status := appOne.GET(jobName).String()
 		Expect(status).To(Equal("DONE"))
 
 		By("deleting the job")

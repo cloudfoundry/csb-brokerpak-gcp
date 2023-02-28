@@ -100,7 +100,7 @@ var _ = Describe("MySQL service instance migration", Label("mysql-data-migration
 		targetApp.Start()
 
 		By("reading the data")
-		got := targetApp.GET("/key-value/%s", key)
+		got := targetApp.GET("/key-value/%s", key).String()
 		Expect(got).To(Equal(value))
 
 		By("writing a new value")
@@ -109,7 +109,7 @@ var _ = Describe("MySQL service instance migration", Label("mysql-data-migration
 		targetApp.PUT(newValue, "/key-value/%s", newKey)
 
 		By("reading the value back")
-		gotNewValue := targetApp.GET("/key-value/%s", newKey)
+		gotNewValue := targetApp.GET("/key-value/%s", newKey).String()
 		Expect(gotNewValue).To(Equal(newValue))
 
 		By("unbinding the new user")
