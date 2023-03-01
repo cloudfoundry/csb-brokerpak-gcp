@@ -1,12 +1,8 @@
 package acceptance_test
 
 import (
-	"encoding/json"
-	"io"
 	"net"
 	"net/url"
-	"os"
-	"path"
 
 	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
@@ -29,13 +25,8 @@ type pgSSLInfo struct {
 	IssuerDN     string `json:"issuerDN"`
 }
 
-var _ = Describe("PostgreSQL", func() {
-	It("can be accessed by an app", Label("postgresql"), func() {
-		var (
-			userIn, userOut appResponseUser
-			sslInfo         pgSSLInfo
-		)
-
+var _ = Describe("PostgreSQL", Label("postgresql"), func() {
+	It("can be accessed by an app", Label("JDBC"), func() {
 		By("creating a service broker with Beta services disabled")
 		broker := brokers.Create(
 			brokers.WithPrefix("csb-postgresql"),
@@ -48,61 +39,50 @@ var _ = Describe("PostgreSQL", func() {
 		serviceInstance := services.CreateInstance("csb-google-postgres", "small", services.WithBroker(broker))
 		defer serviceInstance.Delete()
 
-		By("pushing the unstarted app twice")
-		testExecutable, err := os.Executable()
-		Expect(err).NotTo(HaveOccurred())
-
-		testPath := path.Dir(testExecutable)
-		appManifest := path.Join(testPath, "apps", "jdbctestapp", "manifest-postgres.yml")
-		appOne := apps.Push(apps.WithApp(apps.JDBCTestApp), apps.WithManifest(appManifest))
-		appTwo := apps.Push(apps.WithApp(apps.JDBCTestApp), apps.WithManifest(appManifest))
-		defer apps.Delete(appOne, appTwo)
-
-		By("binding the apps to the service instance")
+		By("pushing and starting a first app")
+		appOne := apps.Push(apps.WithApp(apps.JDBCTestApp), apps.WithTestAppManifest(apps.PostgreSQLTLSTestAppManifest))
+		defer apps.Delete(appOne)
 		binding := serviceInstance.Bind(appOne)
-		serviceInstance.Bind(appTwo)
-
-		By("starting the apps")
-		apps.Start(appOne, appTwo)
+		apps.Start(appOne)
 
 		By("checking that the app environment has a credhub reference for credentials")
 		Expect(binding.Credential()).To(matchers.HaveCredHubRef)
 
 		By("setting a key-value using the first app")
+		var userIn appResponseUser
 		value := random.Hexadecimal()
-		response := appOne.POST("", "?name=%s", value)
+		appOne.POST("", "?name=%s", value).ParseInto(&userIn)
 
-		responseBody, err := io.ReadAll(response.Body)
-		Expect(err).NotTo(HaveOccurred())
+		By("unbinding the first app to trigger permissions re-assignment")
+		binding.Unbind()
 
-		err = json.Unmarshal(responseBody, &userIn)
-		Expect(err).NotTo(HaveOccurred())
+		By("pushing and starting a second app")
+		appTwo := apps.Push(apps.WithApp(apps.JDBCTestApp), apps.WithTestAppManifest(apps.PostgreSQLTLSTestAppManifest))
+		defer apps.Delete(appTwo)
+		serviceInstance.Bind(appTwo)
+		apps.Start(appTwo)
 
 		By("getting the value using the second app")
-		got := appTwo.GET("%s/%s", schema, key).String()
-		Expect(got).To(Equal(value))
+		var userOut appResponseUser
+		appTwo.GET("%d", userIn.ID).ParseInto(&userOut)
+		Expect(userOut.Name).To(Equal(value), "The first app stored [%s] as the value, the second app retrieved [%s]", value, userOut.Name)
 
+		By("verifying the first DB connection utilises TLS")
+		var sslInfo pgSSLInfo
+		appOne.GET("postgres-ssl").ParseInto(&sslInfo)
 		Expect(sslInfo.SSL).To(BeTrue(), "Expected PostgreSQL connection for app %s to be encrypted", appOne.Name)
 		Expect(sslInfo.Version).NotTo(HavePrefix("TLSv"))
 		Expect(sslInfo.Cipher).NotTo(BeEmpty())
 	})
 
-		By("getting the value again using the second app")
-		got2 := appTwo.GET("%s/%s", schema, key).String()
-		Expect(got2).To(Equal(value))
-
+	It("can create instances capable of accepting insecure connection requests", Label("postgresql-no-autotls"), func() {
 		By("creating a service instance")
 		serviceInstance := services.CreateInstance("csb-google-postgres", "small",
 			services.WithParameters(`{"allow_insecure_connections": true}`))
 		defer serviceInstance.Delete()
 
-		By("getting the other value using the second app")
-		got3 := appTwo.GET("%s/%s", schema, key2).String()
-		Expect(got3).To(Equal(value2))
-
-		testPath := path.Dir(testExecutable)
-		appManifest := path.Join(testPath, "apps", "jdbctestapp", "manifest-postgres-no-autotls.yml")
-		appOne := apps.Push(apps.WithApp(apps.JDBCTestApp), apps.WithManifest(appManifest))
+		By("pushing the unstarted app")
+		appOne := apps.Push(apps.WithApp(apps.JDBCTestApp), apps.WithTestAppManifest(apps.PostgreSQLNoAutoTLSTestAppManifest))
 
 		By("binding and starting the app")
 		serviceInstance.Bind(appOne)
@@ -110,9 +90,8 @@ var _ = Describe("PostgreSQL", func() {
 		appOne.Start()
 
 		By("ensuring encryption wasn't used")
-		got := appOne.GET("postgres-ssl")
-		err = json.Unmarshal([]byte(got), &sslInfo)
-		Expect(err).NotTo(HaveOccurred())
+		var sslInfo pgSSLInfo
+		appOne.GET("postgres-ssl").ParseInto(&sslInfo)
 
 		Expect(sslInfo.SSL).To(BeFalse(), "Expected PostgreSQL connection for app %s not to be encrypted", appOne.Name)
 		Expect(sslInfo.Cipher).To(BeEmpty())
@@ -125,19 +104,15 @@ var _ = Describe("PostgreSQL", func() {
 		defer serviceInstance.Delete()
 
 		By("creating and examining a service key")
+		var serviceKeyData struct {
+			Credentials struct {
+				URI string `json:"uri"`
+			} `json:"credentials"`
+		}
 		serviceKey := serviceInstance.CreateServiceKey()
-		var serviceKeyData map[string]any
 		serviceKey.Get(&serviceKeyData)
 
-		Expect(serviceKeyData).To(HaveKey("credentials"))
-		creds, _ := serviceKeyData["credentials"].(map[string]any)
-
-		Expect(creds).To(HaveKey("uri"))
-		uri, ok := creds["uri"]
-		Expect(ok).To(BeTrue())
-		uriString, ok := uri.(string)
-		Expect(ok).To(BeTrue())
-		databaseURI, err := url.ParseRequestURI(uriString)
+		databaseURI, err := url.ParseRequestURI(serviceKeyData.Credentials.URI)
 		Expect(err).NotTo(HaveOccurred())
 		uriIP := net.ParseIP(databaseURI.Hostname())
 		Expect(uriIP).NotTo(BeNil())

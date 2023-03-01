@@ -9,8 +9,10 @@ import (
 type ManifestCode string
 
 const (
-	MySQLTLSTestAppManifest       ManifestCode = "jdbctestapp/manifest.yml"
-	MySQLNoAutoTLSTestAppManifest ManifestCode = "jdbctestapp/manifest-no-autotls.yml"
+	MySQLTLSTestAppManifest            ManifestCode = "jdbctestapp/manifest-mysql.yml"
+	MySQLNoAutoTLSTestAppManifest      ManifestCode = "jdbctestapp/manifest-mysql-no-autotls.yml"
+	PostgreSQLTLSTestAppManifest       ManifestCode = "jdbctestapp/manifest-postgres.yml"
+	PostgreSQLNoAutoTLSTestAppManifest ManifestCode = "jdbctestapp/manifest-postgres-no-autotls.yml"
 )
 
 func (a ManifestCode) Path() string {

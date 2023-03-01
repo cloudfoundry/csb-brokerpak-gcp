@@ -93,18 +93,14 @@ var _ = Describe("MySQL", Label("mysql"), func() {
 
 		By("creating and examining a service key")
 		serviceKey := serviceInstance.CreateServiceKey()
-		var serviceKeyData map[string]any
+		var serviceKeyData struct {
+			Credentials struct {
+				URI string `json:"uri"`
+			} `json:"credentials"`
+		}
 		serviceKey.Get(&serviceKeyData)
 
-		Expect(serviceKeyData).To(HaveKey("credentials"))
-		creds, _ := serviceKeyData["credentials"].(map[string]any)
-
-		Expect(creds).To(HaveKey("uri"))
-		uri, ok := creds["uri"]
-		Expect(ok).To(BeTrue())
-		uriString, ok := uri.(string)
-		Expect(ok).To(BeTrue())
-		databaseURI, err := url.ParseRequestURI(uriString)
+		databaseURI, err := url.ParseRequestURI(serviceKeyData.Credentials.URI)
 		Expect(err).NotTo(HaveOccurred())
 		uriIP := net.ParseIP(databaseURI.Hostname())
 		Expect(uriIP).NotTo(BeNil())
