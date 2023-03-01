@@ -65,7 +65,7 @@ var _ = Describe("UpgradePostgreSQLTest", Label("postgresql"), func() {
 			Expect(got).To(Equal(valueOne))
 
 			By("updating the instance plan")
-			serviceInstance.Update("-p", "medium")
+			serviceInstance.Update(services.WithPlan("medium"))
 
 			By("checking previously written data still accessible")
 			got = appTwo.GET("%s/%s", schema, keyOne).String()

@@ -22,6 +22,7 @@ type config struct {
 	name              string
 	serviceBrokerName func() string
 	parameters        string
+	plan              string
 	async             bool
 }
 
@@ -109,6 +110,12 @@ func WithParameters(parameters any) Option {
 			Expect(err).NotTo(HaveOccurred())
 			c.parameters = string(params)
 		}
+	}
+}
+
+func WithPlan(plan string) Option {
+	return func(c *config) {
+		c.plan = plan
 	}
 }
 

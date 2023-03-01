@@ -64,7 +64,7 @@ var _ = Describe("UpgradeDataprocTest", Label("dataproc"), func() {
 			Expect(appOne.GET(jobName).String()).To(Equal("DONE"))
 
 			By("updating the instance config params")
-			serviceInstance.Update("-c", `{"worker_count":3}`)
+			serviceInstance.Update(services.WithParameters(`{"worker_count":3}`))
 
 			By("checking the job status is still accessible")
 			Expect(appOne.GET(jobName).String()).To(Equal("DONE"))

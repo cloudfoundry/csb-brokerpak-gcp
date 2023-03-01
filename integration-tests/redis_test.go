@@ -15,6 +15,8 @@ const (
 	redisServiceDescription = "Beta - Cloud Memorystore for Redis is a fully managed Redis service for the Google Cloud Platform."
 	redisServiceDisplayName = "Google Cloud Memorystore for Redis (Beta)"
 	redisServiceSupportURL  = "https://cloud.google.com/support/"
+	redisDefaultPlanName    = "default"
+	redisDefaultPlanID      = "9dfa265e-1c4d-40c6-ade6-b341ffd6ccc3"
 )
 
 var customRedisPlans = []map[string]any{
@@ -22,10 +24,10 @@ var customRedisPlans = []map[string]any{
 }
 
 var customRedisPlan = map[string]any{
-	"name":         "custom-plan",
-	"id":           "9dfa265e-1c4d-40c6-ade6-b341ffd6ccc3",
+	"name":         redisDefaultPlanName,
+	"id":           redisDefaultPlanID,
 	"description":  "custom memorystore plan defined by customer",
-	"service_tier": "TIER_UNSPECIFIED",
+	"service_tier": "BASIC",
 	"metadata": map[string]any{
 		"displayName": "custom cloud memorystore service (beta)",
 	},
@@ -35,7 +37,7 @@ var customRedisPlan = map[string]any{
 	},
 }
 
-var _ = Describe("Redis", func() {
+var _ = Describe("Redis", Label("redis"), func() {
 	BeforeEach(func() {
 		Expect(mockTerraform.SetTFState([]testframework.TFStateValue{})).To(Succeed())
 	})
@@ -60,16 +62,8 @@ var _ = Describe("Redis", func() {
 		Expect(service.Plans).To(
 			ConsistOf(
 				MatchFields(IgnoreExtras, Fields{
-					Name: Equal("basic"),
-					ID:   Equal("6ed44104-8777-4b57-8c03-826b3af7d0be"),
-				}),
-				MatchFields(IgnoreExtras, Fields{
-					Name: Equal("ha"),
-					ID:   Equal("8c85c90c-f8e3-4337-9069-c03036243894"),
-				}),
-				MatchFields(IgnoreExtras, Fields{
-					Name: Equal("custom-plan"),
-					ID:   Equal("9dfa265e-1c4d-40c6-ade6-b341ffd6ccc3"),
+					Name: Equal(redisDefaultPlanName),
+					ID:   Equal(redisDefaultPlanID),
 				}),
 			),
 		)
@@ -77,7 +71,7 @@ var _ = Describe("Redis", func() {
 
 	Describe("provisioning", func() {
 		It("should provision basic plan", func() {
-			instanceID, err := broker.Provision(redisServiceName, "basic", nil)
+			instanceID, err := broker.Provision(redisServiceName, redisDefaultPlanName, nil)
 
 			Expect(err).NotTo(HaveOccurred())
 			Expect(mockTerraform.FirstTerraformInvocationVars()).To(
@@ -98,7 +92,7 @@ var _ = Describe("Redis", func() {
 		})
 
 		It("should allow setting properties do not defined in the plan", func() {
-			_, err := broker.Provision(redisServiceName, "basic", map[string]any{
+			_, err := broker.Provision(redisServiceName, redisDefaultPlanName, map[string]any{
 				"memory_size_gb":        float64(10),
 				"instance_id":           "fake-instance-id",
 				"display_name":          "fake-display-name",
@@ -127,7 +121,7 @@ var _ = Describe("Redis", func() {
 		})
 
 		It("should not allow changing of plan defined properties", func() {
-			_, err := broker.Provision(redisServiceName, "basic", map[string]any{"service_tier": "STANDARD_HA"})
+			_, err := broker.Provision(redisServiceName, redisDefaultPlanName, map[string]any{"service_tier": "STANDARD_HA"})
 
 			Expect(err).To(MatchError(ContainSubstring("plan defined properties cannot be changed: service_tier")))
 		})
@@ -188,7 +182,7 @@ var _ = Describe("Redis", func() {
 				SatisfyAll(
 					HaveKeyWithValue("instance_id", ContainSubstring("csb-")),
 					HaveKeyWithValue("labels", HaveKeyWithValue("pcf-instance-id", instanceID)),
-					HaveKeyWithValue("service_tier", "TIER_UNSPECIFIED"),
+					HaveKeyWithValue("service_tier", "BASIC"),
 				),
 			)
 			Expect(mockTerraform.Reset()).To(Succeed())
