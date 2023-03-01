@@ -23,19 +23,7 @@ documentation_url: https://docs.vmware.com/en/Cloud-Service-Broker-for-VMware-Ta
 provider_display_name: VMware
 support_url: https://cloud.google.com/support/
 tags: [gcp, redis, beta]
-plans:
-- name: basic
-  id: 6ed44104-8777-4b57-8c03-826b3af7d0be
-  description: Beta - A basic plan with no failover. Data will be lost on maintenance or cluster changes.
-  display_name: "basic (Beta)"
-  properties:
-    service_tier: BASIC
-- name: ha
-  id: 8c85c90c-f8e3-4337-9069-c03036243894
-  description: Beta - A highly available plan with automatic failover.
-  display_name: "High Availability (Beta)"
-  properties:
-    service_tier: STANDARD_HA
+plans: []
 provision:
   plan_inputs:
   - field_name: service_tier
@@ -145,13 +133,13 @@ bind:
   template: ''
   outputs: []
 examples:
-- name: Development Configuration
-  description: Create a small Redis instance for development.
-  plan_id: 6ed44104-8777-4b57-8c03-826b3af7d0be
+- name: gcp-redis-development
+  description: Create a default Redis instance for development.
+  plan_id: 2ed1d5b7-b21b-41ec-8da4-397a6b124484
   provision_params: {"memory_size_gb": 1}
   bind_params: {}
-- name: HA Configuration
+- name: gcp-redis-ha
   description: Create a small, highly available Redis instance for production.
-  plan_id: 8c85c90c-f8e3-4337-9069-c03036243894
+  plan_id: 366b6758-11c0-4892-9aa1-6e4b7bd8b974
   provision_params: {"memory_size_gb": 1}
   bind_params: {}

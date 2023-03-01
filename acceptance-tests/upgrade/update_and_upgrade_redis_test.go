@@ -61,7 +61,7 @@ var _ = Describe("UpgradeRedisTest", Label("redis"), func() {
 			Expect(appTwo.GET(key1).String()).To(Equal(value1))
 
 			By("updating the instance plan")
-			serviceInstance.Update("-c", `{"memory_size_gb":6}`)
+			serviceInstance.Update(services.WithParameters(`{"memory_size_gb":6}`))
 
 			By("getting the value using the second app")
 			Expect(appTwo.GET(key1).String()).To(Equal(value1))

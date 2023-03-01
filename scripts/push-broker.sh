@@ -98,6 +98,12 @@ if [[ -z "$GSB_SERVICE_CSB_GOOGLE_STORAGE_BUCKET_PLANS" ]]; then
 fi
 echo "    GSB_SERVICE_CSB_GOOGLE_STORAGE_BUCKET_PLANS: $(echo "$GSB_SERVICE_CSB_GOOGLE_STORAGE_BUCKET_PLANS" | jq @json)" >>$cfmf
 
+if [[ -z "$GSB_SERVICE_CSB_GOOGLE_REDIS_PLANS" ]]; then
+  echo "Missing GSB_SERVICE_CSB_GOOGLE_REDIS_PLANS variable"
+  exit 1
+fi
+echo "    GSB_SERVICE_CSB_GOOGLE_REDIS_PLANS: $(echo "$GSB_SERVICE_CSB_GOOGLE_REDIS_PLANS" | jq @json)" >>$cfmf
+
 cf push --no-start -f "${cfmf}" --var app=${APP_NAME}
 
 if [[ -z ${MSYQL_INSTANCE} ]]; then
