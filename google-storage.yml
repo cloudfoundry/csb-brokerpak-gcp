@@ -15,13 +15,13 @@
 version: 1
 name: csb-google-storage-bucket
 id: b247fcde-8a63-11ea-b945-cb26f061f70f
-description: Beta - Google Cloud Storage that uses the Terraform back-end and grants service accounts IAM permissions directly on the bucket.
-display_name: Google Cloud Storage (Beta)
+description: Google Cloud Storage that uses the Terraform back-end and grants service accounts IAM permissions directly on the bucket.
+display_name: Google Cloud Storage
 image_url: file://service-images/csb.png
 documentation_url: https://docs.vmware.com/en/Cloud-Service-Broker-for-VMware-Tanzu/index.html
 provider_display_name: VMware
 support_url: https://cloud.google.com/support/
-tags: [gcp, storage, beta]
+tags: [gcp, storage]
 plan_updateable: true
 plans: []
 provision:
