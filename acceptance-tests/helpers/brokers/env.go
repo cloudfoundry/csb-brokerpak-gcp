@@ -61,6 +61,9 @@ func (b Broker) env() []apps.EnvVar {
 func (b Broker) releasedEnv() []apps.EnvVar {
 	return []apps.EnvVar{
 		{Name: plansPostgreSQLVar, Value: plansPostgreSQL},
+		{Name: PlansMySQLVar, Value: plansMySQL},
+		{Name: plansStorageVar, Value: oldPlansStorage},
+		{Name: plansRedisVar, Value: oldBasicPlanRedis},
 	}
 }
 
