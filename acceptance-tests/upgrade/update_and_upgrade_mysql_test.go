@@ -55,9 +55,6 @@ var _ = Describe("UpgradeMYSQLTest", Label("mysql"), func() {
 			By("upgrading service instance")
 			serviceInstance.Upgrade()
 
-			appOne.SetEnv(apps.EnvVar{Name: "NEW_BINDING_FORMAT_FEATURE_FLAG", Value: "ENABLED"})
-			appTwo.SetEnv(apps.EnvVar{Name: "NEW_BINDING_FORMAT_FEATURE_FLAG", Value: "ENABLED"})
-
 			By("getting the value using the second app")
 			Expect(appTwo.GET("/key-value/%s", key).String()).To(Equal(value))
 

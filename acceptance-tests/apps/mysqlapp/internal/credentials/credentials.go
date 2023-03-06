@@ -5,18 +5,13 @@ import (
 	"crypto/x509"
 	"fmt"
 	"log"
-	"os"
 
 	"github.com/cloudfoundry-community/go-cfenv"
 	"github.com/go-sql-driver/mysql"
 	"github.com/mitchellh/mapstructure"
 )
 
-const (
-	customCaConfigName          = "custom-ca"
-	newBindingFormatFeatureFlag = "NEW_BINDING_FORMAT_FEATURE_FLAG"
-	enabled                     = "ENABLED"
-)
+const customCaConfigName = "custom-ca"
 
 func Read() (string, error) {
 	app, err := cfenv.Current()
@@ -43,8 +38,6 @@ func readBinding(creds any) (string, error) {
 		return "", fmt.Errorf("failed to decode credentials: %w", err)
 	}
 
-	m.isNewBindingFormat = os.Getenv(newBindingFormatFeatureFlag) == enabled
-
 	if err := m.validate(); err != nil {
 		return "", fmt.Errorf("parsed credentials are not valid: %w", err)
 	}
@@ -57,12 +50,9 @@ func readBinding(creds any) (string, error) {
 	c.Passwd = m.Password
 	c.DBName = m.Database
 
-	if m.isNewBindingFormat {
-		log.Println("registering custom CA")
-		c.TLSConfig = customCaConfigName
-		if err := registerCustomCA(m.SSLRootCert, m.SSLKey, m.SSLCert); err != nil {
-			return "", fmt.Errorf("failed to register custom certificate: %w", err)
-		}
+	c.TLSConfig = customCaConfigName
+	if err := registerCustomCA(m.SSLRootCert, m.SSLKey, m.SSLCert); err != nil {
+		return "", fmt.Errorf("failed to register custom certificate: %w", err)
 	}
 
 	return c.FormatDSN(), nil
