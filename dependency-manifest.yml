@@ -38,9 +38,9 @@ dependencies:
       source: https://github.com/terraform-providers/terraform-provider-google/archive/v4.56.0.zip
       source_sha256: 2a29e3cc33317dfe9cfe30497e40ef22d169729f14ea6a6e16735831f19fb160
     - name: terraform-provider-local
-      version: 2.3.0
-      source: https://github.com/terraform-providers/terraform-provider-local/archive/v2.3.0.zip
-      source_sha256: 1d23828963ee11ec4c5449a6ef81101bb0b0986d76e0519aed3b816f8dca7479
+      version: 2.4.0
+      source: https://github.com/terraform-providers/terraform-provider-local/archive/v2.4.0.zip
+      source_sha256: a4097f7535130b970afbd3ff7e99cd5ba6a9b47fba6b9144343bf1aab94b5a3f
     - name: terraform-provider-mysql
       version: 1.9.0
       source: https://github.com/terraform-providers/terraform-provider-mysql/archive/v1.9.0.zip
