@@ -106,13 +106,11 @@ brokerpak-user-docs.md: *.yml
 
 .PHONY: examples
 examples: ## display available examples
-	 $(RUN_CSB) client examples
-
-PARALLEL_JOB_COUNT := $(or $(PARALLEL_JOB_COUNT), 10000)
+	 $(RUN_CSB) examples
 
 .PHONY: run-examples
-run-examples: ## run examples against CSB on localhost (run "make run" to start it), set service_name and example_name to run specific example
-	$(RUN_CSB) client run-examples --service-name="$(service_name)" --example-name="$(example_name)" -j $(PARALLEL_JOB_COUNT)
+run-examples: ## run examples tests, set service_name and/or example_name
+	$(RUN_CSB) run-examples --service-name="$(service_name)" --example-name="$(example_name)"
 
 .PHONY: test ## run the tests
 test: lint run-integration-tests
