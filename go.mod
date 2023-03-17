@@ -16,7 +16,7 @@ require (
 	golang.org/x/tools v0.7.0
 	google.golang.org/api v0.112.0
 	gopkg.in/yaml.v3 v3.0.1
-	honnef.co/go/tools v0.4.2
+	honnef.co/go/tools v0.4.3
 )
 
 require (
