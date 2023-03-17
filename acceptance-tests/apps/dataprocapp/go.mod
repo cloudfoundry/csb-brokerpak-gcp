@@ -4,7 +4,7 @@ go 1.20
 
 require (
 	cloud.google.com/go/dataproc v1.12.0
-	cloud.google.com/go/storage v1.29.0
+	cloud.google.com/go/storage v1.30.0
 	github.com/cloudfoundry-community/go-cfenv v1.18.0
 	github.com/mitchellh/mapstructure v1.5.0
 	google.golang.org/api v0.112.0
