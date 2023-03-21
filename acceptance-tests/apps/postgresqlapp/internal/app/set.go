@@ -7,18 +7,14 @@ import (
 	"log"
 	"net/http"
 
-	"github.com/gorilla/mux"
+	"github.com/go-chi/chi/v5"
 )
 
 func handleSet(db *sql.DB) func(w http.ResponseWriter, r *http.Request) {
 	return func(w http.ResponseWriter, r *http.Request) {
 		log.Println("Handling set.")
 
-		key, ok := mux.Vars(r)["key"]
-		if !ok {
-			fail(w, http.StatusBadRequest, "Key missing.")
-			return
-		}
+		key := chi.URLParam(r, "key")
 
 		rawValue, err := io.ReadAll(r.Body)
 		if err != nil {

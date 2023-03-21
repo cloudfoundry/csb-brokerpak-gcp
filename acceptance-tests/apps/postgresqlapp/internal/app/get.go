@@ -6,18 +6,14 @@ import (
 	"log"
 	"net/http"
 
-	"github.com/gorilla/mux"
+	"github.com/go-chi/chi/v5"
 )
 
 func handleGet(db *sql.DB) func(w http.ResponseWriter, r *http.Request) {
 	return func(w http.ResponseWriter, r *http.Request) {
 		log.Println("Handling get.")
 
-		key, ok := mux.Vars(r)["key"]
-		if !ok {
-			fail(w, http.StatusBadRequest, "Key missing.")
-			return
-		}
+		key := chi.URLParam(r, "key")
 
 		stmt, err := db.Prepare(fmt.Sprintf(`SELECT %s from public.%s WHERE %s = $1`, valueColumn, tableName, keyColumn))
 		if err != nil {
