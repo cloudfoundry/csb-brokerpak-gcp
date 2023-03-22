@@ -14,6 +14,10 @@ func handleGet(db *sql.DB) func(w http.ResponseWriter, r *http.Request) {
 		log.Println("Handling get.")
 
 		key := chi.URLParam(r, "key")
+		if key == "" {
+			fail(w, http.StatusBadRequest, "key missing or zero length")
+			return
+		}
 
 		stmt, err := db.Prepare(fmt.Sprintf(`SELECT %s from public.%s WHERE %s = $1`, valueColumn, tableName, keyColumn))
 		if err != nil {

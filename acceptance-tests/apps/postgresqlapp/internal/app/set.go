@@ -15,6 +15,10 @@ func handleSet(db *sql.DB) func(w http.ResponseWriter, r *http.Request) {
 		log.Println("Handling set.")
 
 		key := chi.URLParam(r, "key")
+		if key == "" {
+			fail(w, http.StatusBadRequest, "key missing or zero length")
+			return
+		}
 
 		rawValue, err := io.ReadAll(r.Body)
 		if err != nil {

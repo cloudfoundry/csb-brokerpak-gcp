@@ -79,10 +79,10 @@ func schemaName(r *http.Request) (string, error) {
 	schema := chi.URLParam(r, "schema")
 
 	switch {
+	case schema == "":
+		return "", fmt.Errorf("schema not specified or empty")
 	case len(schema) > 50:
 		return "", fmt.Errorf("schema name too long")
-	case len(schema) == 0:
-		return "", fmt.Errorf("schema name cannot be zero length")
 	case !regexp.MustCompile(`^[a-zA-Z0-9]+$`).MatchString(schema):
 		return "", fmt.Errorf("schema name contains invalid characters")
 	default:
