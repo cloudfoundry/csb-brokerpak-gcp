@@ -1,13 +1,13 @@
 package brokers
 
 import (
-	"csbbrokerpakgcp/acceptance-tests/helpers/testpath"
-	"fmt"
-	"strings"
-
 	"csbbrokerpakgcp/acceptance-tests/helpers/apps"
 	"csbbrokerpakgcp/acceptance-tests/helpers/cf"
 	"csbbrokerpakgcp/acceptance-tests/helpers/random"
+	"csbbrokerpakgcp/acceptance-tests/helpers/testpath"
+	"fmt"
+	"path/filepath"
+	"strings"
 )
 
 type Option func(broker *Broker)
@@ -67,9 +67,9 @@ func WithEnv(env ...apps.EnvVar) Option {
 	}
 }
 
-func WithReleasedEnv() Option {
+func WithReleasedEnv(dir string) Option {
 	return func(b *Broker) {
-		b.envExtras = append(b.envExtras, b.releasedEnv()...)
+		b.envExtras = append(b.envExtras, readEnvrcServices(filepath.Join(dir, ".envrc"))...)
 	}
 }
 
