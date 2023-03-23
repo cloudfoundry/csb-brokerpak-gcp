@@ -1,9 +1,7 @@
 package apps
 
 import (
-	"fmt"
-	"os"
-	"path/filepath"
+	"csbbrokerpakgcp/acceptance-tests/helpers/testpath"
 )
 
 type AppCode string
@@ -20,15 +18,7 @@ const (
 )
 
 func (a AppCode) Dir() string {
-	for _, d := range []string{"apps", "../apps"} {
-		p := filepath.Join(d, string(a))
-		_, err := os.Stat(p)
-		if err == nil {
-			return p
-		}
-	}
-
-	panic(fmt.Sprintf("could not find source for app: %s", a))
+	return testpath.BrokerpakFile("acceptance-tests", "apps", string(a))
 }
 
 func WithApp(app AppCode) Option {
