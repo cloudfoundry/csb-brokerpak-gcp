@@ -7,7 +7,7 @@ import (
 	"net/http"
 	"regexp"
 
-	"github.com/gorilla/mux"
+	"github.com/go-chi/chi/v5"
 	_ "github.com/jackc/pgx/v4/stdlib"
 )
 
@@ -17,21 +17,28 @@ const (
 	valueColumn = "valuedata"
 )
 
-func App(uri string) *mux.Router {
+func App(uri string) http.Handler {
 	db, err := connect(uri)
 	if err != nil {
 		log.Fatal(err)
 	}
 	log.Printf("Connection succeeded")
 
-	r := mux.NewRouter()
-	r.HandleFunc("/", aliveness).Methods(http.MethodHead, http.MethodGet)
-	r.HandleFunc("/{schema}", handleCreateSchema(db)).Methods(http.MethodPut)
-	r.HandleFunc("/{schema}", handleDropSchema(db)).Methods(http.MethodDelete)
-	r.HandleFunc("/{schema}/{key}", handleSet(db)).Methods(http.MethodPut)
-	r.HandleFunc("/{schema}/{key}", handleGet(db)).Methods(http.MethodGet)
-	r.HandleFunc("/schemas/{schema}/{table}", handleAlterTable(db)).Methods(http.MethodPut)
-	r.HandleFunc("/", handleDeleteTestTable(db)).Methods(http.MethodDelete)
+	r := chi.NewRouter()
+	r.Head("/", aliveness)
+	r.Put("/{schema}", handleCreateSchema(db))
+	r.Delete("/{schema}", handleDropSchema(db))
+
+	// Although the URL path implies that these might do something in the schema, in fact
+	// they ignore the schema name and just use the public schema
+	r.Put("/{schema}/{key}", handleSet(db))
+	r.Get("/{schema}/{key}", handleGet(db))
+
+	// Although this takes a schema and table name as parameters, it ignores them
+	r.Put("/schemas/{schema}/{table}", handleAlterTable(db))
+
+	// This should be moved to a more meaningful URL path
+	r.Delete("/", handleDeleteTestTable(db))
 
 	return r
 }
@@ -69,15 +76,13 @@ func fail(w http.ResponseWriter, code int, format string, a ...any) {
 }
 
 func schemaName(r *http.Request) (string, error) {
-	schema, ok := mux.Vars(r)["schema"]
+	schema := chi.URLParam(r, "schema")
 
 	switch {
-	case !ok:
-		return "", fmt.Errorf("schema missing")
+	case schema == "":
+		return "", fmt.Errorf("schema not specified or empty")
 	case len(schema) > 50:
 		return "", fmt.Errorf("schema name too long")
-	case len(schema) == 0:
-		return "", fmt.Errorf("schema name cannot be zero length")
 	case !regexp.MustCompile(`^[a-zA-Z0-9]+$`).MatchString(schema):
 		return "", fmt.Errorf("schema name contains invalid characters")
 	default:
