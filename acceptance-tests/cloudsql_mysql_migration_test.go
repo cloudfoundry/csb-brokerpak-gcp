@@ -17,12 +17,15 @@ import (
 var _ = Describe("MySQL service instance migration", Label("mysql-data-migration"), func() {
 	It("allows access to migrated data", func() {
 		By("creating a service broker with matching config")
-		const mysql56plan = `[{"name":"default","id":"eec62c9b-b25e-4e65-bad5-6b74d90274bf","description":"MySQL v5.6 10GB storage","mysql_version":"MYSQL_5_6","storage_gb":10,"tier":"db-n1-standard-2"}]`
+		const (
+			planVar     = "GSB_SERVICE_CSB_GOOGLE_MYSQL_PLANS"
+			mysql56plan = `[{"name":"default","id":"eec62c9b-b25e-4e65-bad5-6b74d90274bf","description":"MySQL v5.6 10GB storage","mysql_version":"MYSQL_5_6","storage_gb":10,"tier":"db-n1-standard-2"}]`
+		)
 
 		serviceBroker := brokers.Create(
 			brokers.WithPrefix("csb-mysql"),
 			brokers.WithLatestEnv(),
-			brokers.WithEnv(apps.EnvVar{Name: brokers.PlansMySQLVar, Value: mysql56plan}),
+			brokers.WithEnv(apps.EnvVar{Name: planVar, Value: mysql56plan}),
 		)
 		defer serviceBroker.Delete()
 
