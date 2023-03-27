@@ -16,3 +16,7 @@ them from Ginkgo flags, for example:
 ```
 ginkgo -v -- -releasedBuildDir ... -developmentBuildDir ...
 ```
+
+The test parses the `.envrc` file for the released and development brokerpaks in order to
+set the correct environment variables. Therefore, the directories for the released and
+development brokerpaks should contain the corresponding `.envrc` files.

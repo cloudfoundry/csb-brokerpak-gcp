@@ -1,23 +1,12 @@
 package brokers
 
 import (
+	"csbbrokerpakgcp/acceptance-tests/helpers/apps"
+	"csbbrokerpakgcp/acceptance-tests/helpers/testpath"
 	"fmt"
 	"os"
 
-	"csbbrokerpakgcp/acceptance-tests/helpers/apps"
-
 	"github.com/onsi/ginkgo/v2"
-)
-
-const (
-	plansPostgreSQLVar = "GSB_SERVICE_CSB_GOOGLE_POSTGRES_PLANS"
-	PlansMySQLVar      = "GSB_SERVICE_CSB_GOOGLE_MYSQL_PLANS"
-	plansStorageVar    = "GSB_SERVICE_CSB_GOOGLE_STORAGE_BUCKET_PLANS"
-	plansRedisVar      = "GSB_SERVICE_CSB_GOOGLE_REDIS_PLANS"
-	plansPostgreSQL    = `[{"name":"small","id":"5b45de36-cb90-11ec-a755-77f8be95a49d","description":"PostgreSQL with default version, shared CPU, minimum 0.6GB ram, 10GB storage","metadata":{"displayName":"small"},"tier":"db-f1-micro","storage_gb":10},{"name":"medium","id":"a3359fa6-cb90-11ec-bcb6-cb68544eda78","description":"PostgreSQL with default version, shared CPU, minimum 1.7GB ram, 20GB storage","metadata":{"displayName":"medium"},"tier":"db-g1-small","storage_gb":20},{"name":"large","id":"cd95c5b4-cb90-11ec-a5da-df87b7fb7426","description":"PostgreSQL with default version, minimum 8 cores, minimum 8GB ram, 50GB storage","metadata":{"displayName":"large"},"tier":"db-custom-8-8192","storage_gb":50}]`
-	plansMySQL         = `[{"name":"default","id":"eec62c9b-b25e-4e65-bad5-6b74d90274bf","description":"Default MySQL v8.0 10GB storage","metadata":{"displayName":"default"},"mysql_version":"MYSQL_8_0","storage_gb":10,"tier":"db-n1-standard-2"}]`
-	oldPlansStorage    = `[{"name": "private","id": "bbc4853e-8a63-11ea-a54e-670ca63cee0b","description": "Private Storage bucket", "region": "us-central1", "storage_class": "STANDARD"},{"name": "public-read","id": "c07f21a6-8a63-11ea-bc1b-d38b123189cb","description": "Public-read Storage bucket", "region": "us-central1", "storage_class": "STANDARD"}]`
-	oldBasicPlanRedis  = `[{"name":"basic","id":"6ed44104-8777-4b57-8c03-826b3af7d0be","description":"Cloud Memorystore for Redis service with no failover","metadata":{"display_name":"basic"},"service_tier": "BASIC"}]`
 )
 
 func (b Broker) env() []apps.EnvVar {
@@ -58,20 +47,6 @@ func (b Broker) env() []apps.EnvVar {
 	return append(result, b.envExtras...)
 }
 
-func (b Broker) releasedEnv() []apps.EnvVar {
-	return []apps.EnvVar{
-		{Name: plansPostgreSQLVar, Value: plansPostgreSQL},
-		{Name: PlansMySQLVar, Value: plansMySQL},
-		{Name: plansStorageVar, Value: oldPlansStorage},
-		{Name: plansRedisVar, Value: oldBasicPlanRedis},
-	}
-}
-
 func (b Broker) latestEnv() []apps.EnvVar {
-	return []apps.EnvVar{
-		{Name: plansPostgreSQLVar, Value: plansPostgreSQL},
-		{Name: PlansMySQLVar, Value: plansMySQL},
-		{Name: plansStorageVar, Value: oldPlansStorage},
-		{Name: plansRedisVar, Value: oldBasicPlanRedis},
-	}
+	return readEnvrcServices(testpath.BrokerpakFile(".envrc"))
 }

@@ -17,14 +17,14 @@ var _ = Describe("UpgradeStorageTest", Label("storage"), func() {
 			serviceBroker := brokers.Create(
 				brokers.WithPrefix("csb-storage"),
 				brokers.WithSourceDir(releasedBuildDir),
-				brokers.WithReleasedEnv(),
+				brokers.WithReleasedEnv(releasedBuildDir),
 			)
 			defer serviceBroker.Delete()
 
 			By("creating a service")
 			serviceInstance := services.CreateInstance(
 				"csb-google-storage-bucket",
-				"private",
+				"default",
 				services.WithBroker(serviceBroker),
 			)
 			defer serviceInstance.Delete()
