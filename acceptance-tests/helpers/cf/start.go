@@ -1,7 +1,6 @@
 package cf
 
 import (
-	"fmt"
 	"os/exec"
 	"strings"
 
@@ -19,7 +18,7 @@ func StartWithWorkingDirectory(wd string, args ...string) *gexec.Session {
 }
 
 func start(pwd *string, args ...string) *gexec.Session {
-	_, _ = fmt.Fprintf(GinkgoWriter, "Running: cf %s\n", strings.Join(args, " "))
+	GinkgoWriter.Printf("Running: cf %s\n", strings.Join(args, " "))
 	command := exec.Command("cf", args...)
 	if pwd != nil {
 		command.Dir = *pwd

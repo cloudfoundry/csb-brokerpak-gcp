@@ -1,7 +1,6 @@
 package apps
 
 import (
-	"fmt"
 	"os"
 	"time"
 
@@ -76,7 +75,7 @@ func (a *App) Push(opts ...Option) {
 	checkSuccess(session.ExitCode(), a.Name)
 
 	if session.ExitCode() != 0 {
-		_, _ = fmt.Fprintf(GinkgoWriter, "FAILED to push app. Getting logs...")
+		GinkgoWriter.Printf("FAILED to push app. Getting logs...")
 		cf.Run("logs", a.Name, "--recent")
 		Fail("App failed to push")
 	}
