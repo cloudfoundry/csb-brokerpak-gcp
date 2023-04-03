@@ -12,7 +12,7 @@ import (
 
 func (a *App) GET(format string, s ...any) Payload {
 	url := a.urlf(format, s...)
-	fmt.Fprintf(GinkgoWriter, "HTTP GET: %s\n", url)
+	GinkgoWriter.Printf("HTTP GET: %s\n", url)
 	response, err := http.Get(url)
 	Expect(err).NotTo(HaveOccurred())
 	Expect(response).To(HaveHTTPStatus(http.StatusOK))
@@ -21,14 +21,14 @@ func (a *App) GET(format string, s ...any) Payload {
 	data, err := io.ReadAll(response.Body)
 	Expect(err).NotTo(HaveOccurred())
 
-	fmt.Fprintf(GinkgoWriter, "Recieved: %s\n", string(data))
+	GinkgoWriter.Printf("Recieved: %s\n", string(data))
 	return Payload(data)
 }
 
 func (a *App) PUT(data, format string, s ...any) {
 	url := a.urlf(format, s...)
-	fmt.Fprintf(GinkgoWriter, "HTTP PUT: %s\n", url)
-	fmt.Fprintf(GinkgoWriter, "Sending data: %s\n", data)
+	GinkgoWriter.Printf("HTTP PUT: %s\n", url)
+	GinkgoWriter.Printf("Sending data: %s\n", data)
 	request, err := http.NewRequest(http.MethodPut, url, strings.NewReader(data))
 	Expect(err).NotTo(HaveOccurred())
 	request.Header.Set("Content-Type", "text/html")
@@ -39,8 +39,8 @@ func (a *App) PUT(data, format string, s ...any) {
 
 func (a *App) POST(data, format string, s ...any) Payload {
 	url := a.urlf(format, s...)
-	fmt.Fprintf(GinkgoWriter, "HTTP POST: %s\n", url)
-	fmt.Fprintf(GinkgoWriter, "Sending data: %s\n", data)
+	GinkgoWriter.Printf("HTTP POST: %s\n", url)
+	GinkgoWriter.Printf("Sending data: %s\n", data)
 	request, err := http.NewRequest(http.MethodPost, url, strings.NewReader(data))
 	Expect(err).NotTo(HaveOccurred())
 	request.Header.Set("Content-Type", "application/json")
@@ -56,7 +56,7 @@ func (a *App) POST(data, format string, s ...any) Payload {
 
 func (a *App) DELETETestTable() {
 	url := a.urlf("/")
-	fmt.Fprintf(GinkgoWriter, "HTTP DELETE: %s\n", url)
+	GinkgoWriter.Printf("HTTP DELETE: %s\n", url)
 	request, err := http.NewRequest(http.MethodDelete, url, nil)
 	Expect(err).NotTo(HaveOccurred())
 
@@ -67,7 +67,7 @@ func (a *App) DELETETestTable() {
 
 func (a *App) DELETE(format string, s ...any) {
 	url := a.urlf(format, s...)
-	fmt.Fprintf(GinkgoWriter, "HTTP DELETE: %s\n", url)
+	GinkgoWriter.Printf("HTTP DELETE: %s\n", url)
 	request, err := http.NewRequest(http.MethodDelete, url, nil)
 	Expect(err).NotTo(HaveOccurred())
 
