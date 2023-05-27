@@ -5,7 +5,7 @@ go 1.20
 require (
 	cloud.google.com/go/spanner v1.46.0
 	github.com/cloudfoundry-community/go-cfenv v1.18.0
-	google.golang.org/api v0.123.0
+	google.golang.org/api v0.124.0
 )
 
 require (
@@ -19,7 +19,7 @@ require (
 	github.com/cncf/xds/go v0.0.0-20230310173818-32f1caf87195 // indirect
 	github.com/envoyproxy/go-control-plane v0.11.0 // indirect
 	github.com/envoyproxy/protoc-gen-validate v0.10.0 // indirect
-	github.com/google/s2a-go v0.1.3 // indirect
+	github.com/google/s2a-go v0.1.4 // indirect
 	github.com/googleapis/enterprise-certificate-proxy v0.2.3 // indirect
 	golang.org/x/crypto v0.7.0 // indirect
 )
@@ -32,9 +32,9 @@ require (
 	github.com/googleapis/gax-go/v2 v2.8.0 // indirect
 	github.com/mitchellh/mapstructure v1.5.0
 	go.opencensus.io v0.24.0 // indirect
-	golang.org/x/net v0.9.0 // indirect
-	golang.org/x/oauth2 v0.7.0 // indirect
-	golang.org/x/sys v0.7.0 // indirect
+	golang.org/x/net v0.10.0 // indirect
+	golang.org/x/oauth2 v0.8.0 // indirect
+	golang.org/x/sys v0.8.0 // indirect
 	golang.org/x/text v0.9.0 // indirect
 	golang.org/x/xerrors v0.0.0-20220907171357-04be3eba64a2 // indirect
 	google.golang.org/appengine v1.6.7 // indirect
