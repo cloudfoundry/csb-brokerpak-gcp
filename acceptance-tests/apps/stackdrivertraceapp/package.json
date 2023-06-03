@@ -19,6 +19,6 @@
     "vcap_services": "^0.7.1"
   },
   "devDependencies": {
-    "standard": "^17.0.0"
+    "standard": "^17.1.0"
   }
 }
