@@ -13,7 +13,7 @@ require (
 	github.com/onsi/gomega v1.27.7
 	github.com/otiai10/copy v1.11.0
 	golang.org/x/exp v0.0.0-20221126150942-6ab00d035af9
-	golang.org/x/tools v0.9.1
+	golang.org/x/tools v0.9.3
 	google.golang.org/api v0.125.0
 	gopkg.in/yaml.v3 v3.0.1
 	honnef.co/go/tools v0.4.3
