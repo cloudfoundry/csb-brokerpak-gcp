@@ -5,7 +5,7 @@ go 1.20
 require (
 	cloud.google.com/go/spanner v1.46.0
 	github.com/cloudfoundry-community/go-cfenv v1.18.0
-	google.golang.org/api v0.125.0
+	google.golang.org/api v0.126.0
 )
 
 require (
