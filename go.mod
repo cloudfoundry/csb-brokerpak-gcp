@@ -11,7 +11,7 @@ require (
 	github.com/mitchellh/mapstructure v1.5.0
 	github.com/onsi/ginkgo/v2 v2.11.0
 	github.com/onsi/gomega v1.27.8
-	github.com/otiai10/copy v1.11.0
+	github.com/otiai10/copy v1.12.0
 	golang.org/x/exp v0.0.0-20221126150942-6ab00d035af9
 	golang.org/x/tools v0.10.0
 	google.golang.org/api v0.128.0
