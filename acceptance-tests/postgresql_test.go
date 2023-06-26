@@ -33,12 +33,11 @@ var _ = Describe("PostgreSQL", func() {
 		appTwo := apps.Push(apps.WithApp(apps.PostgreSQL))
 		defer apps.Delete(appOne, appTwo)
 
-		By("binding the apps to the service instance")
+		By("binding the first app to the service instance")
 		binding := serviceInstance.Bind(appOne)
-		serviceInstance.Bind(appTwo)
 
-		By("starting the apps")
-		apps.Start(appOne, appTwo)
+		By("starting the first app")
+		apps.Start(appOne)
 
 		By("checking that the app environment has a credhub reference for credentials")
 		Expect(binding.Credential()).To(matchers.HaveCredHubRef)
@@ -51,6 +50,12 @@ var _ = Describe("PostgreSQL", func() {
 		key := random.Hexadecimal()
 		value := random.Hexadecimal()
 		appOne.PUT(value, "%s/%s", schema, key)
+
+		By("binding the second app to the service instance")
+		serviceInstance.Bind(appTwo)
+
+		By("starting the second app")
+		apps.Start(appTwo)
 
 		By("getting the value using the second app")
 		got := appTwo.GET("%s/%s", schema, key).String()
