@@ -35,12 +35,6 @@ func handleCreateSchema(db *sql.DB) func(w http.ResponseWriter, r *http.Request)
 			return
 		}
 
-		_, err = db.Exec(fmt.Sprintf(`GRANT ALL ON TABLE %s.%s TO PUBLIC`, schema, tableName))
-		if err != nil {
-			fail(w, http.StatusBadRequest, "Error granting table permissions: %s", err)
-			return
-		}
-
 		w.WriteHeader(http.StatusCreated)
 		log.Printf("Schema %q created", schema)
 	}
