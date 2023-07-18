@@ -23,8 +23,8 @@ terraform_binaries:
   version: 1.1.4
   source: https://github.com/hashicorp/terraform/archive/v1.1.4.zip
 - name: terraform-provider-google
-  version: 4.73.2
-  source: https://github.com/terraform-providers/terraform-provider-google/archive/v4.73.2.zip
+  version: 4.74.0
+  source: https://github.com/terraform-providers/terraform-provider-google/archive/v4.74.0.zip
 - name: terraform-provider-local
   version: 2.4.0
   source: https://github.com/terraform-providers/terraform-provider-local/archive/v2.4.0.zip
@@ -35,8 +35,8 @@ terraform_binaries:
   version: 3.5.1
   source: https://github.com/terraform-providers/terraform-provider-random/archive/v3.5.1.zip
 - name: terraform-provider-csbpg
-  version: 1.1.3
-  source: https://github.com/cloudfoundry/terraform-provider-csbpg/archive/v1.1.3.zip
+  version: 1.2.0
+  source: https://github.com/cloudfoundry/terraform-provider-csbpg/archive/v1.2.0.zip
   provider: cloud-service-broker/csbpg
   url_template: https://github.com/cloudfoundry/${name}/releases/download/v${version}/${name}_${version}_${os}_${arch}.zip
 - name: terraform-provider-csbmysql
