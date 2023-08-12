@@ -6,7 +6,7 @@ require (
 	cloud.google.com/go/trace v1.10.1
 	code.cloudfoundry.org/jsonry v1.1.4
 	github.com/Pallinder/go-randomdata v1.2.0
-	github.com/cloudfoundry/cloud-service-broker v0.19.4
+	github.com/cloudfoundry/cloud-service-broker v0.19.5
 	github.com/hashicorp/terraform-json v0.17.1
 	github.com/mitchellh/mapstructure v1.5.0
 	github.com/onsi/ginkgo/v2 v2.11.0
@@ -112,5 +112,5 @@ require (
 	gopkg.in/ini.v1 v1.67.0 // indirect
 	gorm.io/driver/mysql v1.5.1 // indirect
 	gorm.io/driver/sqlite v1.4.4 // indirect
-	gorm.io/gorm v1.25.2 // indirect
+	gorm.io/gorm v1.25.3 // indirect
 )
