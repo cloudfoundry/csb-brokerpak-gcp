@@ -134,7 +134,7 @@ validate: build ## use the CSB to validate the buildpak
 # fetching bits for cf push broker
 .PHONY: cloud-service-broker
 cloud-service-broker: go.mod ## build or fetch CSB binary
-	$(shell "$(GET_CSB)")
+	"$(GET_CSB)"
 
 APP_NAME := $(or $(APP_NAME), cloud-service-broker-gcp)
 DB_TLS := $(or $(DB_TLS), skip-verify)
