@@ -75,6 +75,8 @@ var _ = Describe("PostgreSQL", func() {
 })
 
 func postgresTestMultipleApps(serviceInstance *services.ServiceInstance) {
+	GinkgoHelper()
+
 	By("pushing the unstarted app twice")
 	appOne := apps.Push(apps.WithApp(apps.PostgreSQL))
 	appTwo := apps.Push(apps.WithApp(apps.PostgreSQL))
