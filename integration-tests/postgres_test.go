@@ -142,10 +142,11 @@ var _ = Describe("postgres", Label("postgres"), func() {
 			Entry("12", "POSTGRES_12"),
 			Entry("13", "POSTGRES_13"),
 			Entry("14", "POSTGRES_14"),
+			Entry("15", "POSTGRES_15"),
 		)
 
 		DescribeTable(
-			"does not allow versions other than 11-14",
+			"does not allow versions other than 11-15",
 			func(version any) {
 				_, err := broker.Provision("csb-google-postgres", postgresNoOverridesPlan["name"].(string), map[string]any{"tier": "db-f1-micro", "postgres_version": version})
 
@@ -153,7 +154,6 @@ var _ = Describe("postgres", Label("postgres"), func() {
 				Expect(mockTerraform.ApplyInvocations()).To(HaveLen(0))
 			},
 			Entry("10", "POSTGRES_10"),
-			Entry("15", "POSTGRES_15"),
 			Entry("16", "POSTGRES_16"),
 		)
 	})
