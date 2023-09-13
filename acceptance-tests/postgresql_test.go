@@ -1,6 +1,9 @@
 package acceptance_test
 
 import (
+	"csbbrokerpakgcp/acceptance-tests/helpers/brokers"
+	"csbbrokerpakgcp/acceptance-tests/helpers/matchers"
+	"csbbrokerpakgcp/acceptance-tests/helpers/random"
 	"net"
 	"net/url"
 
@@ -8,77 +11,40 @@ import (
 	. "github.com/onsi/gomega"
 
 	"csbbrokerpakgcp/acceptance-tests/helpers/apps"
-	"csbbrokerpakgcp/acceptance-tests/helpers/brokers"
-	"csbbrokerpakgcp/acceptance-tests/helpers/matchers"
-	"csbbrokerpakgcp/acceptance-tests/helpers/random"
 	"csbbrokerpakgcp/acceptance-tests/helpers/services"
 )
 
 var _ = Describe("PostgreSQL", func() {
-	It("can be accessed by an app", Label("postgresql"), func() {
-		By("creating a service broker with Beta services disabled")
-		broker := brokers.Create(
-			brokers.WithPrefix("csb-postgresql"),
-			brokers.WithLatestEnv(),
-			brokers.WithEnv(apps.EnvVar{Name: "GSB_COMPATIBILITY_ENABLE_BETA_SERVICES", Value: "false"}),
-		)
-		defer broker.Delete()
+	Describe("Can be accessed by an app", func() {
+		var broker *brokers.Broker
 
-		By("creating a service instance")
-		serviceInstance := services.CreateInstance("csb-google-postgres", "small", services.WithBroker(broker))
-		defer serviceInstance.Delete()
+		BeforeEach(func() {
+			broker = brokers.Create(
+				brokers.WithPrefix("csb-postgresql"),
+				brokers.WithLatestEnv(),
+				brokers.WithEnv(apps.EnvVar{Name: "GSB_COMPATIBILITY_ENABLE_BETA_SERVICES", Value: "false"}),
+			)
+			defer broker.Delete()
+		})
 
-		By("pushing the unstarted app twice")
-		appOne := apps.Push(apps.WithApp(apps.PostgreSQL))
-		appTwo := apps.Push(apps.WithApp(apps.PostgreSQL))
-		defer apps.Delete(appOne, appTwo)
+		It("works with the default postgres version", Label("postgresql"), func() {
+			By("creating a service instance")
+			serviceInstance := services.CreateInstance("csb-google-postgres", "small", services.WithBroker(broker))
+			defer serviceInstance.Delete()
 
-		By("binding the first app to the service instance")
-		binding := serviceInstance.Bind(appOne)
+			postgresTestMultipleApps(serviceInstance)
 
-		By("starting the first app")
-		apps.Start(appOne)
+		})
 
-		By("checking that the app environment has a credhub reference for credentials")
-		Expect(binding.Credential()).To(matchers.HaveCredHubRef)
+		It("works with latest changes to public schema in postgres 15", Label("Postgres15"), func() {
+			By("creating a service instance")
+			serviceInstance := services.CreateInstance("csb-google-postgres", "pg15", services.WithBroker(broker))
+			defer serviceInstance.Delete()
 
-		By("creating a schema using the first app")
-		schema := random.Name(random.WithMaxLength(10))
-		appOne.PUT("", schema)
+			postgresTestMultipleApps(serviceInstance)
 
-		By("setting a key-value using the first app")
-		key := random.Hexadecimal()
-		value := random.Hexadecimal()
-		appOne.PUT(value, "%s/%s", schema, key)
+		})
 
-		By("binding the second app to the service instance")
-		serviceInstance.Bind(appTwo)
-
-		By("starting the second app")
-		apps.Start(appTwo)
-
-		By("getting the value using the second app")
-		got := appTwo.GET("%s/%s", schema, key).String()
-		Expect(got).To(Equal(value))
-
-		By("triggering ownership of schema to pass to provision user")
-		binding.Unbind()
-
-		By("getting the value again using the second app")
-		got2 := appTwo.GET("%s/%s", schema, key).String()
-		Expect(got2).To(Equal(value))
-
-		By("setting another value using the second app")
-		key2 := random.Hexadecimal()
-		value2 := random.Hexadecimal()
-		appTwo.PUT(value2, "%s/%s", schema, key2)
-
-		By("getting the other value using the second app")
-		got3 := appTwo.GET("%s/%s", schema, key2).String()
-		Expect(got3).To(Equal(value2))
-
-		By("dropping the schema using the second app")
-		appTwo.DELETE(schema)
 	})
 
 	It("can create service keys with a public IP address", Label("postgresql-public-ip"), func() {
@@ -107,3 +73,60 @@ var _ = Describe("PostgreSQL", func() {
 		Expect(uriIP.IsPrivate()).To(BeFalse())
 	})
 })
+
+func postgresTestMultipleApps(serviceInstance *services.ServiceInstance) {
+	GinkgoHelper()
+
+	By("pushing the unstarted app twice")
+	appOne := apps.Push(apps.WithApp(apps.PostgreSQL))
+	appTwo := apps.Push(apps.WithApp(apps.PostgreSQL))
+	defer apps.Delete(appOne, appTwo)
+
+	By("binding the first app to the service instance")
+	binding := serviceInstance.Bind(appOne)
+
+	By("starting the first app")
+	apps.Start(appOne)
+
+	By("checking that the app environment has a credhub reference for credentials")
+	Expect(binding.Credential()).To(matchers.HaveCredHubRef)
+
+	By("creating a schema using the first app")
+	schema := random.Name(random.WithMaxLength(10))
+	appOne.PUT("", schema)
+
+	By("setting a key-value using the first app")
+	key := random.Hexadecimal()
+	value := random.Hexadecimal()
+	appOne.PUT(value, "%s/%s", schema, key)
+
+	By("binding the second app to the service instance")
+	serviceInstance.Bind(appTwo)
+
+	By("starting the second app")
+	apps.Start(appTwo)
+
+	By("getting the value using the second app")
+	got := appTwo.GET("%s/%s", schema, key).String()
+	Expect(got).To(Equal(value))
+
+	By("triggering ownership of schema to pass to provision user")
+	binding.Unbind()
+
+	By("getting the value again using the second app")
+	got2 := appTwo.GET("%s/%s", schema, key).String()
+	Expect(got2).To(Equal(value))
+
+	By("setting another value using the second app")
+	key2 := random.Hexadecimal()
+	value2 := random.Hexadecimal()
+	appTwo.PUT(value2, "%s/%s", schema, key2)
+
+	By("getting the other value using the second app")
+	got3 := appTwo.GET("%s/%s", schema, key2).String()
+	Expect(got3).To(Equal(value2))
+
+	By("dropping the schema using the second app")
+	appTwo.DELETE(schema)
+
+}
