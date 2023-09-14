@@ -1,7 +1,6 @@
 package acceptance_test
 
 import (
-	"csbbrokerpakgcp/acceptance-tests/helpers/brokers"
 	"csbbrokerpakgcp/acceptance-tests/helpers/matchers"
 	"csbbrokerpakgcp/acceptance-tests/helpers/random"
 	"net"
@@ -16,20 +15,9 @@ import (
 
 var _ = Describe("PostgreSQL", func() {
 	Describe("Can be accessed by an app", func() {
-		var broker *brokers.Broker
-
-		BeforeEach(func() {
-			broker = brokers.Create(
-				brokers.WithPrefix("csb-postgresql"),
-				brokers.WithLatestEnv(),
-				brokers.WithEnv(apps.EnvVar{Name: "GSB_COMPATIBILITY_ENABLE_BETA_SERVICES", Value: "false"}),
-			)
-			defer broker.Delete()
-		})
-
 		It("works with the default postgres version", Label("postgresql"), func() {
 			By("creating a service instance")
-			serviceInstance := services.CreateInstance("csb-google-postgres", "small", services.WithBroker(broker))
+			serviceInstance := services.CreateInstance("csb-google-postgres", "small")
 			defer serviceInstance.Delete()
 
 			postgresTestMultipleApps(serviceInstance)
@@ -38,7 +26,7 @@ var _ = Describe("PostgreSQL", func() {
 
 		It("works with latest changes to public schema in postgres 15", Label("Postgres15"), func() {
 			By("creating a service instance")
-			serviceInstance := services.CreateInstance("csb-google-postgres", "pg15", services.WithBroker(broker))
+			serviceInstance := services.CreateInstance("csb-google-postgres", "pg15")
 			defer serviceInstance.Delete()
 
 			postgresTestMultipleApps(serviceInstance)
