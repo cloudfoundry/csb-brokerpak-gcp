@@ -102,6 +102,7 @@ var _ = Describe("mysql", Label("mysql-terraform"), Ordered, func() {
 							"availability_type": Equal("ZONAL"),
 						}),
 					),
+					"project": Equal(googleProject),
 				}),
 			)
 
