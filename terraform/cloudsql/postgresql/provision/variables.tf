@@ -21,3 +21,6 @@ variable "credentials" {
 }
 variable "project" { type = string }
 variable "require_ssl" { type = bool }
+
+variable "enable_custom_roles" { type = bool }
+variable "custom_roles" { type = string }

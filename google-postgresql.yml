@@ -26,6 +26,16 @@ plan_updateable: true
 provision:
   plan_inputs: []
   user_inputs:
+  - field_name: enable_custom_roles
+    type: boolean
+    default: false
+    details: Whether to enable custom roles functionality
+    prohibit_update: true
+  - field_name: custom_roles
+    type: string
+    default: '{ "*": "binding_user_group" }'
+    details: A key-value map to specify for a given app guid (key) which role (value) to apply to new users when binding
+    prohibit_update: true
   - field_name: tier
     required: true
     type: string
@@ -145,6 +155,12 @@ provision:
     variables: terraform/cloudsql/postgresql/provision/variables.tf
     outputs: terraform/cloudsql/postgresql/provision/outputs.tf
   outputs:
+  - field_name: enable_custom_roles
+    type: boolean
+    details: Whether to enable custom roles functionality
+  - field_name: custom_roles
+    type: string
+    details: A key-value map to specify for a given app guid (key) which role (value) to apply to new users when binding
   - field_name: name
     type: string
     details: The name of the database.
@@ -176,6 +192,18 @@ bind:
   plan_inputs: []
   user_inputs: []
   computed_inputs:
+  - name: app_guid
+    type: string
+    default: ${request.app_guid}
+    overwrite: true
+  - name: enable_custom_roles
+    type: boolean
+    default: ${instance.details["enable_custom_roles"]}
+    overwrite: true
+  - name: custom_roles
+    type: string
+    default: ${instance.details["custom_roles"]}
+    overwrite: true
   - name: db_name
     type: string
     default: ${instance.details["name"]}
@@ -216,6 +244,7 @@ bind:
     provider: terraform/cloudsql/postgresql/bind/provider.tf
     versions: terraform/cloudsql/postgresql/bind/versions.tf
     main: terraform/cloudsql/postgresql/bind/main.tf
+    data: terraform/cloudsql/postgresql/bind/data.tf
     variables: terraform/cloudsql/postgresql/bind/variables.tf
     outputs: terraform/cloudsql/postgresql/bind/outputs.tf
   outputs:

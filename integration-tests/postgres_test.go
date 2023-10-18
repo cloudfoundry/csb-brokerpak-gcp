@@ -258,6 +258,8 @@ var _ = Describe("postgres", Label("postgres"), func() {
 				{Name: "sslcert", Type: "string", Value: fakeClientCert},
 				{Name: "sslkey", Type: "string", Value: fakeClientKey},
 				{Name: "private_ip", Type: "string", Value: fakePrivateIP},
+				{Name: "enable_custom_roles", Type: "bool", Value: false},
+				{Name: "custom_roles", Type: "string", Value: ""},
 			})
 			Expect(err).NotTo(HaveOccurred())
 
@@ -286,6 +288,9 @@ var _ = Describe("postgres", Label("postgres"), func() {
 				"sslcert":     fakeClientCert,
 				"sslkey":      fakeClientKey,
 				"private_ip":  fakePrivateIP,
+
+				"enable_custom_roles": false,
+				"custom_roles":        "",
 			}))
 		})
 	})
