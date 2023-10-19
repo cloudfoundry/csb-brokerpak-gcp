@@ -203,6 +203,9 @@ var _ = Describe("postgres", Label("postgres"), func() {
 						"params_authorized_network_cidr1",
 						"params_authorized_network_cidr2",
 					)),
+					HaveKeyWithValue("highly_available", BeFalse()),
+					HaveKeyWithValue("location_preference_zone", BeEmpty()),
+					HaveKeyWithValue("location_preference_secondary_zone", BeEmpty()),
 				),
 			)
 		})
@@ -325,6 +328,16 @@ var _ = Describe("postgres", Label("postgres"), func() {
 				"backups_retain_number: Must be greater than or equal to 0",
 			),
 			Entry(
+				"invalid preferred primary zone",
+				map[string]any{"location_preference_zone": "abc"},
+				"location_preference_zone: Does not match pattern '^[a-z]?$'",
+			),
+			Entry(
+				"invalid preferred secondary zone",
+				map[string]any{"location_preference_secondary_zone": "abc"},
+				"location_preference_secondary_zone: Does not match pattern '^[a-z]?$'",
+			),
+			Entry(
 				"invalid postgres_version",
 				map[string]any{"postgres_version": "15"},
 				"postgres_version: Does not match pattern '^POSTGRES_[0-9]+$'",
@@ -382,5 +395,26 @@ var _ = Describe("postgres", Label("postgres"), func() {
 			Entry("min backups_point_in_time_log_retain_days", "backups_point_in_time_log_retain_days", -1, "backups_point_in_time_log_retain_days: Must be greater than or equal to 0"),
 			Entry("max backups_point_in_time_log_retain_days", "backups_point_in_time_log_retain_days", 8, "backups_point_in_time_log_retain_days: Must be less than or equal to 7"),
 		)
+	})
+
+	Describe("high-availability", func() {
+		It("allows high-availability to be configured", func() {
+			_, err := broker.Provision("csb-google-postgres", postgresNoOverridesPlan["name"].(string), map[string]any{
+				"tier":                                  "db-f1-micro",
+				"backups_retain_number":                 7,
+				"backups_point_in_time_log_retain_days": 7,
+				"highly_available":                      true,
+			})
+
+			Expect(err).NotTo(HaveOccurred())
+			invocations, err := mockTerraform.ApplyInvocations()
+			Expect(err).NotTo(HaveOccurred())
+			Expect(invocations).To(HaveLen(1))
+			Expect(invocations[0].TFVars()).To(SatisfyAll(
+				HaveKeyWithValue("backups_retain_number", BeNumerically("==", 7)),
+				HaveKeyWithValue("backups_point_in_time_log_retain_days", BeNumerically("==", 7)),
+				HaveKeyWithValue("highly_available", BeTrue()),
+			))
+		})
 	})
 })

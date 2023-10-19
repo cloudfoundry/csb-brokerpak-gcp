@@ -38,6 +38,9 @@ var _ = Describe("postgres", Label("postgres-terraform"), Ordered, func() {
 		"backups_location":                      "us",
 		"backups_retain_number":                 7,
 		"backups_point_in_time_log_retain_days": 7,
+		"highly_available":                      false,
+		"location_preference_zone":              "",
+		"location_preference_secondary_zone":    "",
 	}
 
 	BeforeAll(func() {
@@ -91,6 +94,13 @@ var _ = Describe("postgres", Label("postgres-terraform"), Ordered, func() {
 									),
 								}),
 							),
+							"location_preference": ContainElement(
+								MatchKeys(IgnoreExtras, Keys{
+									"zone":           BeEmpty(),
+									"secondary_zone": BeEmpty(),
+								}),
+							),
+							"availability_type": Equal("ZONAL"),
 						}),
 					),
 					"project": Equal(googleProject),
@@ -111,6 +121,30 @@ var _ = Describe("postgres", Label("postgres-terraform"), Ordered, func() {
 			)
 
 			Expect(AfterOutput(plan, "allow_insecure_connections")).To(BeNil())
+		})
+	})
+
+	Context("High availability", func() {
+		It("enabling", func() {
+			plan = ShowPlan(terraformProvisionDir, buildVars(defaultVars, map[string]any{
+				"highly_available":                      true,
+				"location_preference_zone":              "a",
+				"location_preference_secondary_zone":    "c",
+				"backups_retain_number":                 7,
+				"backups_point_in_time_log_retain_days": 7,
+			}))
+
+			Expect(AfterValuesForType(plan, googleSQLDBInstance)).To(
+				MatchKeys(IgnoreExtras, Keys{
+					"settings": ContainElement(MatchKeys(IgnoreExtras, Keys{
+						"availability_type": Equal("REGIONAL"),
+						"location_preference": ContainElement(MatchKeys(IgnoreExtras, Keys{
+							"zone":           Equal("us-central1-a"),
+							"secondary_zone": Equal("us-central1-c"),
+						})),
+					})),
+				}),
+			)
 		})
 	})
 })
