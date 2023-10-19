@@ -144,18 +144,6 @@ var _ = Describe("postgres", Label("postgres"), func() {
 			Entry("14", "POSTGRES_14"),
 			Entry("15", "POSTGRES_15"),
 		)
-
-		DescribeTable(
-			"does not allow versions other than 11-15",
-			func(version any) {
-				_, err := broker.Provision("csb-google-postgres", postgresNoOverridesPlan["name"].(string), map[string]any{"tier": "db-f1-micro", "postgres_version": version})
-
-				Expect(err).To(MatchError(ContainSubstring("postgres_version: postgres_version must be one of the following")))
-				Expect(mockTerraform.ApplyInvocations()).To(HaveLen(0))
-			},
-			Entry("10", "POSTGRES_10"),
-			Entry("16", "POSTGRES_16"),
-		)
 	})
 
 	Context("no properties overridden from the plan", func() {
@@ -296,6 +284,14 @@ var _ = Describe("postgres", Label("postgres"), func() {
 				_, err := broker.Provision("csb-google-postgres", postgresNoOverridesPlan["name"].(string), map[string]any{"region": "-Asia-northeast1"})
 
 				Expect(err).To(MatchError(ContainSubstring("region: Does not match pattern '^[a-z][a-z0-9-]+$'")))
+			})
+		})
+
+		Describe("postgres_version", func() {
+			It("should validate the postgres_version", func() {
+				_, err := broker.Provision("csb-google-postgres", postgresNoOverridesPlan["name"].(string), map[string]any{"postgres_version": "15"})
+
+				Expect(err).To(MatchError(ContainSubstring("postgres_version: Does not match pattern '^POSTGRES_[0-9]+$'")))
 			})
 		})
 	})
