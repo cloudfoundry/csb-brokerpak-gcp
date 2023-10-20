@@ -14,6 +14,9 @@ variable "backups_retain_number" { type = number }
 variable "backups_location" { type = string }
 variable "backups_start_time" { type = string }
 variable "backups_point_in_time_log_retain_days" { type = number }
+variable "highly_available" { type = bool }
+variable "location_preference_zone" { type = string }
+variable "location_preference_secondary_zone" { type = string }
 
 variable "credentials" {
   type      = string

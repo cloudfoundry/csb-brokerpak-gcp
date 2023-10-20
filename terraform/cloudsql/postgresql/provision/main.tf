@@ -8,6 +8,8 @@ resource "google_sql_database_instance" "instance" {
     disk_size   = var.storage_gb
     user_labels = var.labels
 
+    availability_type = local.availability_type
+
     ip_configuration {
       ipv4_enabled    = var.public_ip
       private_network = local.authorized_network_id
@@ -26,6 +28,11 @@ resource "google_sql_database_instance" "instance" {
     database_flags {
       name  = "password_encryption"
       value = "scram-sha-256"
+    }
+
+    location_preference {
+      zone           = local.primary_zone
+      secondary_zone = local.secondary_zone
     }
 
     backup_configuration {
