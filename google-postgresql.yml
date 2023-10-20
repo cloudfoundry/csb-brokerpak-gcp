@@ -124,6 +124,33 @@ provision:
     constraints:
       maximum: 7
       minimum: 0
+  - field_name: highly_available
+    type: boolean
+    details: |
+      Enable regional high availability for the service instance. This will result in a hot standby instance deployed
+      to a different zone in the same region, and will affect the billing accordingly. Requires `backups_point_in_time_log_retain_days`
+      and `backups_retain_number` different than zero.
+      See https://cloud.google.com/sql/docs/postgres/high-availability.
+    default: false
+  - field_name: location_preference_zone
+    type: string
+    details: |
+      Preferred zone in the instance region for the primary instance in a highly available setup. E.g. "a" or "c". When
+      not specified, one of the available zones will be chosen automatically. See
+      https://cloud.google.com/compute/docs/regions-zones#available for a list of available zones.
+    default: ""
+    constraints:
+      pattern: ^[a-z]?$
+  - field_name: location_preference_secondary_zone
+    type: string
+    details: |
+      Preferred zone in the instance region for the standby instance in a highly available setup. E.g. "b" or "f". In a
+      highly available configuration, when the secondary zone is not specified, a zone different from the one specified
+      for the primary instance will be chosen automatically. See
+      https://cloud.google.com/compute/docs/regions-zones#available for a list of available zones.
+    default: ""
+    constraints:
+      pattern: ^[a-z]?$
   computed_inputs:
   - name: labels
     default: ${json.marshal(request.default_labels)}
