@@ -6,11 +6,11 @@ require (
 	cloud.google.com/go/trace v1.10.2
 	code.cloudfoundry.org/jsonry v1.1.4
 	github.com/Pallinder/go-randomdata v1.2.0
-	github.com/cloudfoundry/cloud-service-broker v0.19.11
+	github.com/cloudfoundry/cloud-service-broker v0.19.12
 	github.com/hashicorp/terraform-json v0.17.1
 	github.com/mitchellh/mapstructure v1.5.0
 	github.com/onsi/ginkgo/v2 v2.13.0
-	github.com/onsi/gomega v1.28.0
+	github.com/onsi/gomega v1.29.0
 	github.com/otiai10/copy v1.14.0
 	golang.org/x/exp v0.0.0-20230905200255-921286631fa9
 	golang.org/x/tools v0.14.0
@@ -74,7 +74,7 @@ require (
 	github.com/openzipkin/zipkin-go v0.4.1 // indirect
 	github.com/pborman/uuid v1.2.1 // indirect
 	github.com/pelletier/go-toml/v2 v2.1.0 // indirect
-	github.com/pivotal-cf/brokerapi/v10 v10.1.0 // indirect
+	github.com/pivotal-cf/brokerapi/v10 v10.1.1 // indirect
 	github.com/pkg/errors v0.9.1 // indirect
 	github.com/prometheus/client_golang v1.11.1 // indirect
 	github.com/prometheus/client_model v0.2.0 // indirect
