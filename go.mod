@@ -6,7 +6,7 @@ require (
 	cloud.google.com/go/trace v1.10.3
 	code.cloudfoundry.org/jsonry v1.1.4
 	github.com/Pallinder/go-randomdata v1.2.0
-	github.com/cloudfoundry/cloud-service-broker v0.19.12
+	github.com/cloudfoundry/cloud-service-broker v0.19.13
 	github.com/hashicorp/terraform-json v0.17.1
 	github.com/mitchellh/mapstructure v1.5.0
 	github.com/onsi/ginkgo/v2 v2.13.0
