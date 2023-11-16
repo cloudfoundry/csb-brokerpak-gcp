@@ -1,0 +1,12 @@
+---
+applications:
+- name: jdbctestapp-postgres
+  path: jdbctestapp-postgres-no-autotls-1.0.0.jar
+  buildpacks:
+  - java_buildpack_offline
+  env:
+    JBP_CONFIG_OPEN_JDK_JRE: '{ jre: { version: 17.+ } }'
+    JBP_CONFIG_SPRING_AUTO_RECONFIGURATION: '{ enabled: false }'
+    JAVA_OPTS: '-Djavax.net.ssl.keyStore=/app/META-INF/keystore.jks -Djavax.net.ssl.keyStorePassword=fakepassword'
+    JAVA_KEYSTORE_PASSWORD: fakepassword
+    FLYWAY_POSTGRESQL_TRANSACTIONAL_LOCK: false
