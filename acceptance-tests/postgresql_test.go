@@ -1,10 +1,11 @@
 package acceptance_test
 
 import (
-	"csbbrokerpakgcp/acceptance-tests/helpers/matchers"
-	"csbbrokerpakgcp/acceptance-tests/helpers/random"
 	"net"
 	"net/url"
+
+	"csbbrokerpakgcp/acceptance-tests/helpers/matchers"
+	"csbbrokerpakgcp/acceptance-tests/helpers/random"
 
 	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
@@ -15,6 +16,69 @@ import (
 
 var _ = Describe("PostgreSQL", func() {
 	Describe("Can be accessed by an app", func() {
+		FIt("work with JDBC and TLS", Label("JDBC"), func() {
+			By("creating a service instance")
+			// serviceInstance := services.CreateInstance("csb-google-postgres", "small")
+			serviceInstance := services.ServiceInstance{Name: "csb-google-postgres-small-plump-gorilla"}
+			// defer serviceInstance.Delete()
+
+			By("pushing the unstarted app twice")
+			appOne := apps.Push(apps.WithApp(apps.JDBCTestApp), apps.WithTestAppManifest(apps.PostgresTestAppManifest))
+			appTwo := apps.Push(apps.WithApp(apps.JDBCTestApp), apps.WithTestAppManifest(apps.PostgresTestAppManifest))
+			defer apps.Delete(appOne, appTwo)
+
+			type AppResponseUser struct {
+				ID   int    `json:"id"`
+				Name string `json:"name"`
+			}
+
+			type PostgresSSLInfo struct {
+				Pid          int    `json:"pid"`
+				SSL          bool   `json:"ssl"`
+				Version      string `json:"version"`
+				Cipher       string `json:"cipher"`
+				Bits         int    `json:"bits"`
+				ClientDN     string `json:"clientDN"`
+				ClientSerial string `json:"clientSerial"`
+				IssuerDN     string `json:"issuerDN"`
+			}
+			var (
+				userIn, userOut AppResponseUser
+				sslInfo         PostgresSSLInfo
+			)
+
+			By("binding the apps to the service instance")
+			binding := serviceInstance.Bind(appOne)
+
+			By("starting the first app")
+			apps.Start(appOne)
+
+			By("checking that the app environment has a credhub reference for credentials")
+			Expect(binding.Credential()).To(matchers.HaveCredHubRef)
+
+			By("creating an entry using the first app")
+			value := random.Hexadecimal()
+			appOne.POST("", "?name=%s", value).ParseInto(&userIn)
+
+			By("binding and starting the second app")
+			serviceInstance.Bind(appTwo)
+			apps.Start(appTwo)
+
+			By("getting the entry using the second app")
+			appTwo.GET("%d", userIn.ID).ParseInto(&userOut)
+			Expect(userOut.Name).To(Equal(value), "The first app stored [%s] as the value, the second app retrieved [%s]", value, userOut.Name)
+
+			By("verifying the DB connection utilises TLS")
+			appOne.GET("postgres-ssl").ParseInto(&sslInfo)
+			Expect(sslInfo.SSL).To(BeTrue())
+			Expect(sslInfo.Cipher).NotTo(BeEmpty())
+			Expect(sslInfo.Bits).To(BeNumerically(">=", 256))
+
+			By("deleting the entry using the first app")
+			appOne.DELETE("%d", userIn.ID)
+
+		})
+
 		It("works with the default postgres version", Label("postgresql"), func() {
 			By("creating a service instance")
 			serviceInstance := services.CreateInstance("csb-google-postgres", "small")
