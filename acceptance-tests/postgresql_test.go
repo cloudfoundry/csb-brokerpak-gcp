@@ -16,11 +16,14 @@ import (
 
 var _ = Describe("PostgreSQL", func() {
 	Describe("Can be accessed by an app", func() {
-		FIt("work with JDBC and TLS", Label("JDBC"), func() {
+		It("work with JDBC and TLS", Label("JDBC"), func() {
 			By("creating a service instance")
-			// serviceInstance := services.CreateInstance("csb-google-postgres", "small")
-			serviceInstance := services.ServiceInstance{Name: "csb-google-postgres-small-plump-gorilla"}
-			// defer serviceInstance.Delete()
+			serviceInstance := services.CreateInstance(
+				"csb-google-postgres",
+				"small",
+				services.WithParameters(map[string]any{"backups_retain_number": 0}),
+			)
+			defer serviceInstance.Delete()
 
 			By("pushing the unstarted app twice")
 			appOne := apps.Push(apps.WithApp(apps.JDBCTestApp), apps.WithTestAppManifest(apps.PostgresTestAppManifest))
@@ -77,6 +80,26 @@ var _ = Describe("PostgreSQL", func() {
 			By("deleting the entry using the first app")
 			appOne.DELETE("%d", userIn.ID)
 
+			By("triggering ownership management")
+			binding.Unbind()
+
+			By("getting the entry using the second app")
+			appTwo.GET("%d", userIn.ID).ParseInto(&userOut)
+			Expect(userOut.Name).To(Equal(value), "The first app stored [%s] as the value, the second app retrieved [%s]", value, userOut.Name)
+
+			By("setting another value using the second app")
+			var userInTwo AppResponseUser
+			value2 := random.Hexadecimal()
+			appOne.POST("", "?name=%s", value2).ParseInto(&userInTwo)
+
+			By("getting the entry using the second app")
+			var userOutTwo AppResponseUser
+			appTwo.GET("%d", userInTwo.ID).ParseInto(&userOutTwo)
+			Expect(userOut.Name).To(Equal(value), "The second app stored [%s] as the value, the second app retrieved [%s]", value, userOut.Name)
+
+			By("deleting the entries using the second app")
+			appOne.DELETE("%d", userIn.ID)
+			appOne.DELETE("%d", userInTwo.ID)
 		})
 
 		It("works with the default postgres version", Label("postgresql"), func() {
