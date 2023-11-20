@@ -6,6 +6,7 @@ require (
 	cloud.google.com/go/trace v1.10.4
 	code.cloudfoundry.org/jsonry v1.1.4
 	github.com/Pallinder/go-randomdata v1.2.0
+	github.com/blang/semver/v4 v4.0.0
 	github.com/cloudfoundry/cloud-service-broker v0.20.0
 	github.com/hashicorp/terraform-json v0.18.0
 	github.com/mitchellh/mapstructure v1.5.0
@@ -13,8 +14,8 @@ require (
 	github.com/onsi/gomega v1.30.0
 	github.com/otiai10/copy v1.14.0
 	golang.org/x/exp v0.0.0-20230905200255-921286631fa9
-	golang.org/x/tools v0.14.0
-	google.golang.org/api v0.150.0
+	golang.org/x/tools v0.15.0
+	google.golang.org/api v0.151.0
 	gopkg.in/yaml.v3 v3.0.1
 	honnef.co/go/tools v0.4.6
 )
@@ -101,7 +102,7 @@ require (
 	go.uber.org/multierr v1.9.0 // indirect
 	golang.org/x/crypto v0.15.0 // indirect
 	golang.org/x/exp/typeparams v0.0.0-20221208152030-732eee02a75a // indirect
-	golang.org/x/mod v0.13.0 // indirect
+	golang.org/x/mod v0.14.0 // indirect
 	golang.org/x/net v0.18.0 // indirect
 	golang.org/x/oauth2 v0.13.0 // indirect
 	golang.org/x/sync v0.5.0 // indirect
