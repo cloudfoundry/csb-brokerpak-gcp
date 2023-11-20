@@ -10,8 +10,8 @@ fi
 
 SERVICE_NAME=${1}; shift
 
-SECURITY_USER_NAME=${SECURITY_USER_NAME:=aws-broker}
-SECURITY_USER_PASSWORD=${SECURITY_USER_PASSWORD:=aws-broker-pw}
+SECURITY_USER_NAME=${SECURITY_USER_NAME:=gcp-broker}
+SECURITY_USER_PASSWORD=${SECURITY_USER_PASSWORD:=gcp-broker-pw}
 DOCKER_OPTS="--rm -v $(PWD):/brokerpak -w /brokerpak --network=host"
 CSB=cfplatformeng/csb
 GSB_COMPATIBILITY_ENABLE_BETA_SERVICES=true
