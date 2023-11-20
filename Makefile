@@ -17,8 +17,8 @@ GO_OK :=  $(or $(USE_GO_CONTAINERS), $(shell which go 1>/dev/null 2>/dev/null; e
 DOCKER_OK := $(shell which docker 1>/dev/null 2>/dev/null; echo $$?)
 
 ####### broker environment variables
-SECURITY_USER_NAME := $(or $(SECURITY_USER_NAME), aws-broker)
-SECURITY_USER_PASSWORD := $(or $(SECURITY_USER_PASSWORD), aws-broker-pw)
+SECURITY_USER_NAME := $(or $(SECURITY_USER_NAME), gcp-broker)
+SECURITY_USER_PASSWORD := $(or $(SECURITY_USER_PASSWORD), gcp-broker-pw)
 GSB_PROVISION_DEFAULTS := $(or $(GSB_PROVISION_DEFAULTS), {"authorized_network_id": "https://www.googleapis.com/compute/v1/projects/$GOOGLE_PROJECT/global/networks/$GCP_PAS_NETWORK"})
 
 ifeq ($(GO_OK), 0) # use local go binary
