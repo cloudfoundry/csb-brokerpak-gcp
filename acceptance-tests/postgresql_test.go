@@ -16,7 +16,7 @@ import (
 
 var _ = Describe("PostgreSQL", func() {
 	Describe("Can be accessed by an app", func() {
-		It("work with JDBC and TLS", Label("JDBC"), func() {
+		It("work with JDBC and TLS", Label("JDBC", "postgresql"), func() {
 			By("creating a service instance")
 			serviceInstance := services.CreateInstance(
 				"csb-google-postgres",
