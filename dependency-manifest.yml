@@ -14,6 +14,10 @@
 
 dependencies:
     - name: terraform
+      version: 1.5.7
+      source: https://github.com/hashicorp/terraform/archive/v1.5.7.zip
+      source_sha256: 67ceb2f009313c076a6bf8a063443da5ea97d75bac18fc22a6861e9f73712155
+    - name: terraform
       version: 1.3.9
       source: https://github.com/hashicorp/terraform/archive/v1.3.9.zip
       source_sha256: 871a84f595664b3d76499d0055b09fd8294e56fb3c08f1803ad175a1f5f10909
@@ -21,10 +25,6 @@ dependencies:
       version: 1.2.4
       source: https://github.com/hashicorp/terraform/archive/v1.2.4.zip
       source_sha256: ce7864b506e101f7eab274b0ddf928305f09b40eab33356f84ac4520b2e4ee83
-    - name: terraform
-      version: 1.1.4
-      source: https://github.com/hashicorp/terraform/archive/v1.1.4.zip
-      source_sha256: 3e4329183962d15f81ca07d872643ad36cb59b8c8c66826e406d43c4e078788e
     - name: terraform-provider-csbmysql
       version: 1.2.16
       source: https://github.com/cloudfoundry/terraform-provider-csbmysql/archive/v1.2.16.zip
