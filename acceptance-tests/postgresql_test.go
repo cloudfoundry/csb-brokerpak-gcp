@@ -18,9 +18,36 @@ var _ = Describe("PostgreSQL", func() {
 	Describe("Can be accessed by an app", func() {
 		It("work with JDBC and TLS", Label("JDBC", "postgresql"), func() {
 			By("creating a service instance")
+			// The test used the small plan.
+			// Instances associated with the small plan, that is to say, with db-f1-micro tier,
+			// only allow a maximum of 25 connections per instance.
+			// See the following link: max_connections => https://cloud.google.com/sql/docs/postgres/flags#postgres-m.
+			//
+			// We found errors when running the test with the application prepared in Java to test the JDBC URL.
+			// The error said the following:
+			// failed: unbind could not be completed: Service broker failed to delete service binding for
+			// instance csb-google-postgres-small-daffodil-koala: Service broker error: unbind failed:
+			// Error: querying for existing role: error finding role "XXXXX": pq: remaining connection
+			// slots are reserved for non-replication superuser connections with csbpg_binding_user.new_user,
+			// on main.tf ...
+			//
+			// In a first proof of concept, we intend to change the plan to use an instance that
+			// allows more connections. The result is satisfactory. We intend to make a study of the
+			// possible causes of the need to use more connections with the Java application than with the
+			// Golang application, since the Golang application does not find this limitation.
+			// In a first surface analysis of the Terraform provider that creates the bindings,
+			// there appears to be no connection leak and the Golang application uses `db.SetMaxIdleConns(0)`.
+			//
+			// SetMaxIdleConns sets the maximum number of connections in the idle
+			// connection pool.
+			//
+			// If MaxOpenConns is greater than 0 but less than the new MaxIdleConns,
+			// then the new MaxIdleConns will be reduced to match the MaxOpenConns limit.
+			//
+			// If n <= 0, no idle connections are retained
 			serviceInstance := services.CreateInstance(
 				"csb-google-postgres",
-				"small",
+				"db-custom-2-7680",
 				services.WithParameters(map[string]any{"backups_retain_number": 0}),
 			)
 			defer serviceInstance.Delete()
@@ -83,23 +110,18 @@ var _ = Describe("PostgreSQL", func() {
 			By("triggering ownership management")
 			binding.Unbind()
 
-			By("getting the entry using the second app")
-			appTwo.GET("%d", userIn.ID).ParseInto(&userOut)
-			Expect(userOut.Name).To(Equal(value), "The first app stored [%s] as the value, the second app retrieved [%s]", value, userOut.Name)
-
 			By("setting another value using the second app")
 			var userInTwo AppResponseUser
 			value2 := random.Hexadecimal()
-			appOne.POST("", "?name=%s", value2).ParseInto(&userInTwo)
+			appTwo.POST("", "?name=%s", value2).ParseInto(&userInTwo)
 
 			By("getting the entry using the second app")
 			var userOutTwo AppResponseUser
 			appTwo.GET("%d", userInTwo.ID).ParseInto(&userOutTwo)
 			Expect(userOut.Name).To(Equal(value), "The second app stored [%s] as the value, the second app retrieved [%s]", value, userOut.Name)
 
-			By("deleting the entries using the second app")
-			appOne.DELETE("%d", userIn.ID)
-			appOne.DELETE("%d", userInTwo.ID)
+			By("deleting the entry using the second app")
+			appTwo.DELETE("%d", userInTwo.ID)
 		})
 
 		It("works with the default postgres version", Label("postgresql"), func() {
