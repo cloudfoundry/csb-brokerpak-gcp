@@ -3,7 +3,7 @@ module spannerapp
 go 1.21
 
 require (
-	cloud.google.com/go/spanner v1.54.0
+	cloud.google.com/go/spanner v1.55.0
 	github.com/cloudfoundry-community/go-cfenv v1.18.0
 	google.golang.org/api v0.155.0
 )
@@ -35,12 +35,12 @@ require (
 	golang.org/x/crypto v0.17.0 // indirect
 	golang.org/x/sync v0.5.0 // indirect
 	golang.org/x/time v0.5.0 // indirect
-	google.golang.org/genproto/googleapis/api v0.0.0-20231211222908-989df2bf70f3 // indirect
-	google.golang.org/genproto/googleapis/rpc v0.0.0-20231212172506-995d672761c0 // indirect
+	google.golang.org/genproto/googleapis/api v0.0.0-20240102182953-50ed04b92917 // indirect
+	google.golang.org/genproto/googleapis/rpc v0.0.0-20240102182953-50ed04b92917 // indirect
 )
 
 require (
-	cloud.google.com/go v0.110.10 // indirect
+	cloud.google.com/go v0.111.0 // indirect
 	github.com/golang/groupcache v0.0.0-20210331224755-41bb18bfe9da // indirect
 	github.com/golang/protobuf v1.5.3 // indirect
 	github.com/googleapis/gax-go/v2 v2.12.0 // indirect
@@ -50,9 +50,9 @@ require (
 	golang.org/x/oauth2 v0.15.0 // indirect
 	golang.org/x/sys v0.15.0 // indirect
 	golang.org/x/text v0.14.0 // indirect
-	golang.org/x/xerrors v0.0.0-20220907171357-04be3eba64a2 // indirect
+	golang.org/x/xerrors v0.0.0-20231012003039-104605ab7028 // indirect
 	google.golang.org/appengine v1.6.8 // indirect
-	google.golang.org/genproto v0.0.0-20231211222908-989df2bf70f3
+	google.golang.org/genproto v0.0.0-20231212172506-995d672761c0
 	google.golang.org/grpc v1.60.1 // indirect
-	google.golang.org/protobuf v1.31.0 // indirect
+	google.golang.org/protobuf v1.32.0 // indirect
 )
