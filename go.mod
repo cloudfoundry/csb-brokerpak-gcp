@@ -127,3 +127,5 @@ require (
 	gorm.io/driver/sqlite v1.4.4 // indirect
 	gorm.io/gorm v1.25.7 // indirect
 )
+
+replace github.com/cloudfoundry/cloud-service-broker => github.com/cloudfoundry/cloud-service-broker v0.21.10-0.20240229133723-51a2c110b48d
