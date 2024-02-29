@@ -124,7 +124,8 @@ bind:
   plan_inputs: []
   user_inputs: []
   computed_inputs: []
-  template: ''
+  template_refs:
+    noop: terraform/redis/bind/noop.tf
   outputs: []
 examples:
 - name: gcp-redis-development
