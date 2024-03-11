@@ -1,6 +1,6 @@
 module storageapp
 
-go 1.22.0
+go 1.22.1
 
 require (
 	cloud.google.com/go/storage v1.39.0
