@@ -8,5 +8,8 @@ variable "name" { type = string }
 variable "region" { type = string }
 variable "labels" { type = map(any) }
 
-variable "credentials" { type = string }
+variable "credentials" {
+  type      = string
+  sensitive = true
+}
 variable "project" { type = string }

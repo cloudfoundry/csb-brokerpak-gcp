@@ -6,6 +6,9 @@ variable "instance_id" { type = string }
 variable "region" { type = string }
 variable "memory_size_gb" { type = number }
 variable "labels" { type = map(any) }
-variable "credentials" { type = string }
+variable "credentials" {
+  type      = string
+  sensitive = true
+}
 variable "project" { type = string }
 variable "reserved_ip_range" { type = string }
