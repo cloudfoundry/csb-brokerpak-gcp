@@ -27,6 +27,7 @@ require (
 	cloud.google.com/go/storage v1.36.0 // indirect
 	code.cloudfoundry.org/credhub-cli v0.0.0-20220620130410-645eee56ecdb // indirect
 	code.cloudfoundry.org/lager/v3 v3.0.3 // indirect
+	filippo.io/edwards25519 v1.1.0 // indirect
 	github.com/BurntSushi/toml v1.2.1 // indirect
 	github.com/agext/levenshtein v1.2.2 // indirect
 	github.com/apparentlymart/go-textseg/v15 v15.0.0 // indirect
@@ -41,7 +42,7 @@ require (
 	github.com/go-chi/chi/v5 v5.0.11 // indirect
 	github.com/go-logr/logr v1.4.1 // indirect
 	github.com/go-logr/stdr v1.2.2 // indirect
-	github.com/go-sql-driver/mysql v1.7.1 // indirect
+	github.com/go-sql-driver/mysql v1.8.0 // indirect
 	github.com/go-task/slim-sprig v0.0.0-20230315185526-52ccab3ef572 // indirect
 	github.com/golang/groupcache v0.0.0-20210331224755-41bb18bfe9da // indirect
 	github.com/golang/protobuf v1.5.3 // indirect
@@ -128,4 +129,4 @@ require (
 	gorm.io/gorm v1.25.7 // indirect
 )
 
-replace github.com/cloudfoundry/cloud-service-broker => github.com/cloudfoundry/cloud-service-broker v0.21.10-0.20240229133723-51a2c110b48d
+replace github.com/cloudfoundry/cloud-service-broker => github.com/cloudfoundry/cloud-service-broker v0.22.3-0.20240315140147-365141d530be
