@@ -7,7 +7,7 @@ require (
 	code.cloudfoundry.org/jsonry v1.1.4
 	github.com/Pallinder/go-randomdata v1.2.0
 	github.com/blang/semver/v4 v4.0.0
-	github.com/cloudfoundry/cloud-service-broker v0.22.2
+	github.com/cloudfoundry/cloud-service-broker v1.0.0
 	github.com/hashicorp/terraform-json v0.21.0
 	github.com/onsi/ginkgo/v2 v2.17.0
 	github.com/onsi/gomega v1.32.0
@@ -124,9 +124,7 @@ require (
 	google.golang.org/grpc v1.62.1 // indirect
 	google.golang.org/protobuf v1.33.0 // indirect
 	gopkg.in/ini.v1 v1.67.0 // indirect
-	gorm.io/driver/mysql v1.5.4 // indirect
+	gorm.io/driver/mysql v1.5.5 // indirect
 	gorm.io/driver/sqlite v1.4.4 // indirect
-	gorm.io/gorm v1.25.7 // indirect
+	gorm.io/gorm v1.25.8 // indirect
 )
-
-replace github.com/cloudfoundry/cloud-service-broker => github.com/cloudfoundry/cloud-service-broker v0.22.3-0.20240315140147-365141d530be
