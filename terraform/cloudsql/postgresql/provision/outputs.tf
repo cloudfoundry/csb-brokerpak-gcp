@@ -22,3 +22,5 @@ output "sslrootcert" {
   value     = google_sql_database_instance.instance.server_ca_cert.0.cert
 }
 
+output "enable_custom_roles" { value = var.enable_custom_roles }
+output "custom_roles" { value = var.custom_roles }

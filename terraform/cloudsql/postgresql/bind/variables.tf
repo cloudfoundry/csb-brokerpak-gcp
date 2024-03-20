@@ -17,3 +17,7 @@ variable "sslrootcert" { type = string }
 locals {
   port = 5432
 }
+
+variable "enable_custom_roles" { type = bool }
+variable "custom_roles" { type = string }
+variable "app_guid" { type = string }
