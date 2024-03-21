@@ -5,7 +5,7 @@ go 1.22.1
 require (
 	cloud.google.com/go/spanner v1.60.0
 	github.com/cloudfoundry-community/go-cfenv v1.18.0
-	google.golang.org/api v0.170.0
+	google.golang.org/api v0.171.0
 )
 
 require (
@@ -36,14 +36,14 @@ require (
 	golang.org/x/sync v0.6.0 // indirect
 	golang.org/x/time v0.5.0 // indirect
 	google.golang.org/genproto/googleapis/api v0.0.0-20240311132316-a219d84964c2 // indirect
-	google.golang.org/genproto/googleapis/rpc v0.0.0-20240311132316-a219d84964c2 // indirect
+	google.golang.org/genproto/googleapis/rpc v0.0.0-20240314234333-6e1732d8331c // indirect
 )
 
 require (
 	cloud.google.com/go v0.112.1 // indirect
 	github.com/golang/groupcache v0.0.0-20210331224755-41bb18bfe9da // indirect
 	github.com/golang/protobuf v1.5.4 // indirect
-	github.com/googleapis/gax-go/v2 v2.12.2 // indirect
+	github.com/googleapis/gax-go/v2 v2.12.3 // indirect
 	github.com/mitchellh/mapstructure v1.5.0
 	go.opencensus.io v0.24.0 // indirect
 	golang.org/x/net v0.22.0 // indirect
