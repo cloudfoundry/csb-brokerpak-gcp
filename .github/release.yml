@@ -1,0 +1,18 @@
+changelog:
+  categories:
+    - title: Breaking Changes
+      labels:
+        - breaking-change
+    - title: New Features
+      labels:
+        - new-feature
+    - title: Bug fixes
+      labels:
+        - bug-fix
+    - title: Dependency updates
+      labels:
+        - dependency-updates
+    - title: Others
+      labels:
+        - chore
+        - "*"
