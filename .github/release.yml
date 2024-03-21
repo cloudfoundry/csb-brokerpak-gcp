@@ -12,6 +12,7 @@ changelog:
     - title: Dependency updates
       labels:
         - dependency-updates
+        - dependencies
     - title: Others
       labels:
         - chore
