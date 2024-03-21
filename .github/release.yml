@@ -1,4 +1,7 @@
 changelog:
+  exclude:
+    labels:
+      - test-dependency-updates
   categories:
     - title: Breaking Changes
       labels:
