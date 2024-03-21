@@ -106,6 +106,7 @@ bind:
     main: terraform/dataproc/bind/main.tf
     variables: terraform/dataproc/bind/variables.tf
     outputs: terraform/dataproc/bind/outputs.tf
+    versions: terraform/dataproc/bind/versions.tf
   outputs:
   - field_name: email
     type: string

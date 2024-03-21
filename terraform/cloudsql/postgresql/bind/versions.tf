@@ -6,7 +6,7 @@ terraform {
     }
 
     csbpg = {
-      source  = "cloud-service-broker/csbpg"
+      source  = "cloudfoundry.org/cloud-service-broker/csbpg"
       version = ">=1.0.0"
     }
   }
