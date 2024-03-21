@@ -160,6 +160,7 @@ bind:
     data: terraform/spanner/bind/data.tf
     variables: terraform/spanner/bind/variables.tf
     outputs: terraform/spanner/bind/outputs.tf
+    versions: terraform/spanner/bind/versions.tf
   outputs:
   - required: true
     field_name: Email

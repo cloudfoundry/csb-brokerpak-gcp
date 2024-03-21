@@ -30,7 +30,8 @@ plans:
 provision:
   user_inputs: []
   computed_inputs: []
-  # template_ref: ./terraform/google-service-account-provision.tf
+  template_refs:
+    noop: terraform/stackdriver/provision/noop.tf
   outputs: []
 bind:
   plan_inputs: []
