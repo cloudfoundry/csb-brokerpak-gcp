@@ -5,7 +5,7 @@ go 1.22.1
 require (
 	cloud.google.com/go/spanner v1.60.0
 	github.com/cloudfoundry-community/go-cfenv v1.18.0
-	google.golang.org/api v0.171.0
+	google.golang.org/api v0.172.0
 )
 
 require (
@@ -36,7 +36,7 @@ require (
 	golang.org/x/sync v0.6.0 // indirect
 	golang.org/x/time v0.5.0 // indirect
 	google.golang.org/genproto/googleapis/api v0.0.0-20240311132316-a219d84964c2 // indirect
-	google.golang.org/genproto/googleapis/rpc v0.0.0-20240314234333-6e1732d8331c // indirect
+	google.golang.org/genproto/googleapis/rpc v0.0.0-20240318140521-94a12d6c2237 // indirect
 )
 
 require (
