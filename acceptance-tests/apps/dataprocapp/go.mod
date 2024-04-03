@@ -1,6 +1,6 @@
 module dataprocapp
 
-go 1.22.1
+go 1.22.2
 
 require (
 	cloud.google.com/go/dataproc v1.12.0
