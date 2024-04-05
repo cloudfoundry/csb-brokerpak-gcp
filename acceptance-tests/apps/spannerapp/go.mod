@@ -1,6 +1,6 @@
 module spannerapp
 
-go 1.22.1
+go 1.22.2
 
 require (
 	cloud.google.com/go/spanner v1.60.0
@@ -46,7 +46,7 @@ require (
 	github.com/googleapis/gax-go/v2 v2.12.3 // indirect
 	github.com/mitchellh/mapstructure v1.5.0
 	go.opencensus.io v0.24.0 // indirect
-	golang.org/x/net v0.22.0 // indirect
+	golang.org/x/net v0.23.0 // indirect
 	golang.org/x/oauth2 v0.18.0 // indirect
 	golang.org/x/sys v0.18.0 // indirect
 	golang.org/x/text v0.14.0 // indirect

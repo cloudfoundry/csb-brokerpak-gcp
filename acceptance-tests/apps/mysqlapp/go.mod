@@ -1,6 +1,6 @@
 module mysqlapp
 
-go 1.22.1
+go 1.22.2
 
 require (
 	github.com/cloudfoundry-community/go-cfenv v1.18.0
@@ -10,6 +10,6 @@ require (
 
 require (
 	filippo.io/edwards25519 v1.1.0 // indirect
-	golang.org/x/net v0.7.0 // indirect
+	golang.org/x/net v0.23.0 // indirect
 	gopkg.in/yaml.v2 v2.4.0 // indirect
 )
