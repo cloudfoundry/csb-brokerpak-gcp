@@ -13,7 +13,7 @@ const (
 	storageServiceName        = "csb-google-storage-bucket"
 	storageServiceID          = "b247fcde-8a63-11ea-b945-cb26f061f70f"
 	storageServiceDisplayName = "Google Cloud Storage"
-	storageServiceDescription = "Google Cloud Storage that uses the Terraform back-end and grants service accounts IAM permissions directly on the bucket."
+	storageServiceDescription = "Google Cloud Storage that uses OpenTofu and grants service accounts IAM permissions directly on the bucket."
 	storageServiceSupportURL  = "https://cloud.google.com/support/"
 	storageDefaultPlanName    = "default"
 	storageDefaultPlanID      = "2875f0f0-a69f-4fe6-a5ec-5ed7f6e89a01"
