@@ -15,7 +15,7 @@
 version: 1
 name: csb-google-storage-bucket
 id: b247fcde-8a63-11ea-b945-cb26f061f70f
-description: Google Cloud Storage that uses OpenTofu and grants service accounts IAM permissions directly on the bucket.
+description: Google Cloud Storage that grants service accounts IAM permissions directly on the bucket.
 display_name: Google Cloud Storage
 image_url: file://service-images/csb.png
 documentation_url: https://docs.vmware.com/en/Cloud-Service-Broker-for-VMware-Tanzu/index.html
