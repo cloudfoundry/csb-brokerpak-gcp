@@ -5,7 +5,7 @@ OpenTofu language files directly. These tests download the latest versions of th
 restrictions in the definition file. They do not examine the service offering definitions (.yml) or the manifest.yml
 files.
 
-The objective of these tests is to ensure that OpenTofu receives a set of variable inputs and sends the expected values
+The objective of these tests is to ensure that OpenTofu receives a set of inputs variables and sends the expected values
 to the providers. This verification is achieved by executing `tofu plan -refresh=false` and analyzing the outputs.
 
 Properties without assigned values will remain `Unknown` until an apply operation is executed, limiting the extent of
