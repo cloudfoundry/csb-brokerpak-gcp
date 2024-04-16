@@ -26,9 +26,9 @@ dependencies:
       source: https://github.com/terraform-providers/terraform-provider-google/archive/v5.25.0.zip
       source_sha256: 15a530ea2e7f9a4df340fa772d87e369058182cf84a2b1786a11ec8c25bbf75c
     - name: terraform-provider-random
-      version: 3.6.0
-      source: https://github.com/terraform-providers/terraform-provider-random/archive/v3.6.0.zip
-      source_sha256: c30766ac5ed26ac2839c8d29b28a894c9b2f5733215f178b268b2592978019ad
+      version: 3.6.1
+      source: https://github.com/terraform-providers/terraform-provider-random/archive/v3.6.1.zip
+      source_sha256: 1320092edd42a83f19c3d627cd1810629c557cb0959169e1346d605a76719ae3
     - name: tofu
       version: 1.6.2
       source: https://github.com/opentofu/opentofu/archive/v1.6.2.zip
