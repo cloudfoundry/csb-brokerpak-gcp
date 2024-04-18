@@ -3,7 +3,7 @@ module dataprocapp
 go 1.22.2
 
 require (
-	cloud.google.com/go/dataproc v1.12.0
+	cloud.google.com/go/dataproc/v2 v2.4.1
 	cloud.google.com/go/storage v1.40.0
 	github.com/cloudfoundry-community/go-cfenv v1.18.0
 	github.com/mitchellh/mapstructure v1.5.0

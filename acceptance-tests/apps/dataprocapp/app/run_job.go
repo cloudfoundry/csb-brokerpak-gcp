@@ -9,8 +9,8 @@ import (
 	"net/http"
 	"regexp"
 
-	dataproc "cloud.google.com/go/dataproc/apiv1"
-	"cloud.google.com/go/dataproc/apiv1/dataprocpb"
+	dataproc "cloud.google.com/go/dataproc/v2/apiv1"
+	"cloud.google.com/go/dataproc/v2/apiv1/dataprocpb"
 	"cloud.google.com/go/storage"
 	"google.golang.org/api/option"
 )
