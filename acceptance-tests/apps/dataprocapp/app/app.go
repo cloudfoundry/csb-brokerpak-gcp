@@ -8,7 +8,7 @@ import (
 	"net/http"
 	"strings"
 
-	dataproc "cloud.google.com/go/dataproc/apiv1"
+	dataproc "cloud.google.com/go/dataproc/v2/apiv1"
 	"google.golang.org/api/option"
 )
 

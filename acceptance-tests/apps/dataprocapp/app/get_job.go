@@ -6,8 +6,8 @@ import (
 	"log"
 	"net/http"
 
-	dataproc "cloud.google.com/go/dataproc/apiv1"
-	"cloud.google.com/go/dataproc/apiv1/dataprocpb"
+	dataproc "cloud.google.com/go/dataproc/v2/apiv1"
+	"cloud.google.com/go/dataproc/v2/apiv1/dataprocpb"
 )
 
 func handleGetJob(w http.ResponseWriter, jobName string, jobClient *dataproc.JobControllerClient, creds credentials.DataprocCredentials) {
