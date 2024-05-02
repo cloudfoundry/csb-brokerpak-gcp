@@ -7,7 +7,6 @@ import (
 	"net/http"
 	"regexp"
 
-	"github.com/go-chi/chi/v5"
 	_ "github.com/jackc/pgx/v5/stdlib"
 )
 
@@ -24,21 +23,21 @@ func App(uri string) http.Handler {
 	}
 	log.Printf("Connection succeeded")
 
-	r := chi.NewRouter()
-	r.Head("/", aliveness)
-	r.Put("/{schema}", handleCreateSchema(db))
-	r.Delete("/{schema}", handleDropSchema(db))
+	r := http.NewServeMux()
+	r.HandleFunc("HEAD /", aliveness)
+	r.HandleFunc("PUT /{schema}", handleCreateSchema(db))
+	r.HandleFunc("DELETE /{schema}", handleDropSchema(db))
 
 	// Although the URL path implies that these might do something in the schema, in fact
 	// they ignore the schema name and just use the public schema
-	r.Put("/{schema}/{key}", handleSet(db))
-	r.Get("/{schema}/{key}", handleGet(db))
+	r.HandleFunc("PUT /{schema}/{key}", handleSet(db))
+	r.HandleFunc("GET /{schema}/{key}", handleGet(db))
 
 	// Although this takes a schema and table name as parameters, it ignores them
-	r.Put("/schemas/{schema}/{table}", handleAlterTable(db))
+	r.HandleFunc("PUT /schemas/{schema}/{table}", handleAlterTable(db))
 
 	// This should be moved to a more meaningful URL path
-	r.Delete("/", handleDeleteTestTable(db))
+	r.HandleFunc("DELETE /", handleDeleteTestTable(db))
 
 	return r
 }
@@ -76,7 +75,7 @@ func fail(w http.ResponseWriter, code int, format string, a ...any) {
 }
 
 func schemaName(r *http.Request) (string, error) {
-	schema := chi.URLParam(r, "schema")
+	schema := r.PathValue("schema")
 
 	switch {
 	case schema == "":
