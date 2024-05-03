@@ -24,7 +24,7 @@ func App(uri string) http.Handler {
 	log.Printf("Connection succeeded")
 
 	r := http.NewServeMux()
-	r.HandleFunc("HEAD /", aliveness)
+	r.HandleFunc("GET /", aliveness)
 	r.HandleFunc("PUT /{schema}", handleCreateSchema(db))
 	r.HandleFunc("DELETE /{schema}", handleDropSchema(db))
 
