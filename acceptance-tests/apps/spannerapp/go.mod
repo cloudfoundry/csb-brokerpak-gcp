@@ -3,7 +3,7 @@ module spannerapp
 go 1.22.3
 
 require (
-	cloud.google.com/go/spanner v1.62.0
+	cloud.google.com/go/spanner v1.63.0
 	github.com/cloudfoundry-community/go-cfenv v1.18.0
 	google.golang.org/api v0.181.0
 )
@@ -17,7 +17,7 @@ require (
 	github.com/GoogleCloudPlatform/grpc-gcp-go/grpcgcp v1.5.0 // indirect
 	github.com/census-instrumentation/opencensus-proto v0.4.1 // indirect
 	github.com/cespare/xxhash/v2 v2.2.0 // indirect
-	github.com/cncf/xds/go v0.0.0-20231128003011-0fa0005c9caa // indirect
+	github.com/cncf/xds/go v0.0.0-20240318125728-8a4994d93e50 // indirect
 	github.com/envoyproxy/go-control-plane v0.12.0 // indirect
 	github.com/envoyproxy/protoc-gen-validate v1.0.4 // indirect
 	github.com/felixge/httpsnoop v1.0.4 // indirect
@@ -38,7 +38,7 @@ require (
 )
 
 require (
-	cloud.google.com/go v0.113.0 // indirect
+	cloud.google.com/go v0.114.0 // indirect
 	github.com/golang/groupcache v0.0.0-20210331224755-41bb18bfe9da // indirect
 	github.com/golang/protobuf v1.5.4 // indirect
 	github.com/googleapis/gax-go/v2 v2.12.4 // indirect
@@ -50,6 +50,6 @@ require (
 	golang.org/x/text v0.15.0 // indirect
 	golang.org/x/xerrors v0.0.0-20231012003039-104605ab7028 // indirect
 	google.golang.org/genproto v0.0.0-20240401170217-c3f982113cda
-	google.golang.org/grpc v1.63.2 // indirect
+	google.golang.org/grpc v1.64.0 // indirect
 	google.golang.org/protobuf v1.34.1 // indirect
 )
