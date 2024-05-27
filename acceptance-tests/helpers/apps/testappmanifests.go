@@ -10,7 +10,7 @@ const (
 	MySQLTLSTestAppManifest       ManifestCode = "jdbctestapp/manifest.yml"
 	MySQLNoAutoTLSTestAppManifest ManifestCode = "jdbctestapp/manifest-no-autotls.yml"
 	PostgresTestAppManifest       ManifestCode = "jdbctestapp/manifest-postgres.yml"
-	StorageTestAppManifest        ManifestCode = "jdbctestapp/manifest-google-storage.yml"
+	StorageTestAppManifest        ManifestCode = "springgcp/manifest-google-storage.yml"
 )
 
 func (a ManifestCode) Path() string {
