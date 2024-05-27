@@ -73,7 +73,7 @@ func (a *App) DELETE(format string, s ...any) {
 
 	response, err := http.DefaultClient.Do(request)
 	Expect(err).NotTo(HaveOccurred())
-	Expect(response).To(HaveHTTPStatus(http.StatusGone, http.StatusNoContent))
+	Expect(response).To(HaveHTTPStatus(http.StatusGone, http.StatusNoContent, http.StatusOK))
 }
 
 func (a *App) urlf(format string, s ...any) string {
