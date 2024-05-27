@@ -253,6 +253,23 @@ bind:
       minLength: 6
       pattern: ^[a-z0-9-]+$
   - required: true
+    field_name: private_key_data
+    type: string
+    details: Deprecated - Service account private key data. Base64 encoded JSON.
+    constraints:
+      minLength: 512
+      pattern: ^[A-Za-z0-9+/]*=*$
+  - required: true
+    field_name: project_id
+    type: string
+    details: Deprecated - ID of the project that owns the service account.
+    constraints:
+      examples:
+        - my-project
+      maxLength: 30
+      minLength: 6
+      pattern: ^[a-z0-9-]+$
+  - required: true
     field_name: unique_id
     type: string
     details: Unique and stable ID of the service account.
