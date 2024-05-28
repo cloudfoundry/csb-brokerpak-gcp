@@ -24,9 +24,11 @@ func (a AppCode) Dir() string {
 
 func WithApp(app AppCode) Option {
 	switch app {
-	case StackdriverTrace, JDBCTestApp, SpringStorageApp:
+	case StackdriverTrace, JDBCTestApp:
 		return WithDir(app.Dir())
+	case SpringStorageApp:
+		return WithMavenPreBuild(app.Dir())
 	default:
-		return WithPreBuild(app.Dir())
+		return WithGoLangPreBuild(app.Dir())
 	}
 }
