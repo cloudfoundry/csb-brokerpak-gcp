@@ -1,6 +1,6 @@
-package broadcom.spring.gcp.object.storage.gcpobjectstorage.controller;
+package org.cloudfoundry.spring.storage.controller;
 
-import broadcom.spring.gcp.object.storage.gcpobjectstorage.service.StorageService;
+import org.cloudfoundry.spring.storage.service.StorageService;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.web.bind.annotation.*;
 
