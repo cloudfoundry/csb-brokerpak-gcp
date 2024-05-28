@@ -56,8 +56,8 @@ var _ = Describe("Storage", Label("storage"), func() {
 		defer serviceInstance.Delete()
 
 		By("pushing the unstarted app twice")
-		appOne := apps.Push(apps.WithApp(apps.JDBCTestApp), apps.WithTestAppManifest(apps.StorageTestAppManifest))
-		appTwo := apps.Push(apps.WithApp(apps.JDBCTestApp), apps.WithTestAppManifest(apps.StorageTestAppManifest))
+		appOne := apps.Push(apps.WithApp(apps.SpringStorageApp), apps.WithTestAppManifest(apps.StorageTestAppManifest))
+		appTwo := apps.Push(apps.WithApp(apps.SpringStorageApp), apps.WithTestAppManifest(apps.StorageTestAppManifest))
 		defer apps.Delete(appOne, appTwo)
 
 		By("binding the apps to the storage service instance")
@@ -73,13 +73,12 @@ var _ = Describe("Storage", Label("storage"), func() {
 		By("uploading a blob using the first app")
 		blobName := random.Hexadecimal()
 		blobData := random.Hexadecimal()
-		urlWithParams := "/storage/write?bucketName=" + bucketName + "&objectName=" + blobName
-		appOne.POST(blobData, urlWithParams)
+		appOne.POST(blobData, "/storage/write?bucketName=%s&objectName=%s", bucketName, blobName)
 
 		By("downloading the blob using the second app")
-		got := appTwo.GET("/storage/read?bucketName=" + bucketName + "&objectName=" + blobName).String()
+		got := appTwo.GET("/storage/read?bucketName=%s&objectName=%s", bucketName, blobName).String()
 		Expect(got).To(Equal(blobData))
 
-		appOne.DELETE("/storage/delete?bucketName=" + bucketName + "&objectName=" + blobName)
+		appOne.DELETE("/storage/delete?bucketName=%s&objectName=%s", bucketName, blobName)
 	})
 })

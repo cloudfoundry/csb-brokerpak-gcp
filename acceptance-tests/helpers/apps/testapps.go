@@ -15,6 +15,7 @@ const (
 	Redis            AppCode = "redisapp"
 	StackdriverTrace AppCode = "stackdrivertraceapp"
 	JDBCTestApp      AppCode = "jdbctestapp"
+	SpringStorageApp AppCode = "springstorageapp"
 )
 
 func (a AppCode) Dir() string {
@@ -23,7 +24,7 @@ func (a AppCode) Dir() string {
 
 func WithApp(app AppCode) Option {
 	switch app {
-	case StackdriverTrace, JDBCTestApp:
+	case StackdriverTrace, JDBCTestApp, SpringStorageApp:
 		return WithDir(app.Dir())
 	default:
 		return WithPreBuild(app.Dir())
