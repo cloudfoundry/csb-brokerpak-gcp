@@ -1,13 +1,13 @@
-package broadcom.spring.gcp.object.storage.gcpobjectstorage;
+package org.cloudfoundry.spring.storage;
 
 import org.springframework.boot.SpringApplication;
 import org.springframework.boot.autoconfigure.SpringBootApplication;
 
 @SpringBootApplication
-public class GcpobjectstorageApplication {
+public class SpringStorageApplication {
 
 	public static void main(String[] args) {
-		SpringApplication.run(GcpobjectstorageApplication.class, args);
+		SpringApplication.run(SpringStorageApplication.class, args);
 	}
 
 }

@@ -1,4 +1,4 @@
-package broadcom.spring.gcp.object.storage.gcpobjectstorage.service;
+package org.cloudfoundry.spring.storage.service;
 
 import com.google.cloud.storage.Blob;
 import com.google.cloud.storage.BlobId;
