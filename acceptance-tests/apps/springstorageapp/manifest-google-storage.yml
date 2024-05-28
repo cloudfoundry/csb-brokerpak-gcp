@@ -1,7 +1,7 @@
 ---
 applications:
 - name: springstorage
-  path: springstorage-0.0.1-SNAPSHOT.jar
+  path: springstorage-0.0.1.jar
   buildpacks:
   - java_buildpack_offline
   env:
