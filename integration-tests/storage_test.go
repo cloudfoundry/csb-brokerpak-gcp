@@ -51,7 +51,7 @@ var _ = Describe("Storage Bucket", Label("storage"), func() {
 		service := testframework.FindService(catalog, storageServiceName)
 		Expect(service.ID).To(Equal(storageServiceID))
 		Expect(service.Description).To(Equal(storageServiceDescription))
-		Expect(service.Tags).To(ConsistOf("gcp", "storage"))
+		Expect(service.Tags).To(ConsistOf("gcp", "storage", "google-storage"))
 		Expect(service.Metadata.ImageUrl).To(ContainSubstring("data:image/png;base64,"))
 		Expect(service.Metadata.DisplayName).To(Equal(storageServiceDisplayName))
 		Expect(service.Metadata.DocumentationUrl).To(Equal(cloudServiceBrokerDocumentationURL))
