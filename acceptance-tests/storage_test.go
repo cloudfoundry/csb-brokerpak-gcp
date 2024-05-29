@@ -43,7 +43,7 @@ var _ = Describe("Storage", Label("storage"), func() {
 		appOne.DELETE(blobName)
 	})
 
-	It("works with Spring and  GCP Cloud libraries", Label("spring"), func() {
+	It("works with Spring and GCP Cloud libraries", Label("spring"), func() {
 		By("creating a service instance")
 		bucketName := random.Name(random.WithPrefix("csb"))
 		serviceInstance := services.CreateInstance(
