@@ -21,7 +21,7 @@ image_url: file://service-images/csb.png
 documentation_url: https://docs.vmware.com/en/Cloud-Service-Broker-for-VMware-Tanzu/index.html
 provider_display_name: VMware
 support_url: https://cloud.google.com/support/
-tags: [gcp, storage]
+tags: [gcp, storage, google-storage]
 plan_updateable: true
 plans: []
 provision:
@@ -236,19 +236,36 @@ bind:
       examples:
       - pcf-binding-ex312029
   - required: true
-    field_name: private_key_data
+    field_name: PrivateKeyData
     type: string
     details: Service account private key data. Base64 encoded JSON.
     constraints:
       minLength: 512
       pattern: ^[A-Za-z0-9+/]*=*$
   - required: true
-    field_name: project_id
+    field_name: ProjectId
     type: string
     details: ID of the project that owns the service account.
     constraints:
       examples:
       - my-project
+      maxLength: 30
+      minLength: 6
+      pattern: ^[a-z0-9-]+$
+  - required: true
+    field_name: private_key_data
+    type: string
+    details: Deprecated - Service account private key data. Base64 encoded JSON.
+    constraints:
+      minLength: 512
+      pattern: ^[A-Za-z0-9+/]*=*$
+  - required: true
+    field_name: project_id
+    type: string
+    details: Deprecated - ID of the project that owns the service account.
+    constraints:
+      examples:
+        - my-project
       maxLength: 30
       minLength: 6
       pattern: ^[a-z0-9-]+$

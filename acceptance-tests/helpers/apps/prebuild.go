@@ -12,7 +12,7 @@ import (
 	"github.com/onsi/gomega/gexec"
 )
 
-func WithPreBuild(source string) Option {
+func WithGoPreBuild(source string) Option {
 	dir := newTmpDir()
 	name := path.Base(source)
 	command := exec.Command("go", "build", "-o", fmt.Sprintf("%s/%s", dir, name))
@@ -31,5 +31,20 @@ func WithPreBuild(source string) Option {
 		func(a *App) {
 			a.dir = dir
 		},
+	)
+}
+
+func WithMavenPreBuild(source string) Option {
+	command := exec.Command("mvn", "-f", "pom.xml", "clean", "package")
+	command.Dir = source
+
+	session, err := gexec.Start(command, ginkgo.GinkgoWriter, ginkgo.GinkgoWriter)
+	Expect(err).NotTo(HaveOccurred())
+	Eventually(session, 5*time.Minute).Should(gexec.Exit(0))
+
+	Expect(err).NotTo(HaveOccurred())
+
+	return WithOptions(
+		WithDir(source),
 	)
 }
