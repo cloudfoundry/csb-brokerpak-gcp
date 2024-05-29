@@ -29,6 +29,6 @@ func WithApp(app AppCode) Option {
 	case SpringStorageApp:
 		return WithMavenPreBuild(app.Dir())
 	default:
-		return WithGoLangPreBuild(app.Dir())
+		return WithGoPreBuild(app.Dir())
 	}
 }

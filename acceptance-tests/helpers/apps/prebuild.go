@@ -12,7 +12,7 @@ import (
 	"github.com/onsi/gomega/gexec"
 )
 
-func WithGoLangPreBuild(source string) Option {
+func WithGoPreBuild(source string) Option {
 	dir := newTmpDir()
 	name := path.Base(source)
 	command := exec.Command("go", "build", "-o", fmt.Sprintf("%s/%s", dir, name))
