@@ -9,6 +9,12 @@ resource "google_pubsub_subscription" "subscription" {
   name                 = var.subscription_name
   topic                = google_pubsub_topic.topic.name
   ack_deadline_seconds = var.ack_deadline
+  dynamic "push_config" {
+    for_each = length(var.push_endpoint) > 0 ? [1] : []
+    content {
+      push_endpoint = var.push_endpoint
+    }
+  }
 
   labels = var.labels
 

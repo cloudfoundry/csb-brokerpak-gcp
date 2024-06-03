@@ -26,6 +26,7 @@ var _ = Describe("PubSub", Label("pubsub-terraform"), Ordered, func() {
 			"topic_name":        "test-topic-name",
 			"subscription_name": "",
 			"ack_deadline":      10,
+			"push_endpoint":     "",
 		}
 		terraformProvisionDir = path.Join(workingDir, "pubsub/provision")
 		Init(terraformProvisionDir)
@@ -51,29 +52,57 @@ var _ = Describe("PubSub", Label("pubsub-terraform"), Ordered, func() {
 				}),
 			)
 		})
+	})
 
-		When("subscription name is passed", func() {
-			BeforeEach(func() {
-				plan = ShowPlan(terraformProvisionDir, buildVars(defaultVars, map[string]any{
-					"subscription_name": "test-subscription-name",
-				}))
-			})
+	When("subscription name is passed", func() {
+		BeforeEach(func() {
+			plan = ShowPlan(terraformProvisionDir, buildVars(defaultVars, map[string]any{
+				"subscription_name": "test-subscription-name",
+			}))
+		})
 
-			It("should create a subscription with the right values", func() {
-				Expect(plan.ResourceChanges).To(HaveLen(2))
+		It("should create a subscription with the right values", func() {
+			Expect(plan.ResourceChanges).To(HaveLen(2))
 
-				Expect(ResourceChangesTypes(plan)).To(ConsistOf(
-					"google_pubsub_topic",
-					"google_pubsub_subscription",
-				))
-				Expect(AfterValuesForType(plan, "google_pubsub_subscription")).To(
-					MatchKeys(IgnoreExtras, Keys{
-						"name":                 Equal("test-subscription-name"),
-						"topic":                Equal("test-topic-name"),
-						"ack_deadline_seconds": BeNumerically("==", 10),
-					}),
-				)
-			})
+			Expect(ResourceChangesTypes(plan)).To(ConsistOf(
+				"google_pubsub_topic",
+				"google_pubsub_subscription",
+			))
+			Expect(AfterValuesForType(plan, "google_pubsub_subscription")).To(
+				MatchKeys(IgnoreExtras, Keys{
+					"name":                 Equal("test-subscription-name"),
+					"topic":                Equal("test-topic-name"),
+					"ack_deadline_seconds": BeNumerically("==", 10),
+				}),
+			)
+		})
+	})
+
+	When("a push subscription is requested", func() {
+		BeforeEach(func() {
+			plan = ShowPlan(terraformProvisionDir, buildVars(defaultVars, map[string]any{
+				"subscription_name": "test-subscription-name",
+				"push_endpoint":     "https://example.com/push",
+			}))
+		})
+
+		It("should create a subscription with the right values", func() {
+			Expect(plan.ResourceChanges).To(HaveLen(2))
+
+			Expect(ResourceChangesTypes(plan)).To(ConsistOf(
+				"google_pubsub_topic",
+				"google_pubsub_subscription",
+			))
+			Expect(AfterValuesForType(plan, "google_pubsub_subscription")).To(
+				MatchKeys(IgnoreExtras, Keys{
+					"name":                 Equal("test-subscription-name"),
+					"topic":                Equal("test-topic-name"),
+					"ack_deadline_seconds": BeNumerically("==", 10),
+					"push_config": ContainElement(MatchKeys(IgnoreExtras, Keys{
+						"push_endpoint": Equal("https://example.com/push"),
+					})),
+				}),
+			)
 		})
 	})
 })

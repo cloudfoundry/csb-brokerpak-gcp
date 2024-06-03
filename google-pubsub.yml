@@ -26,6 +26,13 @@ provision:
     constraints:
       maximum: 600
       minimum: 10
+  - field_name: push_endpoint
+    type: string
+    details: A URL locating the endpoint to which messages should be pushed. If this is set push delivery is used with this subscription.
+    default: 10
+    constraints:
+      maximum: 600
+      minimum: 10
   - field_name: credentials
     type: string
     details: GCP credentials
