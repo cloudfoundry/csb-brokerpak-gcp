@@ -135,8 +135,8 @@ var _ = Describe("PubSub", Label("pubsub"), func() {
 
 		It("returns the bind values from terraform output", func() {
 			err := mockTerraform.SetTFState([]testframework.TFStateValue{
-				{Name: "name", Type: "string", Value: "bind.account-name"},
-				{Name: "email", Type: "string", Value: "bind.account-email"},
+				{Name: "Name", Type: "string", Value: "bind.account-name"},
+				{Name: "Email", Type: "string", Value: "bind.account-email"},
 				{Name: "UniqueId", Type: "string", Value: "bind.account-uniqueID"},
 				{Name: "PrivateKeyData", Type: "string", Value: "bind.account-key"},
 				{Name: "ProjectId", Type: "string", Value: "bind.account-projectID"},
@@ -150,8 +150,8 @@ var _ = Describe("PubSub", Label("pubsub"), func() {
 			Expect(bindResult).To(Equal(map[string]any{
 				"topic_name":        "create.topic-name",
 				"subscription_name": "create.subscription-name",
-				"name":              "bind.account-name",
-				"email":             "bind.account-email",
+				"Name":              "bind.account-name",
+				"Email":             "bind.account-email",
 				"UniqueId":          "bind.account-uniqueID",
 				"PrivateKeyData":    "bind.account-key",
 				"ProjectId":         "bind.account-projectID",
