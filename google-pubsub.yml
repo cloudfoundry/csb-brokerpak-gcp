@@ -1,0 +1,54 @@
+version: 1
+name: csb-google-pubsub
+id: 59c8535c-d068-4078-b293-a368b09a1a32
+description: Beta - Pub/Sub is an asynchronous and scalable messaging service that decouples services producing messages from services processing those messages.
+display_name: Google Pub/Sub (Beta)
+image_url: file://service-images/csb.png
+documentation_url: https://docs.vmware.com/en/Cloud-Service-Broker-for-VMware-Tanzu/index.html
+provider_display_name: VMware by Broadcom
+support_url: https://cloud.google.com/support/
+tags: [gcp, pubsub, beta]
+plans: []
+provision:
+  user_inputs:
+  - field_name: topic_name
+    type: string
+    details: The name of the topic to create
+    default: csb-topic-${request.instance_id}
+  - field_name: subscription_name
+    type: string
+    details: The name of the subscription to create and associate to the topic
+    default: csb-subscription-${request.instance_id}
+  - field_name: ack_deadline
+    type: integer
+    details: This value is the maximum time after a subscriber receives a message before the subscriber should acknowledge the message (in seconds). 
+    default: 10
+    constraints:
+      maximum: 600
+      minimum: 10
+  - field_name: credentials
+    type: string
+    details: GCP credentials
+    default: ${config("gcp.credentials")}
+  - field_name: project
+    type: string
+    details: GCP project
+    default: ${config("gcp.project")} 
+  computed_inputs:
+  - name: labels
+    default: ${json.marshal(request.default_labels)}
+    overwrite: true
+    type: object
+  template_refs:
+    provider: terraform/pubsub/provision/provider.tf
+    versions: terraform/pubsub/provision/versions.tf
+    main: terraform/pubsub/provision/main.tf
+    variables: terraform/pubsub/provision/variables.tf
+    outputs: terraform/pubsub/provision/outputs.tf
+  outputs:
+  - field_name: topic_name
+    type: string
+    details: The version of the instance.
+  - field_name: subscription_name
+    type: string
+    details: The version of the instance.
