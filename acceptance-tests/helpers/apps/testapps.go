@@ -16,6 +16,7 @@ const (
 	StackdriverTrace AppCode = "stackdrivertraceapp"
 	JDBCTestApp      AppCode = "jdbctestapp"
 	SpringStorageApp AppCode = "springstorageapp"
+	PubSubApp        AppCode = "pubsubapp"
 )
 
 func (a AppCode) Dir() string {
