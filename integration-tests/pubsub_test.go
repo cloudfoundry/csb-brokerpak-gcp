@@ -119,4 +119,44 @@ var _ = Describe("PubSub", Label("pubsub"), func() {
 			)
 		})
 	})
+
+	Describe("binding", func() {
+		var instanceID string
+		BeforeEach(func() {
+			err := mockTerraform.SetTFState([]testframework.TFStateValue{
+				{Name: "topic_name", Type: "string", Value: "create.topic-name"},
+				{Name: "subscription_name", Type: "string", Value: "create.subscription-name"},
+			})
+			Expect(err).NotTo(HaveOccurred())
+
+			instanceID, err = broker.Provision(pubsubServiceName, pubsubDefaultPlanName, nil)
+			Expect(err).NotTo(HaveOccurred())
+		})
+
+		It("returns the bind values from terraform output", func() {
+			err := mockTerraform.SetTFState([]testframework.TFStateValue{
+				{Name: "name", Type: "string", Value: "bind.account-name"},
+				{Name: "email", Type: "string", Value: "bind.account-email"},
+				{Name: "UniqueId", Type: "string", Value: "bind.account-uniqueID"},
+				{Name: "PrivateKeyData", Type: "string", Value: "bind.account-key"},
+				{Name: "ProjectId", Type: "string", Value: "bind.account-projectID"},
+				{Name: "credentials", Type: "string", Value: "bind.credentials"},
+			})
+			Expect(err).NotTo(HaveOccurred())
+
+			bindResult, err := broker.Bind(pubsubServiceName, pubsubDefaultPlanName, instanceID, nil)
+			Expect(err).NotTo(HaveOccurred())
+
+			Expect(bindResult).To(Equal(map[string]any{
+				"topic_name":        "create.topic-name",
+				"subscription_name": "create.subscription-name",
+				"name":              "bind.account-name",
+				"email":             "bind.account-email",
+				"UniqueId":          "bind.account-uniqueID",
+				"PrivateKeyData":    "bind.account-key",
+				"ProjectId":         "bind.account-projectID",
+				"credentials":       "bind.credentials",
+			}))
+		})
+	})
 })
