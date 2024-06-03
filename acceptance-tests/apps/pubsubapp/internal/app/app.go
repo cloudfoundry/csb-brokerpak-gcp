@@ -1,13 +1,14 @@
 package app
 
 import (
-	"cloud.google.com/go/pubsub"
 	"context"
 	"fmt"
-	"google.golang.org/api/option"
 	"log"
 	"net/http"
 	"pubsubapp/internal/credentials"
+
+	"cloud.google.com/go/pubsub"
+	"google.golang.org/api/option"
 )
 
 func App(creds credentials.PubSubCredentials) http.HandlerFunc {

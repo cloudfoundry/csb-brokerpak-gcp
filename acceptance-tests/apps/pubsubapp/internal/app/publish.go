@@ -1,12 +1,13 @@
 package app
 
 import (
-	"cloud.google.com/go/pubsub"
 	"context"
 	"fmt"
 	"io"
 	"net/http"
 	"sync"
+
+	"cloud.google.com/go/pubsub"
 )
 
 func handlePublish(w http.ResponseWriter, r *http.Request, client *pubsub.Client, topicName string) {

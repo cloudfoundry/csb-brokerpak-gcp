@@ -1,11 +1,12 @@
 package app
 
 import (
-	"cloud.google.com/go/pubsub"
 	"context"
 	"log"
 	"net/http"
 	"time"
+
+	"cloud.google.com/go/pubsub"
 )
 
 func handleReceive(w http.ResponseWriter, r *http.Request, client *pubsub.Client, subscriptionName string) {
