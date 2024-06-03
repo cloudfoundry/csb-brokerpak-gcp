@@ -144,3 +144,9 @@ bind:
       field_name: credentials
       type: string
       details: Credentials of the service account.
+examples:
+  - name: gcp-default-pubsub
+    description: Create a default PubSub topic and subscription for development.
+    plan_id: 0690bcd8-e29e-4317-9387-f8152501403d
+    provision_params: {"subscription_name": "example-test"}
+    bind_params: {}
