@@ -101,7 +101,7 @@ bind:
     versions: terraform/pubsub/bind/versions.tf
     outputs: terraform/pubsub/bind/outputs.tf
   outputs:
-    - field_name: email
+    - field_name: Email
       required: true
       type: string
       details: Email address of the service account.
@@ -109,7 +109,7 @@ bind:
         examples:
           - pcf-binding-ex312029@my-project.iam.gserviceaccount.com
         pattern: ^pcf-binding-[a-z0-9-]+@.+\.gserviceaccount\.com$
-    - field_name: name
+    - field_name: Name
       required: true
       type: string
       details: The name of the service account.
