@@ -46,3 +46,4 @@ service_definitions:
 - google-bigquery.yml
 - google-dataproc.yml
 - google-stackdriver-trace.yml
+- google-pubsub.yml

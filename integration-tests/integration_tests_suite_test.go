@@ -45,6 +45,7 @@ var _ = BeforeSuite(func() {
 		"GSB_SERVICE_CSB_GOOGLE_MYSQL_PLANS=" + marshal(customMySQLPlans),
 		"GSB_SERVICE_CSB_GOOGLE_REDIS_PLANS=" + marshal(customRedisPlans),
 		"GSB_SERVICE_CSB_GOOGLE_STORAGE_BUCKET_PLANS=" + marshal(customCloudStoragePlans),
+		"GSB_SERVICE_CSB_GOOGLE_PUBSUB_PLANS=" + marshal(customPubSubPlans),
 		"CSB_LISTENER_HOST=localhost", // prevents permissions popup
 	})).To(Succeed())
 })

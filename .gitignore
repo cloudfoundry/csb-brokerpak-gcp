@@ -3,3 +3,4 @@ cloud-service-broker
 *.brokerpak
 .csb.db
 integration-tests.test
+acceptance-tests/acceptance-tests.test
