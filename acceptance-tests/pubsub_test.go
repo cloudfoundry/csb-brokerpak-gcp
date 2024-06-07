@@ -7,6 +7,7 @@ import (
 	"csbbrokerpakgcp/acceptance-tests/helpers/random"
 	"csbbrokerpakgcp/acceptance-tests/helpers/services"
 	"fmt"
+	"log"
 	"time"
 
 	dataflow "cloud.google.com/go/dataflow/apiv1beta3"
@@ -50,7 +51,7 @@ var _ = Describe("PubSub", Label("pubsub"), func() {
 		Expect(got).To(Equal(messageData), "Received message matched published message")
 	})
 
-	FWhen("migrating from the legacy broker", func() {
+	When("migrating from the legacy broker", func() {
 		It("can receive legacy topic messages in the new CSB topic", func() {
 			By("creating a legacy service instance")
 			legacySubscription := random.Name()
@@ -111,10 +112,10 @@ var _ = Describe("PubSub", Label("pubsub"), func() {
 				Location: "us-central1",
 			})
 			Expect(err).ToNot(HaveOccurred())
-
+			log.Printf("Started migration job: %s \n", jobResponse.Name)
 			defer setJobToDoneState(ctx, jobResponse.Id)
 
-			// It takes a few minutes for the DataFlow job to pick up the message from legacy topic and move it to the new one
+			// It takes a few minutes (~3min) for the DataFlow job to pick up the message from legacy topic and move it to the new one
 			By("retrieving a message with the subscriber app")
 			Eventually(func() string {
 				return subscriberApp.GET("").String()
@@ -135,7 +136,7 @@ func setJobToDoneState(context context.Context, jobID string) {
 		Job: &dataflowpb.Job{
 			Id:             jobID,
 			ProjectId:      GCPMetadata.Project,
-			RequestedState: dataflowpb.JobState_JOB_STATE_CANCELLED,
+			RequestedState: dataflowpb.JobState_JOB_STATE_DONE,
 		},
 		Location: "us-central1",
 	})
