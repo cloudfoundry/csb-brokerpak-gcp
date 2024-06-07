@@ -106,8 +106,8 @@ var _ = Describe("PubSub", Label("pubsub"), func() {
 					"outputTopic":       fmt.Sprintf("projects/%s/topics/%s", GCPMetadata.Project, fmt.Sprintf("csb-topic-%s", CSBServiceInstance.GUID())),
 				},
 				Environment: &dataflowpb.RuntimeEnvironment{
-					TempLocation:          "gs://test-migrate-pubsub/temp",
-					AdditionalExperiments: []string{"streaming_mode_exactly_once"},
+					BypassTempDirValidation: true,
+					AdditionalExperiments:   []string{"streaming_mode_exactly_once"},
 				},
 				Location: "us-central1",
 			})
