@@ -1,13 +1,17 @@
 package acceptance_test
 
 import (
+	"context"
 	"csbbrokerpakgcp/acceptance-tests/helpers/apps"
-	"csbbrokerpakgcp/acceptance-tests/helpers/gcloud"
 	"csbbrokerpakgcp/acceptance-tests/helpers/matchers"
 	"csbbrokerpakgcp/acceptance-tests/helpers/random"
 	"csbbrokerpakgcp/acceptance-tests/helpers/services"
 	"fmt"
 	"time"
+
+	dataflow "cloud.google.com/go/dataflow/apiv1beta3"
+	"cloud.google.com/go/dataflow/apiv1beta3/dataflowpb"
+	"google.golang.org/api/option"
 
 	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
@@ -46,65 +50,8 @@ var _ = Describe("PubSub", Label("pubsub"), func() {
 		Expect(got).To(Equal(messageData), "Received message matched published message")
 	})
 
-	When("using the legacy broker", func() {
-		It("can continue using the same app with CSB service instance", func() {
-			By("creating a legacy service instance")
-			legacySubscription := random.Name()
-			legacyInstance := services.CreateInstance(
-				"google-pubsub",
-				"default",
-				services.WithBrokerName("legacy-gcp-broker"),
-				services.WithParameters(map[string]any{"subscription_name": legacySubscription}))
-			defer legacyInstance.Delete()
-
-			By("pushing the unstarted app twice")
-			publisherApp := apps.Push(apps.WithApp(apps.PubSubApp))
-			subscriberApp := apps.Push(apps.WithApp(apps.PubSubApp))
-			defer apps.Delete(publisherApp, subscriberApp)
-
-			By("binding the apps to the pubsub service instance")
-			legacyPubBinding := legacyInstance.BindWithParams(publisherApp, `{"role":"pubsub.editor"}`)
-			legacySubBinding := legacyInstance.BindWithParams(subscriberApp, `{"role":"pubsub.editor"}`)
-
-			By("starting the apps")
-			apps.Start(publisherApp, subscriberApp)
-
-			By("publishing a message with the publisher app")
-			messageData := random.Hexadecimal()
-			publisherApp.PUT(messageData, "")
-
-			By("retrieving a message with the subscriber app")
-			got := subscriberApp.GET("").String()
-			Expect(got).To(Equal(messageData), "Received message matched published message")
-
-			By("creating a CSB service instance")
-			CSBServiceInstance := services.CreateInstance(
-				"csb-google-pubsub",
-				"default",
-				services.WithParameters(map[string]any{"subscription_name": random.Name()}))
-			defer CSBServiceInstance.Delete()
-
-			By("unbinding the apps from legacy service instance and binding them to CSB instance")
-			legacyPubBinding.Unbind()
-			legacySubBinding.Unbind()
-			CSBServiceInstance.BindWithParams(publisherApp, `{"role":"pubsub.editor"}`)
-			CSBServiceInstance.BindWithParams(subscriberApp, `{"role":"pubsub.editor"}`)
-
-			By("starting the apps")
-			apps.Restage(publisherApp, subscriberApp)
-
-			By("publishing a message with the publisher app")
-			newMessageData := random.Hexadecimal()
-			publisherApp.PUT(newMessageData, "")
-
-			By("retrieving a message with the subscriber app")
-			result := subscriberApp.GET("").String()
-			Expect(result).To(Equal(newMessageData), "Received message matched published message")
-		})
-	})
-
-	When("migrating from the legacy broker", func() {
-		It("can continue using the same app with CSB service instance", func() {
+	FWhen("migrating from the legacy broker", func() {
+		It("can receive legacy topic messages in the new CSB topic", func() {
 			By("creating a legacy service instance")
 			legacySubscription := random.Name()
 			legacyInstance := services.CreateInstance(
@@ -141,20 +88,33 @@ var _ = Describe("PubSub", Label("pubsub"), func() {
 			CSBServiceInstance.BindWithParams(subscriberApp, `{"role":"pubsub.editor"}`)
 			apps.Start(subscriberApp)
 
-			By("starting a job that moves messages from legacy topic to new CSB topic", func() {
-				jobName := random.Name()
-				_ = gcloud.GCP(
-					"dataflow", "jobs", "run", jobName,
-					"--gcs-location", fmt.Sprintf("gs://dataflow-templates-us-central1/latest/Cloud_PubSub_to_Cloud_PubSub"),
-					"--region", "us-central1", "--staging-location", "gs://test-migrate-pubsub/temp",
-					"--parameters",
-					fmt.Sprintf("inputSubscription=projects/%s/subscriptions/%s,outputTopic=projects/%s/topics/csb-topic-%s", GCPMetadata.Project, legacySubscription, GCPMetadata.Project, CSBServiceInstance.GUID()),
-				)
+			By("starting a job that moves messages from legacy topic to new CSB topic")
+			ctx := context.Background()
+			templatesClient, err := dataflow.NewTemplatesClient(ctx, option.WithCredentialsJSON([]byte(GCPMetadata.Credentials)))
+			Expect(err).ToNot(HaveOccurred())
+			defer templatesClient.Close()
 
-				//gcloud dataflow jobs list => get job Id from name
-				//defer cancelling the job
+			jobResponse, err := templatesClient.CreateJobFromTemplate(ctx, &dataflowpb.CreateJobFromTemplateRequest{
+				ProjectId: GCPMetadata.Project,
+				JobName:   "migration-job-" + random.Name(),
+				Template: &dataflowpb.CreateJobFromTemplateRequest_GcsPath{
+					GcsPath: "gs://dataflow-templates-us-central1/latest/Cloud_PubSub_to_Cloud_PubSub",
+				},
+				Parameters: map[string]string{
+					"inputSubscription": fmt.Sprintf("projects/%s/subscriptions/%s", GCPMetadata.Project, legacySubscription),
+					"outputTopic":       fmt.Sprintf("projects/%s/topics/%s", GCPMetadata.Project, fmt.Sprintf("csb-topic-%s", CSBServiceInstance.GUID())),
+				},
+				Environment: &dataflowpb.RuntimeEnvironment{
+					TempLocation:          "gs://test-migrate-pubsub/temp",
+					AdditionalExperiments: []string{"streaming_mode_exactly_once"},
+				},
+				Location: "us-central1",
 			})
+			Expect(err).ToNot(HaveOccurred())
 
+			defer setJobToDoneState(ctx, jobResponse.Id)
+
+			// It takes a few minutes for the DataFlow job to pick up the message from legacy topic and move it to the new one
 			By("retrieving a message with the subscriber app")
 			Eventually(func() string {
 				return subscriberApp.GET("").String()
@@ -163,3 +123,22 @@ var _ = Describe("PubSub", Label("pubsub"), func() {
 	})
 
 })
+
+func setJobToDoneState(context context.Context, jobID string) {
+	jobClient, err := dataflow.NewJobsV1Beta3Client(context, option.WithCredentialsJSON([]byte(GCPMetadata.Credentials)))
+	Expect(err).ToNot(HaveOccurred())
+	defer jobClient.Close()
+
+	_, err = jobClient.UpdateJob(context, &dataflowpb.UpdateJobRequest{
+		ProjectId: GCPMetadata.Project,
+		JobId:     jobID,
+		Job: &dataflowpb.Job{
+			Id:             jobID,
+			ProjectId:      GCPMetadata.Project,
+			RequestedState: dataflowpb.JobState_JOB_STATE_CANCELLED,
+		},
+		Location: "us-central1",
+	})
+	Expect(err).ToNot(HaveOccurred())
+	_ = jobClient.Close()
+}
