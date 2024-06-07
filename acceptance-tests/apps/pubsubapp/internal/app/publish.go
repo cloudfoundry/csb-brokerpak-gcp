@@ -30,6 +30,7 @@ func handlePublish(w http.ResponseWriter, r *http.Request, client *pubsub.Client
 	finished.Add(1)
 
 	go func(res *pubsub.PublishResult) {
+		defer finished.Done()
 		// The Get method blocks until a server-generated ID or
 		// an error is returned for the published message.
 		id, err := res.Get(ctx)
@@ -39,7 +40,6 @@ func handlePublish(w http.ResponseWriter, r *http.Request, client *pubsub.Client
 			return
 		}
 		fmt.Fprintf(w, "Published message msg ID: %v\n", id)
-		finished.Done()
 	}(result)
 
 	w.WriteHeader(http.StatusCreated)

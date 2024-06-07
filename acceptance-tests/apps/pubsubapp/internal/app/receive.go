@@ -19,9 +19,13 @@ func handleReceive(w http.ResponseWriter, r *http.Request, client *pubsub.Client
 	defer cancel()
 
 	err := sub.Receive(ctx, func(_ context.Context, msg *pubsub.Message) {
-		w.Write(msg.Data)
-		w.WriteHeader(http.StatusOK)
 		w.Header().Set("Content-Type", "text/html")
+		w.WriteHeader(http.StatusOK)
+		_, err := w.Write(msg.Data)
+		if err != nil {
+			log.Printf("Error writing response: %v", err)
+			return
+		}
 
 		msg.Ack()
 
