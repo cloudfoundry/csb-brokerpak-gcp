@@ -3,6 +3,7 @@ module csbbrokerpakgcp
 go 1.22.4
 
 require (
+	cloud.google.com/go/dataflow v0.9.7
 	cloud.google.com/go/trace v1.10.7
 	code.cloudfoundry.org/jsonry v1.1.4
 	github.com/Pallinder/go-randomdata v1.2.0
