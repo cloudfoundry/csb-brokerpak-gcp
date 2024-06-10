@@ -141,5 +141,4 @@ func setJobToDoneState(context context.Context, jobID string) {
 		Location: "us-central1",
 	})
 	Expect(err).ToNot(HaveOccurred())
-	_ = jobClient.Close()
 }
