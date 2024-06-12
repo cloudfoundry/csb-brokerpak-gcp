@@ -16,7 +16,7 @@ resource "google_pubsub_topic_iam_member" "member" {
 }
 
 resource "google_pubsub_subscription_iam_member" "member" {
-  count        = length(var.subscription_name) > 0 ? 1 : 0
+  count        = length(var.subscription_name) > 0 && var.role != "pubsub.publisher" ? 1 : 0
   subscription = var.subscription_name
   role         = format("roles/%s", var.role)
   member       = format("serviceAccount:%s", google_service_account.account.email)
