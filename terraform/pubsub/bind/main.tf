@@ -1,7 +1,7 @@
 
 resource "google_service_account" "account" {
   account_id   = var.service_account_name
-  display_name = var.service_account_display_name
+  display_name = format("%s with role roles/%s", var.service_account_display_name, var.role)
 }
 
 resource "google_service_account_key" "key" {
