@@ -120,6 +120,28 @@ var _ = Describe("PubSub", Label("pubsub"), func() {
 		})
 	})
 
+	Describe("updating instance", func() {
+		var instanceID string
+
+		BeforeEach(func() {
+			var err error
+			instanceID, err = broker.Provision(pubsubServiceName, "default", nil)
+
+			Expect(err).NotTo(HaveOccurred())
+			Expect(mockTerraform.Reset()).To(Succeed())
+		})
+
+		It("should prevent updating properties flagged as `prohibit_update` because it can result in the recreation of the service instance and lost data", func() {
+			err := broker.Update(instanceID, pubsubServiceName, "default", map[string]any{"subscription_name": "other-name"})
+
+			Expect(err).To(MatchError(
+				ContainSubstring(
+					"attempt to update parameter that may result in service instance re-creation and data loss",
+				),
+			))
+		})
+	})
+
 	Describe("binding", func() {
 		var instanceID string
 		BeforeEach(func() {

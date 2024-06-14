@@ -19,6 +19,7 @@ provision:
     type: string
     details: The name of the subscription to create and associate to the topic. If it is not specified then no subscription will be created.
     default: ""
+    prohibit_update: true
   - field_name: ack_deadline
     type: integer
     details: This value is the maximum time after a subscriber receives a message before the subscriber should acknowledge the message (in seconds). 
