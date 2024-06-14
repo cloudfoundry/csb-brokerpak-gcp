@@ -83,10 +83,10 @@ bind:
       default: ${config("gcp.project")}
   computed_inputs:
     - name: service_account_name
-      default: ${str.truncate(20, "pcf-binding-${request.binding_id}")}
+      default: ${str.truncate(20, "csb-binding-${request.binding_id}")}
       overwrite: true
     - name: service_account_display_name
-      default: ""
+      default: ${str.truncate(20, "csb-binding-${request.binding_id}")}
       overwrite: true
     - name: topic_name
       default: ${instance.details["topic_name"]}
@@ -107,15 +107,15 @@ bind:
       details: Email address of the service account.
       constraints:
         examples:
-          - pcf-binding-ex312029@my-project.iam.gserviceaccount.com
-        pattern: ^pcf-binding-[a-z0-9-]+@.+\.gserviceaccount\.com$
+          - csb-binding-ex312029@my-project.iam.gserviceaccount.com
+        pattern: ^csb-binding-[a-z0-9-]+@.+\.gserviceaccount\.com$
     - field_name: Name
       required: true
       type: string
       details: The name of the service account.
       constraints:
         examples:
-          - pcf-binding-ex312029
+          - csb-binding-ex312029
     - field_name: PrivateKeyData
       required: true
       type: string
