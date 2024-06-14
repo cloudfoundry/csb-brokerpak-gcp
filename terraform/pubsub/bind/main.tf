@@ -1,7 +1,7 @@
 
 resource "google_service_account" "account" {
   account_id   = var.service_account_name
-  display_name = var.service_account_display_name
+  display_name = format("%s with role roles/%s", var.service_account_display_name, var.role)
 }
 
 resource "google_service_account_key" "key" {
@@ -16,7 +16,7 @@ resource "google_pubsub_topic_iam_member" "member" {
 }
 
 resource "google_pubsub_subscription_iam_member" "member" {
-  count        = length(var.subscription_name) > 0 ? 1 : 0
+  count        = length(var.subscription_name) > 0 && var.role != "pubsub.publisher" ? 1 : 0
   subscription = var.subscription_name
   role         = format("roles/%s", var.role)
   member       = format("serviceAccount:%s", google_service_account.account.email)
