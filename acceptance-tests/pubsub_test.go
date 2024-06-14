@@ -51,6 +51,36 @@ var _ = Describe("PubSub", Label("pubsub"), func() {
 		Expect(got).To(Equal(messageData), "Received message matched published message")
 	})
 
+	It("works with Spring and GCP Cloud libraries", Label("spring"), func() {
+		By("creating a service instance")
+		subscriptionName := random.Name()
+		serviceInstance := services.CreateInstance(
+			"csb-google-pubsub",
+			"default",
+			services.WithParameters(map[string]any{"subscription_name": subscriptionName}))
+		defer serviceInstance.Delete()
+
+		By("pushing the unstarted app twice")
+		publisherApp := apps.Push(apps.WithApp(apps.SpringPubSubApp), apps.WithTestAppManifest(apps.PubSubTestAppManifest))
+		subscriberApp := apps.Push(apps.WithApp(apps.SpringPubSubApp), apps.WithTestAppManifest(apps.PubSubTestAppManifest))
+		defer apps.Delete(publisherApp, subscriberApp)
+
+		By("binding the apps to the pubsub service instance")
+		serviceInstance.BindWithParams(publisherApp, `{"role":"pubsub.editor"}`)
+		serviceInstance.BindWithParams(subscriberApp, `{"role":"pubsub.editor"}`)
+
+		By("starting the apps")
+		apps.Start(publisherApp, subscriberApp)
+
+		By("publishing a message with the publisher app")
+		messageData := random.Hexadecimal()
+		publisherApp.POST(messageData, "/pubsub/post-message?topicName=csb-topic-%s", serviceInstance.GUID())
+
+		By("retrieving a message with the subscriber app")
+		got := subscriberApp.GET("/pubsub/pull-message?subscriptionName=%s", subscriptionName).String()
+		Expect(got).To(Equal(messageData), "Received message matched published message")
+	})
+
 	When("migrating from the legacy broker", func() {
 		It("can receive legacy topic messages in the new CSB topic", func() {
 			By("creating a legacy service instance")
