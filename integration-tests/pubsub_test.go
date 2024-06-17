@@ -51,7 +51,7 @@ var _ = Describe("PubSub", Label("pubsub"), func() {
 		service := testframework.FindService(catalog, pubsubServiceName)
 		Expect(service.ID).To(Equal(pubsubServiceID))
 		Expect(service.Description).To(Equal(pubsubServiceDescription))
-		Expect(service.Tags).To(ConsistOf("gcp", "pubsub", "google-pubsub", "beta"))
+		Expect(service.Tags).To(ConsistOf("gcp", "pubsub", "google-pubsub"))
 		Expect(service.Metadata.ImageUrl).To(ContainSubstring("data:image/png;base64,"))
 		Expect(service.Metadata.DisplayName).To(Equal(pubsubServiceDisplayName))
 		Expect(service.Metadata.DocumentationUrl).To(Equal(cloudServiceBrokerDocumentationURL))
