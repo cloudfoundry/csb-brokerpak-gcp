@@ -12,8 +12,8 @@ import (
 const (
 	pubsubServiceName        = "csb-google-pubsub"
 	pubsubServiceID          = "59c8535c-d068-4078-b293-a368b09a1a32"
-	pubsubServiceDisplayName = "Google Pub/Sub (Beta)"
-	pubsubServiceDescription = "Beta - Google Pub/Sub is an asynchronous and scalable messaging service that decouples services producing messages from services processing those messages."
+	pubsubServiceDisplayName = "Google Pub/Sub"
+	pubsubServiceDescription = "Google Pub/Sub is an asynchronous and scalable messaging service that decouples services producing messages from services processing those messages."
 	pubsubServiceSupportURL  = "https://cloud.google.com/support/"
 	pubsubDefaultPlanName    = "default"
 	pubsubDefaultPlanID      = "0690bcd8-e29e-4317-9387-f8152501403d"
