@@ -24,7 +24,7 @@ resource "google_pubsub_subscription" "subscription" {
   }
 
   dynamic "expiration_policy" {
-    for_each = length(var.subscription_expiration_policy) > 0 ? [1] : []
+    for_each = var.subscription_expiration_policy != null ? [1] : []
     content {
       ttl = var.subscription_expiration_policy
     }

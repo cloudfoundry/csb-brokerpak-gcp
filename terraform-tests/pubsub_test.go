@@ -31,7 +31,7 @@ var _ = Describe("PubSub", Label("pubsub-terraform"), Ordered, func() {
 			"topic_kms_key_name":               "",
 			"subscription_message_retention_duration":   "",
 			"subscription_retain_acked_messages":        false,
-			"subscription_expiration_policy":            "",
+			"subscription_expiration_policy":            nil,
 			"subscription_retry_policy_minimum_backoff": "",
 			"subscription_retry_policy_maximum_backoff": "",
 			"subscription_enable_message_ordering":      false,

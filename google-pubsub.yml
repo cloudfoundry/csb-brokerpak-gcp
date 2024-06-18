@@ -61,11 +61,13 @@ provision:
     default: false
   - field_name: subscription_expiration_policy
     type: string
+    default: null
+    nullable: true
     details: |
       Duration after which the subscription expires if no messages are received (e.g., "604800s" for 7 days)
       If expirationPolicy is not set, a default policy with ttl of 31 days will be used.
-      If it is set with "", the resource never expires. The minimum allowed value is 1 day
-    default: ""
+      If it is set with "", the resource never expires. The minimum allowed value is 1 day.
+      Once a subscription's policy is set, it cannot be unset.
   - field_name: subscription_retry_policy_minimum_backoff
     type: string
     details: |
