@@ -34,6 +34,66 @@ provision:
     constraints:
       maximum: 600
       minimum: 10
+  - field_name: topic_message_retention_duration
+    type: string
+    details: |
+      Duration to retain messages in the topic if no subscription is attached. (e.g., "604800s" for 7 days)
+    default: ""
+  - field_name: topic_kms_key_name
+    type: string
+    details: |
+      KMS key name for encryption.
+      The expected format is `projects/*/locations/*/keyRings/*/cryptoKeys/*`
+    default: ""
+  - field_name: subscription_message_retention_duration
+    type: string
+    details: |
+      Duration to retain unacknowledged messages in the subscription.
+      If `subscription_retain_acked_messages` is true, then this also configures the retention
+      of acknowledged messages, and thus configures how far back in time a subscriptions.seek can be done.
+    default: ""
+  - field_name: subscription_retain_acked_messages
+    type: boolean
+    details: |
+      Retain acknowledged messages.
+      If true, then messages are not expunged from the subscription's backlog, even if they are acknowledged,
+      until they fall out of the messageRetentionDuration window.
+    default: false
+  - field_name: subscription_expiration_policy
+    type: string
+    default: null
+    nullable: true
+    details: |
+      Duration after which the subscription expires if no messages are received (e.g., "604800s" for 7 days)
+      If expirationPolicy is not set, a default policy with ttl of 31 days will be used.
+      If it is set with "", the resource never expires. The minimum allowed value is 1 day.
+      Once a subscription's policy is set, it cannot be unset.
+  - field_name: subscription_retry_policy_minimum_backoff
+    type: string
+    details: |
+      The minimum delay between consecutive deliveries of a given message (e.g., "10.5s")
+      When setting `subscription_retry_policy_minimum_backoff` and `subscription_retry_policy_maximum_backoff`,
+      a policy will establish how Pub/Sub retries message delivery for the subscription.
+      If the group of properties is not set, the default retry policy is applied.
+      This generally implies that messages will be retried as soon as possible for healthy subscribers.
+    default: ""
+  - field_name: subscription_retry_policy_maximum_backoff
+    type: string
+    details: Maximum backoff duration for retry policy (e.g., "600s")
+    default: |
+      The maximum delay between consecutive deliveries of a given message (e.g., "15.5s")
+      When setting `subscription_retry_policy_minimum_backoff` and `subscription_retry_policy_maximum_backoff`,
+      a policy will establish how Pub/Sub retries message delivery for the subscription.
+      If the group of properties is not set, the default retry policy is applied.
+      This generally implies that messages will be retried as soon as possible for healthy subscribers.
+  - field_name: subscription_enable_message_ordering
+    type: boolean
+    details: Enable message ordering for the subscription
+    default: false
+  - field_name: subscription_enable_exactly_once_delivery
+    type: boolean
+    details: Enable exactly-once delivery for the subscription
+    default: false
   - field_name: credentials
     type: string
     details: GCP credentials

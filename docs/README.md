@@ -5,7 +5,7 @@
 ### CloudFoundry
 The service broker is deployed to CloudFoundry as a `cf push`ed application.
 * [General configuration](./configuration.md)
-* [GCP](./gcp-installation.md)
+* [GCP](./installation.md)
 
 ## Cloud Service Broker General
 * Consuming Services are documented in Tanzu CSB for GCP official docs.
