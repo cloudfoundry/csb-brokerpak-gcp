@@ -102,10 +102,19 @@ var _ = Describe("PubSub", Label("pubsub"), func() {
 
 		It("should allow properties to be set on provision", func() {
 			_, err := broker.Provision(pubsubServiceName, pubsubDefaultPlanName, map[string]any{
-				"topic_name":        "test-topic-name",
-				"subscription_name": "test-subscription-name",
-				"ack_deadline":      600,
-				"push_endpoint":     "https://example.test/push",
+				"topic_name":                                "test-topic-name",
+				"subscription_name":                         "test-subscription-name",
+				"ack_deadline":                              600,
+				"push_endpoint":                             "https://example.test/push",
+				"topic_message_retention_duration":          "604800s",
+				"topic_kms_key_name":                        "projects/my-project/locations/us/keyRings/my-keyring/cryptoKeys/my-key",
+				"subscription_message_retention_duration":   "604800s",
+				"subscription_retain_acked_messages":        true,
+				"subscription_expiration_policy":            "604800s",
+				"subscription_retry_policy_minimum_backoff": "10s",
+				"subscription_retry_policy_maximum_backoff": "600s",
+				"subscription_enable_message_ordering":      true,
+				"subscription_enable_exactly_once_delivery": true,
 			})
 			Expect(err).NotTo(HaveOccurred())
 
@@ -115,6 +124,15 @@ var _ = Describe("PubSub", Label("pubsub"), func() {
 					HaveKeyWithValue("subscription_name", "test-subscription-name"),
 					HaveKeyWithValue("ack_deadline", BeNumerically("==", 600)),
 					HaveKeyWithValue("push_endpoint", "https://example.test/push"),
+					HaveKeyWithValue("topic_message_retention_duration", "604800s"),
+					HaveKeyWithValue("topic_kms_key_name", "projects/my-project/locations/us/keyRings/my-keyring/cryptoKeys/my-key"),
+					HaveKeyWithValue("subscription_message_retention_duration", "604800s"),
+					HaveKeyWithValue("subscription_retain_acked_messages", BeTrue()),
+					HaveKeyWithValue("subscription_expiration_policy", "604800s"),
+					HaveKeyWithValue("subscription_retry_policy_minimum_backoff", "10s"),
+					HaveKeyWithValue("subscription_retry_policy_maximum_backoff", "600s"),
+					HaveKeyWithValue("subscription_enable_message_ordering", BeTrue()),
+					HaveKeyWithValue("subscription_enable_exactly_once_delivery", BeTrue()),
 				),
 			)
 		})
