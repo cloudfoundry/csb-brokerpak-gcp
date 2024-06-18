@@ -1,13 +1,13 @@
 version: 1
 name: csb-google-pubsub
 id: 59c8535c-d068-4078-b293-a368b09a1a32
-description: Beta - Google Pub/Sub is an asynchronous and scalable messaging service that decouples services producing messages from services processing those messages.
-display_name: Google Pub/Sub (Beta)
+description: Google Pub/Sub is an asynchronous and scalable messaging service that decouples services producing messages from services processing those messages.
+display_name: Google Pub/Sub
 image_url: file://service-images/csb.png
 documentation_url: https://docs.vmware.com/en/Cloud-Service-Broker-for-VMware-Tanzu/index.html
 provider_display_name: VMware
 support_url: https://cloud.google.com/support/
-tags: [gcp, pubsub, google-pubsub, beta]
+tags: [gcp, pubsub, google-pubsub]
 plans: []
 provision:
   user_inputs:
