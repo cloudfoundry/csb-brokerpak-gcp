@@ -3,7 +3,7 @@ module pubsubapp
 go 1.22.4
 
 require (
-	cloud.google.com/go/pubsub v1.38.0
+	cloud.google.com/go/pubsub v1.39.0
 	github.com/cloudfoundry-community/go-cfenv v1.18.0
 	github.com/mitchellh/mapstructure v1.5.0
 	google.golang.org/api v0.185.0
