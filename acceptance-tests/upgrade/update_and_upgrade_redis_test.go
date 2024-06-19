@@ -60,8 +60,17 @@ var _ = Describe("UpgradeRedisTest", Label("redis"), func() {
 			By("getting the value using the second app")
 			Expect(appTwo.GET(key1).String()).To(Equal(value1))
 
-			By("updating the instance plan")
-			serviceInstance.Update(services.WithParameters(`{"memory_size_gb":6}`))
+			By("deleting bindings created before the upgrade")
+			bindingOne.Unbind()
+			bindingTwo.Unbind()
+
+			By("creating new bindings and testing they still work")
+			serviceInstance.Bind(appOne)
+			serviceInstance.Bind(appTwo)
+			apps.Restage(appOne, appTwo)
+
+			By("triggering a no-op update to reapply the terraform for service instance")
+			serviceInstance.Update(services.WithParameters(`{}`))
 
 			By("getting the value using the second app")
 			Expect(appTwo.GET(key1).String()).To(Equal(value1))
