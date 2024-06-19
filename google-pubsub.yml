@@ -79,13 +79,13 @@ provision:
     default: ""
   - field_name: subscription_retry_policy_maximum_backoff
     type: string
-    details: Maximum backoff duration for retry policy (e.g., "600s")
-    default: |
+    details: |
       The maximum delay between consecutive deliveries of a given message (e.g., "15.5s")
       When setting `subscription_retry_policy_minimum_backoff` and `subscription_retry_policy_maximum_backoff`,
       a policy will establish how Pub/Sub retries message delivery for the subscription.
       If the group of properties is not set, the default retry policy is applied.
       This generally implies that messages will be retried as soon as possible for healthy subscribers.
+    default: ""
   - field_name: subscription_enable_message_ordering
     type: boolean
     details: Enable message ordering for the subscription
