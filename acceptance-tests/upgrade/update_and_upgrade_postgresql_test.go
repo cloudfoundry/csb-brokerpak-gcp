@@ -64,14 +64,23 @@ var _ = Describe("UpgradePostgreSQLTest", Label("postgresql"), func() {
 			got = appTwo.GET("%s/%s", schema, keyOne).String()
 			Expect(got).To(Equal(valueOne))
 
+			By("deleting bindings created before the upgrade")
+			bindingOne.Unbind()
+			bindingTwo.Unbind()
+
+			By("creating new bindings and testing they still work")
+			serviceInstance.Bind(appOne)
+			serviceInstance.Bind(appTwo)
+			apps.Restage(appOne, appTwo)
+
 			By("updating the instance plan")
-			serviceInstance.Update(services.WithPlan("medium"))
+			serviceInstance.Update(services.WithParameters(`{}`))
 
 			By("checking previously written data still accessible")
 			got = appTwo.GET("%s/%s", schema, keyOne).String()
 			Expect(got).To(Equal(valueOne))
 
-			By("deleting bindings created before the upgrade")
+			By("deleting bindings created before the update")
 			bindingOne.Unbind()
 			bindingTwo.Unbind()
 
