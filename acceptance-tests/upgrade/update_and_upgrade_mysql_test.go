@@ -58,13 +58,22 @@ var _ = Describe("UpgradeMYSQLTest", Label("mysql"), func() {
 			By("getting the value using the second app")
 			Expect(appTwo.GET("/key-value/%s", key).String()).To(Equal(value))
 
+			By("deleting bindings created before the upgrade")
+			bindingOne.Unbind()
+			bindingTwo.Unbind()
+
+			By("creating new bindings and testing they still work")
+			serviceInstance.Bind(appOne)
+			serviceInstance.Bind(appTwo)
+			apps.Restage(appOne, appTwo)
+
 			By("updating the instance plan")
-			serviceInstance.Update(services.WithPlan("default"))
+			serviceInstance.Update(services.WithParameters(`{}`))
 
 			By("getting the value using the second app")
 			Expect(appTwo.GET("/key-value/%s", key).String()).To(Equal(value))
 
-			By("deleting bindings created before the upgrade")
+			By("deleting bindings created before the update")
 			bindingOne.Unbind()
 			bindingTwo.Unbind()
 

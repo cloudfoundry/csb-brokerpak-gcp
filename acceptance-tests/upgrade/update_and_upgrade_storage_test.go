@@ -58,10 +58,23 @@ var _ = Describe("UpgradeStorageTest", Label("storage"), func() {
 			got = appTwo.GET(blobNameOne).String()
 			Expect(got).To(Equal(blobDataOne))
 
-			By("re-applying the terraform for service instance")
-			serviceInstance.Update(services.WithParameters(`{"uniform_bucket_level_access": true}`))
-
 			By("deleting bindings created before the upgrade")
+			bindingOne.Unbind()
+			bindingTwo.Unbind()
+
+			By("creating new bindings and testing they still work")
+			serviceInstance.BindWithParams(appOne, `{"role":"storage.objectAdmin"}`)
+			serviceInstance.BindWithParams(appTwo, `{"role":"storage.objectAdmin"}`)
+			apps.Restage(appOne, appTwo)
+
+			By("triggering a no-op update to reapply the terraform for service instance")
+			serviceInstance.Update(services.WithParameters(`{}`))
+
+			By("checking that previously written data is accessible")
+			got = appTwo.GET(blobNameOne).String()
+			Expect(got).To(Equal(blobDataOne))
+
+			By("deleting bindings created before the update")
 			bindingOne.Unbind()
 			bindingTwo.Unbind()
 
