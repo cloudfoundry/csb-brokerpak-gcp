@@ -103,6 +103,7 @@ bind:
     default: ${instance.details["bucket_name"]}
     overwrite: true
   template_refs:
+    provider: terraform/dataproc/bind/provider.tf
     main: terraform/dataproc/bind/main.tf
     variables: terraform/dataproc/bind/variables.tf
     outputs: terraform/dataproc/bind/outputs.tf
