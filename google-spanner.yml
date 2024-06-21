@@ -158,6 +158,7 @@ bind:
   template_refs:
     main: terraform/spanner/bind/main.tf
     data: terraform/spanner/bind/data.tf
+    provider: terraform/spanner/bind/provider.tf
     variables: terraform/spanner/bind/variables.tf
     outputs: terraform/spanner/bind/outputs.tf
     versions: terraform/spanner/bind/versions.tf
