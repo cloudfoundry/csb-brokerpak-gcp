@@ -108,6 +108,7 @@ bind:
       default: ""
       overwrite: true
   template_refs:
+    provider: terraform/bigquery/bind/provider.tf
     main: terraform/bigquery/bind/main.tf
     variables: terraform/bigquery/bind/variables.tf
     data: terraform/bigquery/bind/data.tf
