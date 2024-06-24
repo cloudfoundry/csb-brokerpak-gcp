@@ -91,6 +91,10 @@ provision:
 bind:
   plan_inputs: []
   user_inputs:
+  - field_name: credentials
+    type: string
+    details: GCP credentials
+    default: ${config("gcp.credentials")}
   - field_name: project
     type: string
     details: GCP project

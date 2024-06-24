@@ -140,6 +140,10 @@ bind:
     type: string
     details: GCP credentials
     default: ${config("gcp.credentials")}
+  - field_name: project
+    type: string
+    details: GCP project
+    default: ${config("gcp.project")}
   computed_inputs:
     - name: instance
       type: string
