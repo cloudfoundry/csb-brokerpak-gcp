@@ -54,7 +54,7 @@ var _ = Describe("storage", Label("storage-terraform"), Ordered, func() {
 			Expect(AfterValuesForType(plan, googleBucketResource)).To(
 				MatchKeys(IgnoreExtras, Keys{
 					"name":                     Equal("bucket-name"),
-					"location":                 Equal("US"),
+					"location":                 Equal("us"),
 					"storage_class":            Equal("MULTI_REGIONAL"),
 					"labels":                   MatchAllKeys(Keys{"label1": Equal("value1")}),
 					"custom_placement_config":  BeEmpty(), // TF internals: It is a []any{} which means no custom_placement_config
@@ -98,7 +98,7 @@ var _ = Describe("storage", Label("storage-terraform"), Ordered, func() {
 			Expect(AfterValuesForType(plan, googleBucketResource)).To(
 				MatchKeys(IgnoreExtras, Keys{
 					"name":          Equal("bucket-name"),
-					"location":      Equal("US"),
+					"location":      Equal("us"),
 					"storage_class": Equal("STANDARD"),
 					"labels":        MatchAllKeys(Keys{"label1": Equal("value1")}),
 					"custom_placement_config": ConsistOf(
