@@ -5,11 +5,11 @@ go 1.22.4
 require (
 	cloud.google.com/go/spanner v1.63.0
 	github.com/cloudfoundry-community/go-cfenv v1.18.0
-	google.golang.org/api v0.185.0
+	google.golang.org/api v0.186.0
 )
 
 require (
-	cloud.google.com/go/auth v0.5.1 // indirect
+	cloud.google.com/go/auth v0.6.0 // indirect
 	cloud.google.com/go/auth/oauth2adapt v0.2.2 // indirect
 	cloud.google.com/go/compute/metadata v0.3.0 // indirect
 	cloud.google.com/go/iam v1.1.8 // indirect
@@ -41,7 +41,7 @@ require (
 	cloud.google.com/go v0.115.0 // indirect
 	github.com/golang/groupcache v0.0.0-20210331224755-41bb18bfe9da // indirect
 	github.com/golang/protobuf v1.5.4 // indirect
-	github.com/googleapis/gax-go/v2 v2.12.4 // indirect
+	github.com/googleapis/gax-go/v2 v2.12.5 // indirect
 	github.com/mitchellh/mapstructure v1.5.0
 	go.opencensus.io v0.24.0 // indirect
 	golang.org/x/net v0.26.0 // indirect
