@@ -1,111 +1,81 @@
 package credentials
 
 import (
-	"crypto/tls"
-	"crypto/x509"
 	"fmt"
-	"log"
+	"mysqlapp/internal/connector"
 
 	"github.com/cloudfoundry-community/go-cfenv"
-	"github.com/go-sql-driver/mysql"
 	"github.com/mitchellh/mapstructure"
 )
 
-const customCaConfigName = "custom-ca"
-
-func Read() (string, error) {
+func Read() (connector.Connector, error) {
 	app, err := cfenv.Current()
 	if err != nil {
-		return "", fmt.Errorf("error reading app env: %w", err)
+		return connector.Connector{}, fmt.Errorf("error reading app env: %w", err)
 	}
 
 	svs, err := app.Services.WithTag("mysql")
 	if err != nil {
-		return "", fmt.Errorf("error reading MySQL service details")
+		return connector.Connector{}, fmt.Errorf("error reading MySQL service details")
 	}
 
-	switch svs[0].Label {
-	case "google-cloudsql-mysql-vpc":
-		return readLegacyBrokerBinding(svs[0].Credentials)
-	default:
-		return readBinding(svs[0].Credentials)
+	serviceHandlers := map[string]func(any) (connector.Connector, error){
+		"google-cloudsql-mysql-vpc": readLegacyBrokerBinding,
 	}
+
+	// Attempt to find a handler for the service label.
+	if handler, ok := serviceHandlers[svs[0].Label]; ok {
+		return handler(svs[0].Credentials)
+	}
+
+	// Default to readBinding if no specific handler is found.
+	return readBinding(svs[0].Credentials)
 }
 
-func readBinding(creds any) (string, error) {
+func readBinding(creds any) (connector.Connector, error) {
 	var m binding
 	if err := mapstructure.Decode(creds, &m); err != nil {
-		return "", fmt.Errorf("failed to decode credentials: %w", err)
+		return connector.Connector{}, fmt.Errorf("failed to decode credentials: %w", err)
 	}
 
 	if err := m.validate(); err != nil {
-		return "", fmt.Errorf("parsed credentials are not valid: %w", err)
+		return connector.Connector{}, fmt.Errorf("parsed credentials are not valid: %w", err)
 	}
 
-	c := mysql.NewConfig()
-	c.TLSConfig = "false"
-	c.Net = "tcp"
-	c.Addr = fmt.Sprintf("%s:%d", m.Host, m.Port)
-	c.User = m.Username
-	c.Passwd = m.Password
-	c.DBName = m.Database
-
-	c.TLSConfig = customCaConfigName
-	if err := registerCustomCA(m.SSLRootCert, m.SSLKey, m.SSLCert); err != nil {
-		return "", fmt.Errorf("failed to register custom certificate: %w", err)
+	c := connector.Connector{
+		Host:        fmt.Sprintf("%s:%d", m.Host, m.Port),
+		Database:    m.Database,
+		Username:    m.Username,
+		Password:    m.Password,
+		Port:        m.Port,
+		SSLRootCert: m.SSLRootCert,
+		SSLKey:      m.SSLKey,
+		SSLCert:     m.SSLCert,
 	}
 
-	return c.FormatDSN(), nil
+	return c, nil
 }
 
-func readLegacyBrokerBinding(creds any) (string, error) {
+func readLegacyBrokerBinding(creds any) (connector.Connector, error) {
 	var m legacyBrokerBinding
 	if err := mapstructure.Decode(creds, &m); err != nil {
-		return "", err
+		return connector.Connector{}, err
 	}
 
 	if err := m.validate(); err != nil {
-		return "", fmt.Errorf("parsed legacy broker credentials are not valid: %w", err)
+		return connector.Connector{}, fmt.Errorf("parsed legacy broker credentials are not valid: %w", err)
 	}
 
-	c := mysql.NewConfig()
-	c.TLSConfig = "false"
-	c.Net = "tcp"
-	c.Addr = fmt.Sprintf("%s:3306", m.Host)
-	c.User = m.Username
-	c.Passwd = m.Password
-	c.DBName = m.Database
-
-	c.TLSConfig = customCaConfigName
-	if err := registerCustomCA(m.SSLRootCert, m.SSLKey, m.SSLCert); err != nil {
-		return "", fmt.Errorf("failed to register custom certificate: %w", err)
+	c := connector.Connector{
+		Host:        fmt.Sprintf("%s:3306", m.Host),
+		Database:    m.Database,
+		Username:    m.Username,
+		Password:    m.Password,
+		Port:        3306,
+		SSLRootCert: m.SSLRootCert,
+		SSLKey:      m.SSLKey,
+		SSLCert:     m.SSLCert,
 	}
 
-	return c.FormatDSN(), nil
-}
-
-func registerCustomCA(rootCert, key, cert string) error {
-	rootCertPool := x509.NewCertPool()
-	if ok := rootCertPool.AppendCertsFromPEM([]byte(rootCert)); !ok {
-		return fmt.Errorf("unable to append CA cert:\n[ %v ]", rootCert)
-	}
-
-	clientCert := make([]tls.Certificate, 0, 1)
-	certs, err := tls.X509KeyPair([]byte(cert), []byte(key))
-	if err != nil {
-		return fmt.Errorf("unable to parse a public/private key pair from a pair of PEM encoded data CA cert:\n[ %v ]", rootCert)
-	}
-
-	clientCert = append(clientCert, certs)
-	log.Printf("registering custom cert")
-	err = mysql.RegisterTLSConfig(customCaConfigName, &tls.Config{
-		RootCAs:            rootCertPool,
-		MinVersion:         tls.VersionTLS12,
-		Certificates:       clientCert,
-		InsecureSkipVerify: true,
-	})
-	if err != nil {
-		return fmt.Errorf("unable to register custom-ca mysql config: %s", err.Error())
-	}
-	return nil
+	return c, nil
 }
