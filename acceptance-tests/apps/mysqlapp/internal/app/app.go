@@ -1,22 +1,18 @@
 package app
 
 import (
-	"database/sql"
 	"fmt"
 	"log"
+	"mysqlapp/internal/connector"
 	"net/http"
 	"strings"
-	"time"
 )
 
 const (
-	tableName   = "test"
-	keyColumn   = "keyname"
-	valueColumn = "valuedata"
+	tlsQueryParam = "tls"
 )
 
-func App(uri string) http.Handler {
-	db := connect(uri)
+func App(conn connector.Connector) http.Handler {
 
 	r := http.NewServeMux()
 	r.HandleFunc("/", func(w http.ResponseWriter, r *http.Request) {
@@ -32,9 +28,9 @@ func App(uri string) http.Handler {
 		key := strings.Trim(r.URL.Path, "/")
 		switch r.Method {
 		case http.MethodGet:
-			handleGet(w, key, db)
+			handleGet(w, r, key, conn)
 		case http.MethodPut:
-			handleSet(w, r, key, db)
+			handleSet(w, r, key, conn)
 		default:
 			methodNotAllowed(w)
 		}
@@ -43,7 +39,7 @@ func App(uri string) http.Handler {
 	r.HandleFunc("/admin/ssl/", func(w http.ResponseWriter, r *http.Request) {
 		switch {
 		case r.Method == http.MethodGet:
-			handleGetSSLCipher(w, db)
+			handleGetSSLCipher(w, r, conn)
 		default:
 			methodNotAllowed(w)
 		}
@@ -55,23 +51,6 @@ func App(uri string) http.Handler {
 func aliveness(w http.ResponseWriter, r *http.Request) {
 	log.Printf("Handled aliveness test.")
 	w.WriteHeader(http.StatusNoContent)
-}
-
-func connect(uri string) *sql.DB {
-	db, err := sql.Open("mysql", uri)
-	if err != nil {
-		log.Fatalf("failed to connect to database: %s", err)
-	}
-	db.SetConnMaxLifetime(time.Minute * 3)
-	db.SetMaxOpenConns(10)
-	db.SetMaxIdleConns(10)
-
-	_, err = db.Exec(fmt.Sprintf(`CREATE TABLE IF NOT EXISTS %s (%s VARCHAR(255) NOT NULL, %s VARCHAR(255) NOT NULL)`, tableName, keyColumn, valueColumn))
-	if err != nil {
-		log.Fatalf("failed to create test table: %s", err)
-	}
-
-	return db
 }
 
 func fail(w http.ResponseWriter, code int, format string, a ...any) {

@@ -1,16 +1,27 @@
 package app
 
 import (
-	"database/sql"
 	"fmt"
 	"log"
+	"mysqlapp/internal/connector"
+	"mysqlapp/internal/keyvalue"
 	"net/http"
 )
 
-func handleGet(w http.ResponseWriter, key string, db *sql.DB) {
+func handleGet(w http.ResponseWriter, r *http.Request, key string, conn connector.Connector) {
 	log.Println("Handling get.")
 
-	stmt, err := db.Prepare(fmt.Sprintf(`SELECT %s from %s WHERE %s = ?`, valueColumn, tableName, keyColumn))
+	db, err := conn.Connect(connector.WithTLS(r.URL.Query().Get(tlsQueryParam)))
+	if err != nil {
+		fail(w, http.StatusInternalServerError, "error connecting to database: %s", err)
+	}
+
+	stmt, err := db.Prepare(fmt.Sprintf(
+		`SELECT %s from %s WHERE %s = ?`,
+		keyvalue.ValueColumn,
+		keyvalue.TableName,
+		keyvalue.KeyColumn,
+	))
 	if err != nil {
 		fail(w, http.StatusInternalServerError, "Error preparing statement: %s", err)
 		return

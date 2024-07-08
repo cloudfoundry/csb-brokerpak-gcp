@@ -1,13 +1,15 @@
 package acceptance_test
 
 import (
+	"csbbrokerpakgcp/acceptance-tests/helpers/matchers"
+	"csbbrokerpakgcp/acceptance-tests/helpers/random"
+	"io"
 	"net"
+	"net/http"
 	"net/url"
 	"strings"
 
 	"csbbrokerpakgcp/acceptance-tests/helpers/apps"
-	"csbbrokerpakgcp/acceptance-tests/helpers/matchers"
-	"csbbrokerpakgcp/acceptance-tests/helpers/random"
 	"csbbrokerpakgcp/acceptance-tests/helpers/services"
 
 	. "github.com/onsi/ginkgo/v2"
@@ -61,6 +63,26 @@ var _ = Describe("MySQL", Label("mysql"), func() {
 
 		Expect(strings.ToLower(tlsCipher.Name)).To(Equal("ssl_cipher"))
 		Expect(tlsCipher.Value).NotTo(BeEmpty(), "Expected Mysql connection for app %s to be encrypted", appOne.Name)
+
+		By("pushing and binding an app for verifying non-TLS connection attempts")
+		golangApp := apps.Push(apps.WithApp(apps.MySQL))
+		serviceInstance.Bind(golangApp)
+		apps.Start(golangApp)
+
+		By("verifying interactions with TLS enabled")
+		key, value := "key", "value"
+		golangApp.PUT(value, "/key-value/%s", key)
+		got := golangApp.GET("/key-value/%s", key).String()
+		Expect(got).To(Equal(value))
+
+		By("verifying that non-TLS connections should fail")
+		response := golangApp.GETResponse("/key-value/%s?tls=false", key)
+		defer response.Body.Close()
+		Expect(response).To(HaveHTTPStatus(http.StatusInternalServerError), "force TLS is enabled by default")
+		b, err := io.ReadAll(response.Body)
+		Expect(err).ToNot(HaveOccurred(), "error reading response body in TLS failure")
+		Expect(string(b)).To(ContainSubstring("error connecting to database: failed to verify the connection"), "force TLS is enabled by default")
+		Expect(string(b)).To(ContainSubstring("Error 1045 (28000): Access denied for user"), "mysql client cannot connect to the postgres server due to invalid TLS")
 	})
 
 	It("can create instances capable of accepting insecure connection requests", Label("mysql-no-autotls"), func() {
