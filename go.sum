@@ -81,8 +81,8 @@ cloud.google.com/go/datacatalog v1.5.0/go.mod h1:M7GPLNQeLfWqeIm3iuiruhPzkt65+Bx
 cloud.google.com/go/datacatalog v1.6.0/go.mod h1:+aEyF8JKg+uXcIdAmmaMUmZ3q1b/lKLtXCmXdnc0lbc=
 cloud.google.com/go/dataflow v0.6.0/go.mod h1:9QwV89cGoxjjSR9/r7eFDqqjtvbKxAK2BaYU6PVk9UM=
 cloud.google.com/go/dataflow v0.7.0/go.mod h1:PX526vb4ijFMesO1o202EaUmouZKBpjHsTlCtB4parQ=
-cloud.google.com/go/dataflow v0.9.9 h1:7qTWGXfpM2z3assRznIXJLw+XJNlucHFcvFAYhclQ+o=
-cloud.google.com/go/dataflow v0.9.9/go.mod h1:Wk/92E1BvhV7qs/dWb+3dN26uGgyp/H1Jr5ZJxeD3dw=
+cloud.google.com/go/dataflow v0.9.10 h1:L/mgrz4kqADWc2TZ5gFkU4qYGEqKgEzbUGBGcmXXNxM=
+cloud.google.com/go/dataflow v0.9.10/go.mod h1:lkhCwyVAOR4cKx+TzaxFbfh0tJcBVqxyIN97TDc/OJ8=
 cloud.google.com/go/dataform v0.3.0/go.mod h1:cj8uNliRlHpa6L3yVhDOBrUXH+BPAO1+KFMQQNSThKo=
 cloud.google.com/go/dataform v0.4.0/go.mod h1:fwV6Y4Ty2yIFL89huYlEkwUPtS7YZinZbzzj5S9FzCE=
 cloud.google.com/go/datalabeling v0.5.0/go.mod h1:TGcJ0G2NzcsXSE/97yWjIZO0bXj0KbVlINXMG9ud42I=
