@@ -4,7 +4,7 @@ go 1.22.5
 
 require (
 	cloud.google.com/go/dataflow v0.9.9
-	cloud.google.com/go/trace v1.10.9
+	cloud.google.com/go/trace v1.10.10
 	code.cloudfoundry.org/jsonry v1.1.4
 	github.com/Pallinder/go-randomdata v1.2.0
 	github.com/blang/semver/v4 v4.0.0
