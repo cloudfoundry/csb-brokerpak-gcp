@@ -16,8 +16,6 @@ const (
 	StackdriverTrace AppCode = "stackdrivertraceapp"
 	JDBCTestApp      AppCode = "jdbctestapp"
 	SpringStorageApp AppCode = "springstorageapp"
-	SpringPubSubApp  AppCode = "springpubsubapp"
-	PubSubApp        AppCode = "pubsubapp"
 )
 
 func (a AppCode) Dir() string {
@@ -28,7 +26,7 @@ func WithApp(app AppCode) Option {
 	switch app {
 	case StackdriverTrace, JDBCTestApp:
 		return WithDir(app.Dir())
-	case SpringStorageApp, SpringPubSubApp:
+	case SpringStorageApp:
 		return WithMavenPreBuild(app.Dir())
 	default:
 		return WithGoPreBuild(app.Dir())
