@@ -1,6 +1,6 @@
 module csbbrokerpakgcp
 
-go 1.22.5
+go 1.22.6
 
 require (
 	cloud.google.com/go/trace v1.10.11
