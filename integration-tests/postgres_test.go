@@ -114,7 +114,6 @@ var _ = Describe("postgres", Label("postgres"), func() {
 				Expect(err).NotTo(HaveOccurred())
 			},
 			Entry("tier", "tier", "db-g1-small"),
-			Entry("storage_gb", "storage_gb", 11),
 			Entry("authorized_network", "authorized_network", "new_network"),
 			Entry("authorized_network_id", "authorized_network_id", "new_network_id"),
 			Entry("authorized_networks_cidrs", "authorized_networks_cidrs", []string{"new cidr"}),

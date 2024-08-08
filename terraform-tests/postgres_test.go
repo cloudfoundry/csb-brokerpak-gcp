@@ -22,6 +22,7 @@ var _ = Describe("postgres", Label("postgres-terraform"), Ordered, func() {
 	defaultVars := map[string]any{
 		"tier":                                  "db-n1-standard-2",
 		"storage_gb":                            10,
+		"storage_autoresize_limit":              50,
 		"credentials":                           googleCredentials,
 		"project":                               googleProject,
 		"instance_name":                         "test-instance-name-456",
@@ -81,7 +82,7 @@ var _ = Describe("postgres", Label("postgres-terraform"), Ordered, func() {
 								}),
 							),
 							"disk_autoresize":       BeTrue(),
-							"disk_autoresize_limit": BeNumerically("==", 0),
+							"disk_autoresize_limit": BeNumerically("==", 50),
 							"backup_configuration": ContainElement(
 								MatchKeys(IgnoreExtras, Keys{
 									"enabled":    BeTrue(),
