@@ -9,6 +9,7 @@ variable "db_name" { type = string }
 variable "region" { type = string }
 variable "labels" { type = map(any) }
 variable "storage_gb" { type = number }
+variable "storage_autoresize_limit" { type = number }
 variable "database_version" { type = string }
 variable "backups_retain_number" { type = number }
 variable "backups_location" { type = string }

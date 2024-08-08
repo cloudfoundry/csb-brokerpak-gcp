@@ -6,6 +6,7 @@ resource "google_sql_database_instance" "instance" {
   settings {
     tier        = var.tier
     disk_size   = var.storage_gb
+    disk_autoresize_limit = var.storage_autoresize_limit
     user_labels = var.labels
 
     availability_type = local.availability_type
@@ -51,6 +52,14 @@ resource "google_sql_database_instance" "instance" {
 
   lifecycle {
     prevent_destroy = true
+    ignore_changes = [ 
+      // disk_size and disk_autoresize properties do not play along well together.
+      // The value of disk_size will attempt override the resizing from disk_autoresize when that feature is enabled. 
+      // This will cause an attempt to recreate the database instance.
+      // Ideally we would like to be able to control the lifecycle.ignore_changes depending on the value of `disk_autoresize`
+      // but dynamic lifecycle.ignore_changes variables are not alloweed. See https://github.com/opentofu/opentofu/issues/1432 
+      settings[0].disk_size,
+    ]
   }
 
   timeouts {
