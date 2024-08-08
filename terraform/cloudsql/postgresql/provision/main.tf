@@ -4,10 +4,10 @@ resource "google_sql_database_instance" "instance" {
   region           = var.region
 
   settings {
-    tier        = var.tier
-    disk_size   = var.storage_gb
+    tier                  = var.tier
+    disk_size             = var.storage_gb
     disk_autoresize_limit = var.storage_autoresize_limit
-    user_labels = var.labels
+    user_labels           = var.labels
 
     availability_type = local.availability_type
 
@@ -52,7 +52,7 @@ resource "google_sql_database_instance" "instance" {
 
   lifecycle {
     prevent_destroy = true
-    ignore_changes = [ 
+    ignore_changes = [
       // disk_size and disk_autoresize properties do not play along well together.
       // The value of disk_size will attempt override the resizing from disk_autoresize when that feature is enabled. 
       // This will cause an attempt to recreate the database instance.
