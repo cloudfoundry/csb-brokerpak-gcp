@@ -22,6 +22,8 @@ var _ = Describe("postgres", Label("postgres-terraform"), Ordered, func() {
 	defaultVars := map[string]any{
 		"tier":                                  "db-n1-standard-2",
 		"storage_gb":                            10,
+		"storage_autoresize":                    true,
+		"storage_autoresize_limit":              100,
 		"credentials":                           googleCredentials,
 		"project":                               googleProject,
 		"instance_name":                         "test-instance-name-456",
@@ -71,7 +73,6 @@ var _ = Describe("postgres", Label("postgres-terraform"), Ordered, func() {
 					"settings": ContainElement(
 						MatchKeys(IgnoreExtras, Keys{
 							"tier":        Equal("db-n1-standard-2"),
-							"disk_size":   BeNumerically("==", 10),
 							"user_labels": MatchAllKeys(Keys{"label1": Equal("value1")}),
 							"ip_configuration": ContainElement(
 								MatchKeys(IgnoreExtras, Keys{
@@ -81,7 +82,7 @@ var _ = Describe("postgres", Label("postgres-terraform"), Ordered, func() {
 								}),
 							),
 							"disk_autoresize":       BeTrue(),
-							"disk_autoresize_limit": BeNumerically("==", 0),
+							"disk_autoresize_limit": BeNumerically("==", 100),
 							"backup_configuration": ContainElement(
 								MatchKeys(IgnoreExtras, Keys{
 									"enabled":    BeTrue(),
@@ -121,6 +122,43 @@ var _ = Describe("postgres", Label("postgres-terraform"), Ordered, func() {
 			)
 
 			Expect(AfterOutput(plan, "allow_insecure_connections")).To(BeNil())
+		})
+	})
+
+	Context("storage auto resize", func() {
+		It("does not set the disk_gb value explicitly when it is enabled", func() {
+			plan = ShowPlan(terraformProvisionDir, buildVars(defaultVars, map[string]any{
+				"storage_gb":               50,
+				"storage_autoresize":       true,
+				"storage_autoresize_limit": 300,
+			}))
+
+			Expect(AfterValuesForType(plan, googleSQLDBInstance)).To(
+				MatchKeys(IgnoreExtras, Keys{
+					"settings": ContainElement(MatchKeys(IgnoreExtras, Keys{
+						"disk_autoresize":       BeTrue(),
+						"disk_autoresize_limit": BeNumerically("==", 300),
+					})),
+				}),
+			)
+		})
+
+		It("sets the disk_gb value explicitly when it is disabled", func() {
+			plan = ShowPlan(terraformProvisionDir, buildVars(defaultVars, map[string]any{
+				"storage_gb":               50,
+				"storage_autoresize":       false,
+				"storage_autoresize_limit": 300,
+			}))
+
+			Expect(AfterValuesForType(plan, googleSQLDBInstance)).To(
+				MatchKeys(IgnoreExtras, Keys{
+					"settings": ContainElement(MatchKeys(IgnoreExtras, Keys{
+						"disk_size":             BeNumerically("==", 50),
+						"disk_autoresize":       BeFalse(),
+						"disk_autoresize_limit": BeNumerically("==", 0),
+					})),
+				}),
+			)
 		})
 	})
 
