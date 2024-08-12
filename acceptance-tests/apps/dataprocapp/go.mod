@@ -3,7 +3,7 @@ module dataprocapp
 go 1.22.6
 
 require (
-	cloud.google.com/go/dataproc/v2 v2.5.3
+	cloud.google.com/go/dataproc/v2 v2.5.4
 	cloud.google.com/go/storage v1.43.0
 	github.com/cloudfoundry-community/go-cfenv v1.18.0
 	github.com/mitchellh/mapstructure v1.5.0
@@ -12,7 +12,7 @@ require (
 
 require (
 	cloud.google.com/go v0.115.0 // indirect
-	cloud.google.com/go/auth v0.7.3 // indirect
+	cloud.google.com/go/auth v0.8.0 // indirect
 	cloud.google.com/go/auth/oauth2adapt v0.2.3 // indirect
 	cloud.google.com/go/compute/metadata v0.5.0 // indirect
 	cloud.google.com/go/iam v1.1.12 // indirect
