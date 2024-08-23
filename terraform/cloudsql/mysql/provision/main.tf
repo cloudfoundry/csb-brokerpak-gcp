@@ -6,10 +6,10 @@ resource "google_sql_database_instance" "instance" {
 
   settings {
     tier                  = var.tier
-    disk_size             = var.storage_gb
     user_labels           = var.labels
+    disk_size             = var.disk_autoresize ? null : var.storage_gb
     disk_autoresize       = var.disk_autoresize
-    disk_autoresize_limit = var.disk_autoresize_limit
+    disk_autoresize_limit = var.disk_autoresize ? var.disk_autoresize_limit : 0
     availability_type     = local.availability_type
 
 

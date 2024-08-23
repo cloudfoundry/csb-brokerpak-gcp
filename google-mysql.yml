@@ -60,10 +60,10 @@ provision:
       The database can't be deleted when this value is set to `true`.
     default: false
   - field_name: storage_gb
-    required: true
     type: number
     details: |
       Size of storage volume for service instance.
+      To change this value, set the `disk_autoresize` to false.
       See documentation to understand the limits https://cloud.google.com/sql/docs/mysql/quotas#storage_limits
     default: 10
     constraints:

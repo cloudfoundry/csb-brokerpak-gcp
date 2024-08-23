@@ -69,7 +69,6 @@ var _ = Describe("mysql", Label("mysql-terraform"), Ordered, func() {
 					"settings": ContainElement(
 						MatchKeys(IgnoreExtras, Keys{
 							"tier":        Equal("db-n1-standard-2"),
-							"disk_size":   BeNumerically("==", 10),
 							"user_labels": MatchAllKeys(Keys{"label1": Equal("value1")}),
 							"ip_configuration": ContainElement(
 								MatchKeys(IgnoreExtras, Keys{
@@ -221,6 +220,43 @@ var _ = Describe("mysql", Label("mysql-terraform"), Ordered, func() {
 							"zone":           Equal("us-central1-a"),
 							"secondary_zone": Equal("us-central1-c"),
 						})),
+					})),
+				}),
+			)
+		})
+	})
+
+	Context("disk auto resize", func() {
+		It("does not set the disk_gb value explicitly when it is enabled", func() {
+			plan = ShowPlan(terraformProvisionDir, buildVars(defaultVars, map[string]any{
+				"storage_gb":            50,
+				"disk_autoresize":       true,
+				"disk_autoresize_limit": 300,
+			}))
+
+			Expect(AfterValuesForType(plan, googleSQLDBInstance)).To(
+				MatchKeys(IgnoreExtras, Keys{
+					"settings": ContainElement(MatchKeys(IgnoreExtras, Keys{
+						"disk_autoresize":       BeTrue(),
+						"disk_autoresize_limit": BeNumerically("==", 300),
+					})),
+				}),
+			)
+		})
+
+		It("sets the disk_gb value explicitly when it is disabled", func() {
+			plan = ShowPlan(terraformProvisionDir, buildVars(defaultVars, map[string]any{
+				"storage_gb":            50,
+				"disk_autoresize":       false,
+				"disk_autoresize_limit": 300,
+			}))
+
+			Expect(AfterValuesForType(plan, googleSQLDBInstance)).To(
+				MatchKeys(IgnoreExtras, Keys{
+					"settings": ContainElement(MatchKeys(IgnoreExtras, Keys{
+						"disk_size":             BeNumerically("==", 50),
+						"disk_autoresize":       BeFalse(),
+						"disk_autoresize_limit": BeNumerically("==", 0),
 					})),
 				}),
 			)
