@@ -22,8 +22,8 @@ var _ = Describe("postgres", Label("postgres-terraform"), Ordered, func() {
 	defaultVars := map[string]any{
 		"tier":                                  "db-n1-standard-2",
 		"storage_gb":                            10,
-		"storage_autoresize":                    true,
-		"storage_autoresize_limit":              100,
+		"disk_autoresize":                       true,
+		"disk_autoresize_limit":                 100,
 		"credentials":                           googleCredentials,
 		"project":                               googleProject,
 		"instance_name":                         "test-instance-name-456",
@@ -125,12 +125,12 @@ var _ = Describe("postgres", Label("postgres-terraform"), Ordered, func() {
 		})
 	})
 
-	Context("storage auto resize", func() {
+	Context("disk auto resize", func() {
 		It("does not set the disk_gb value explicitly when it is enabled", func() {
 			plan = ShowPlan(terraformProvisionDir, buildVars(defaultVars, map[string]any{
-				"storage_gb":               50,
-				"storage_autoresize":       true,
-				"storage_autoresize_limit": 300,
+				"storage_gb":            50,
+				"disk_autoresize":       true,
+				"disk_autoresize_limit": 300,
 			}))
 
 			Expect(AfterValuesForType(plan, googleSQLDBInstance)).To(
@@ -145,9 +145,9 @@ var _ = Describe("postgres", Label("postgres-terraform"), Ordered, func() {
 
 		It("sets the disk_gb value explicitly when it is disabled", func() {
 			plan = ShowPlan(terraformProvisionDir, buildVars(defaultVars, map[string]any{
-				"storage_gb":               50,
-				"storage_autoresize":       false,
-				"storage_autoresize_limit": 300,
+				"storage_gb":            50,
+				"disk_autoresize":       false,
+				"disk_autoresize_limit": 300,
 			}))
 
 			Expect(AfterValuesForType(plan, googleSQLDBInstance)).To(

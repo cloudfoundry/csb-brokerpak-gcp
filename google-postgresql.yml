@@ -40,19 +40,19 @@ provision:
       pattern: ^POSTGRES_[0-9]+$
   - field_name: storage_gb
     type: number
-    details: Size of storage volume for service instance. To change this value, set the `storage_autoresize` to false.
+    details: Size of storage volume for service instance. To change this value, set the `disk_autoresize` to false.
     default: 10
     constraints:
       maximum: 4096
       minimum: 10
-  - field_name: storage_autoresize
+  - field_name: disk_autoresize
     type: boolean
     details: Enables auto-resizing of the storage size. When this is enabled the `storage_gb` value is ignored.
     default: true
     constraints:
       maximum: 4096
       minimum: 10
-  - field_name: storage_autoresize_limit
+  - field_name: disk_autoresize_limit
     type: number
     details: The maximum size to which storage capacity can be automatically increased. The default value is 0, which specifies that there is no limit.
     default: 0
