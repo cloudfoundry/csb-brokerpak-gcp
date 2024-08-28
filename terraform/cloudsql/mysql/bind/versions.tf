@@ -6,7 +6,7 @@ terraform {
     }
     random = {
       source  = "registry.terraform.io/hashicorp/random"
-      version = ">=3.1.0"
+      version = "~> 3"
     }
   }
 }
