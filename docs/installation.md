@@ -31,7 +31,6 @@ Enable the following services in **[APIs and services > Library](https://console
 1. If you want to enable Bigtable as a service, enable the [Bigtable Admin API](https://console.cloud.google.com/apis/library/bigtable.googleapis.com)
 1. If you want to enable Datastore as a service, enable the [Datastore API](https://console.cloud.google.com/apis/api/datastore.googleapis.com/overview)
 1. If you want to enable Redis as a service, enable the [Redis API](https://console.cloud.google.com/apis/library/redis.googleapis.com)
-1. If you want to enable Dataproc as a service, enable the [Dataproc API](https://console.developers.google.com/apis/api/dataproc.googleapis.com/overview)
 1. If you want to enable Cloud Spanner as a service, enable the [Cloud Spanner API](https://console.developers.google.com/apis/api/spanner.googleapis.com/overview)
 
 #### [Create a root service account](#service-account)

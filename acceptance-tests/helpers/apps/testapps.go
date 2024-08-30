@@ -7,7 +7,6 @@ import (
 type AppCode string
 
 const (
-	Dataproc         AppCode = "dataprocapp"
 	Spanner          AppCode = "spannerapp"
 	Storage          AppCode = "storageapp"
 	MySQL            AppCode = "mysqlapp"

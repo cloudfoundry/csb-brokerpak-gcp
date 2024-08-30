@@ -15,13 +15,6 @@ updates:
     interval: "weekly"
     day: "saturday"
 - package-ecosystem: gomod
-  directory: "/acceptance-tests/apps/dataprocapp"
-  schedule:
-    interval: "weekly"
-    day: "saturday"
-  labels:
-    - "test-dependencies"
-- package-ecosystem: gomod
   directory: "/acceptance-tests/apps/mysqlapp"
   schedule:
     interval: "weekly"
