@@ -1,6 +1,6 @@
 module spannerapp
 
-go 1.23.6
+go 1.23.0
 
 require (
 	cloud.google.com/go/spanner v1.67.0
