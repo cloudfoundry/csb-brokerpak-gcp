@@ -1,16 +1,65 @@
 package brokers
 
 import (
+	"fmt"
+	"os/exec"
+	"path/filepath"
+	"strings"
+	"time"
+
 	"csbbrokerpakgcp/acceptance-tests/helpers/apps"
 	"csbbrokerpakgcp/acceptance-tests/helpers/cf"
 	"csbbrokerpakgcp/acceptance-tests/helpers/random"
 	"csbbrokerpakgcp/acceptance-tests/helpers/testpath"
-	"fmt"
-	"path/filepath"
-	"strings"
+
+	. "github.com/onsi/ginkgo/v2"
+	. "github.com/onsi/gomega"
+	"github.com/onsi/gomega/gexec"
 )
 
 type Option func(broker *Broker)
+
+func WithBoshReleaseDir(dir string) Option {
+	return func(b *Broker) {
+		b.boshReleaseDir = dir
+	}
+}
+
+func WithVM() Option {
+	return func(b *Broker) {
+		b.isVmBased = true
+	}
+}
+
+func defaultVmConfig(opts ...Option) (broker Broker) {
+	defaults := []Option{
+		WithName(random.Name(random.WithPrefix("broker"))),
+		WithUsername(random.Name()),
+		WithPassword(random.Password()),
+		WithEncryptionSecret(random.Password()),
+	}
+	WithOptions(append(defaults, opts...)...)(&broker)
+	return broker
+}
+
+func CreateVm(opts ...Option) *Broker {
+	broker := defaultVmConfig(opts...)
+
+	broker.isVmBased = true
+	deployCmd := exec.Command(
+		"bosh",
+		"-n", "deploy", "-d", broker.Name,
+		"../assets/manifest.yml",
+		"-l", "../assets/vars.yml", // fmt.Sprintf("vars-%s.yml", broker.Name),
+		"-v", fmt.Sprintf("release_repo_path=%s", broker.boshReleaseDir),
+		"-v", fmt.Sprintf("name=%s", broker.Name),
+	)
+
+	session, err := gexec.Start(deployCmd, GinkgoWriter, GinkgoWriter)
+	Expect(err).To(Not(HaveOccurred()))
+	Eventually(session, time.Minute*30).Should(gexec.Exit(0))
+	return &broker
+}
 
 func Create(opts ...Option) *Broker {
 	broker := defaultConfig(opts...)
@@ -56,6 +105,7 @@ func WithPrefix(prefix string) Option {
 }
 
 func WithSourceDir(dir string) Option {
+	Expect(filepath.Join(dir, "cloud-service-broker")).To(BeAnExistingFile())
 	return func(b *Broker) {
 		b.dir = dir
 	}

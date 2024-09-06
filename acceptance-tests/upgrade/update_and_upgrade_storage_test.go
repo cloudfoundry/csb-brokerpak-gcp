@@ -1,8 +1,11 @@
 package upgrade_test
 
 import (
+	"fmt"
+
 	"csbbrokerpakgcp/acceptance-tests/helpers/apps"
 	"csbbrokerpakgcp/acceptance-tests/helpers/brokers"
+	"csbbrokerpakgcp/acceptance-tests/helpers/cf"
 	"csbbrokerpakgcp/acceptance-tests/helpers/random"
 	"csbbrokerpakgcp/acceptance-tests/helpers/services"
 
@@ -11,6 +14,40 @@ import (
 )
 
 var _ = Describe("UpgradeStorageTest", Label("storage"), func() {
+	FWhen("upgrading the broker to a vm based deployment", func() {
+		It("drains in flight instances and waits for them to finish deploying", func() {
+			By("pushing latest released broker version")
+			serviceBroker := brokers.Create(
+				brokers.WithPrefix("csb-storage"),
+				brokers.WithSourceDir(releasedBuildDir),
+				brokers.WithReleasedEnv(releasedBuildDir),
+			)
+			defer serviceBroker.Delete()
+			By("creating a service")
+			serviceInstance := services.CreateInstance(
+				"csb-google-storage-bucket",
+				"default",
+				services.WithBroker(serviceBroker),
+			)
+			defer serviceInstance.Delete()
+
+			By("Starting to deploy a vm based broker")
+			serviceBrokerVM := brokers.CreateVm(
+				brokers.WithName(serviceBroker.Name),
+				brokers.WithBoshReleaseDir("../../../csb-gcp-release"),
+			)
+			defer serviceBrokerVM.Delete()
+			By("checking that the vm broker stopped the app broker")
+			out, _ := cf.Run("apps")
+			Expect(out).To(MatchRegexp(fmt.Sprintf("%s.*stopped", serviceBroker.Name)))
+
+			By("checking that the broker now uses a bosh dns name")
+			out, _ = cf.Run("service-brokers")
+			Expect(out).To(MatchRegexp(fmt.Sprintf("%s.csb.internal", serviceBrokerVM.Name)))
+			By("checking that the vm broker can continue to access the SI")
+			serviceInstance.Delete()
+		})
+	})
 	When("upgrading broker version", func() {
 		It("should continue to work", func() {
 			By("pushing latest released broker version")

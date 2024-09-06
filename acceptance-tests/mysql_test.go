@@ -1,13 +1,14 @@
 package acceptance_test
 
 import (
-	"csbbrokerpakgcp/acceptance-tests/helpers/matchers"
-	"csbbrokerpakgcp/acceptance-tests/helpers/random"
 	"io"
 	"net"
 	"net/http"
 	"net/url"
 	"strings"
+
+	"csbbrokerpakgcp/acceptance-tests/helpers/matchers"
+	"csbbrokerpakgcp/acceptance-tests/helpers/random"
 
 	"csbbrokerpakgcp/acceptance-tests/helpers/apps"
 	"csbbrokerpakgcp/acceptance-tests/helpers/services"
@@ -27,7 +28,7 @@ type mySQLOption struct {
 }
 
 var _ = Describe("MySQL", Label("mysql"), func() {
-	It("can be accessed by an app", Label("JDBC"), func() {
+	FIt("can be accessed by an app", Label("JDBC"), func() {
 		By("creating a service instance")
 		serviceInstance := services.CreateInstance("csb-google-mysql", "default")
 		defer serviceInstance.Delete()
