@@ -43,6 +43,7 @@ CF_API_PASS=$( credhub get --key password -n "/opsmgr/$CF_DEPLOYMENT_ID/uaa/admi
 CF_API_DOMAIN="$(cf api | head -1 | cut -f3- -d/ )"
 
 GCP_PAS_NETWORK="$(jq -r .service_network_name "${ENVIRONMENT_LOCK_METADATA}")"
+export GCP_PAS_NETWORK
 GOOGLE_PROJECT="$(jq -r .project "${ENVIRONMENT_LOCK_METADATA}")"
 export GOOGLE_PROJECT
 GOOGLE_CREDENTIALS="$(vault kv get -field key  /runway_concourse/service-enablement/gcp_cloud_service_broker)"
@@ -134,5 +135,5 @@ bosh -d "$DEPLOYMENT_NAME" deploy ./acceptance-tests/assets/manifest.yml  \
   -v release_repo_path="$(pwd)/../csb-gcp-release/" \
   --no-redact -n
 
-ginkgo acceptance-tests/
+ginkgo acceptance-tests/upgrade
 

@@ -86,8 +86,11 @@ var _ = Describe("UpgradeStorageTest", Label("storage"), func() {
 			Expect(got).To(Equal(blobDataOne))
 
 			By("pushing the development version of the broker")
-			serviceBroker.UpdateBroker(developmentBuildDir)
-
+			serviceBrokerVM := brokers.CreateVm(
+				brokers.WithName(serviceBroker.Name),
+				brokers.WithBoshReleaseDir("../../../csb-gcp-release"),
+			)
+			defer serviceBrokerVM.Delete()
 			By("upgrading service instance")
 			serviceInstance.Upgrade()
 
