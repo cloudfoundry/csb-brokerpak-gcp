@@ -15,6 +15,8 @@ var (
 	fromVersion         string
 	developmentBuildDir string
 	releasedBuildDir    string
+	csbGCPRelease       string
+	brokerDBEncryption  string
 	metadata            environment.GCPMetadata
 )
 
@@ -31,6 +33,9 @@ func TestUpgrade(t *testing.T) {
 
 var _ = BeforeSuite(func() {
 	metadata = environment.ReadGCPMetadata()
+	csbGCPRelease = "../../../csb-gcp-release"
+	brokerDBEncryption = os.Getenv("DB_PASSWORD")
+	Expect(brokerDBEncryption).NotTo(BeEmpty())
 
 	if releasedBuildDir == "" { // Released dir not specified, so we should download a brokerpak
 		if fromVersion == "" { // Version not specified, so use latest
