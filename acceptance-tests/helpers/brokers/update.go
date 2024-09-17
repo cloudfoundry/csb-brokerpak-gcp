@@ -35,3 +35,15 @@ func (b *Broker) UpdateEncryptionSecrets(secrets ...EncryptionSecret) {
 
 	cf.Run("update-service-broker", b.Name, b.username, b.password, b.app.URL)
 }
+
+func (b *Broker) UpdateToVM(opts ...Option) *Broker {
+
+	return CreateVm(
+		append(
+			opts,
+			// Name and encryption secret must not be changed when updating.
+			WithEncryptionSecrets(b.secrets[0]),
+			WithName(b.Name),
+		)...,
+	)
+}
