@@ -13,7 +13,8 @@ source <(smith om -l "${ENVIRONMENT_LOCK_METADATA}")
 # shellcheck disable=1090
 source <(smith bosh -l "${ENVIRONMENT_LOCK_METADATA}")
 smith -l "${ENVIRONMENT_LOCK_METADATA}" cf-login <<< "${ORG}" &> /dev/null
-DB_PASSWORD="$(echo "${ENV_NAME}" | sha256sum | cut -f1 -d' ')"
+DB_PASSWORD=$(echo "${ENV_NAME}" | sha256sum | cut -f1 -d' ')
+export DB_PASSWORD
 ENCRYPTION_PASSWORDS='[{"password": {"secret":"'${DB_PASSWORD}'"},"label":"first-encryption","primary":true}]'
 if ! cf service-key  csb-sql csb-sql; then
   cf create-service-key csb-sql csb-sql
@@ -21,11 +22,11 @@ fi
 CSB_DB_DATA_RAW=$( cf service-key  csb-sql csb-sql | tail -n+2)
 CSB_DB_DATA=$( \
 jq ".credentials | 
-    { 
+    {
       host: .hostname, 
       encryption: { enabled: true, passwords: $ENCRYPTION_PASSWORDS }, 
       ca: { cert: .tls.cert.ca}, 
-      name: .name, 
+      name: \"service_instance_db\",
       user: .username, 
       password: .password,
       port: .port
@@ -46,7 +47,7 @@ GCP_PAS_NETWORK="$(jq -r .service_network_name "${ENVIRONMENT_LOCK_METADATA}")"
 export GCP_PAS_NETWORK
 GOOGLE_PROJECT="$(jq -r .project "${ENVIRONMENT_LOCK_METADATA}")"
 export GOOGLE_PROJECT
-GOOGLE_CREDENTIALS="$(vault kv get -field key  /runway_concourse/service-enablement/gcp_cloud_service_broker)"
+GOOGLE_CREDENTIALS="$(vault kv get -field key  /concourse/tas-services-enablement/gcp_cloud_service_broker)"
 export GOOGLE_CREDENTIALS
 GCP_PAS_NETWORK_ID="https://www.googleapis.com/compute/v1/projects/$GOOGLE_PROJECT/global/networks/$GCP_PAS_NETWORK"
 GSB_PROVISION_DEFAULTS="{\"authorized_network_id\":\"${GCP_PAS_NETWORK_ID}\"}"
@@ -128,6 +129,20 @@ service:
         ${GSB_PROVISION_DEFAULTS}
     
 EOF
+
+# This Manifest is used to deploy the broker in the upgrade tests when upgrading to a VM.
+# Do not confuse with the deployment that is used to run the acceptance tests.
+# The temporary manifest will be modify by the upgrade tests by using opsfiles.
+# We need to have a encryption block with the default label and the same value as
+# the one used when creating the broker in the initial phase of the upgrade tests.
+# CSB will perform a integrity check of the password and will fail if the password
+# is not the same when upgrading to a VM.
+bosh int ./acceptance-tests/assets/manifest.yml  \
+  -l ./acceptance-tests/assets/vars.yml \
+  -v release_repo_path="$(pwd)/../csb-gcp-release/" > /tmp/tmp-manifest.yml
+
+# This deployment is used to run the acceptance tests
+# Do not confuse with the deployment that is used to run the upgrade tests
 DEPLOYMENT_NAME=cloud-service-broker-gcp
 bosh -d "$DEPLOYMENT_NAME" deploy ./acceptance-tests/assets/manifest.yml  \
   -l ./acceptance-tests/assets/vars.yml \
@@ -135,5 +150,5 @@ bosh -d "$DEPLOYMENT_NAME" deploy ./acceptance-tests/assets/manifest.yml  \
   -v release_repo_path="$(pwd)/../csb-gcp-release/" \
   --no-redact -n
 
-ginkgo acceptance-tests/upgrade
+ginkgo --procs 4 --vv acceptance-tests/upgrade
 
