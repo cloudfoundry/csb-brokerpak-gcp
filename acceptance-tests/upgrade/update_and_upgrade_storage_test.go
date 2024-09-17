@@ -1,20 +1,19 @@
 package upgrade_test
 
 import (
-	"fmt"
-
 	"csbbrokerpakgcp/acceptance-tests/helpers/apps"
 	"csbbrokerpakgcp/acceptance-tests/helpers/brokers"
 	"csbbrokerpakgcp/acceptance-tests/helpers/cf"
 	"csbbrokerpakgcp/acceptance-tests/helpers/random"
 	"csbbrokerpakgcp/acceptance-tests/helpers/services"
+	"fmt"
 
 	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
 )
 
 var _ = Describe("UpgradeStorageTest", Label("storage"), func() {
-	FWhen("upgrading the broker to a vm based deployment", func() {
+	When("upgrading the broker to a vm based deployment", func() {
 		It("drains in flight instances and waits for them to finish deploying", func() {
 			By("pushing latest released broker version")
 			serviceBroker := brokers.Create(
@@ -85,12 +84,13 @@ var _ = Describe("UpgradeStorageTest", Label("storage"), func() {
 			got := appTwo.GET(blobNameOne).String()
 			Expect(got).To(Equal(blobDataOne))
 
-			By("pushing the development version of the broker")
-			serviceBrokerVM := brokers.CreateVm(
+			By("deploying the development version of the broker")
+			serviceBrokerVM := serviceBroker.UpdateToVM(
 				brokers.WithName(serviceBroker.Name),
-				brokers.WithBoshReleaseDir("../../../csb-gcp-release"),
+				brokers.WithBoshReleaseDir(csbGCPRelease),
 			)
 			defer serviceBrokerVM.Delete()
+
 			By("upgrading service instance")
 			serviceInstance.Upgrade()
 
