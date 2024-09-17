@@ -1,0 +1,64 @@
+env_name: {{.BoshEnvName}}
+azs:
+  - us-central1-c
+
+gcp:
+  credentials: '{{.GoogleCredentials}}'
+  project: '{{.GoogleProject}}'
+
+cf_api_url: {{.CFAPIDomain}}
+cf_admin_pass: "{{.CFAPIPass}}"
+brokerpak:
+  builtin:
+    path: ./
+  config: '{{.GSBBrokerpakConfig}}'
+  sources: |
+    {}
+  terraform:
+    upgrades:
+      enabled: true
+  updates:
+    enabled: true
+compatibility:
+  enable-beta-services: true
+credhub:
+  ca_cert_file: credhub_ca_cert.pem
+  skip_ssl_validation: false
+  uaa_client_name: {{.CHUAAClientName}}
+  uaa_client_secret: {{.CHUAAClientSecret}}
+  uaa_url: {{.CHUAAURL}}
+  url: {{.CHCredHubURL}}
+db: {{.CsbDbData}}
+
+provision:
+  defaults: |
+    {{.GSBProvisionDefaults}}
+request:
+  property:
+    validation:
+      disabled: false
+service:
+  csb-google-postgres:
+    plans: |+
+      {{.GSBServiceCsbGooglePostgresPlans}}
+    provision:
+      defaults: |+
+        {{.GSBProvisionDefaults}}
+  csb-google-mysql:
+    plans: |+
+      {{.GSBServiceCsbGoogleMysqlPlans}}
+    provision:
+      defaults: |+
+        {{.GSBProvisionDefaults}}
+  csb-google-storage-bucket:
+    plans: |+
+      {{.GSBServiceCsbGoogleStorageBucketPlans}}
+    provision:
+      defaults: |+
+        {{.GSBProvisionDefaults}}
+  csb-google-redis:
+    plans: |+
+      {{.GSBServiceCsbGoogleRedisPlans}}
+    provision:
+      defaults: |+
+        {{.GSBProvisionDefaults}}
