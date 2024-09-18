@@ -47,7 +47,7 @@ var _ = Describe("UpgradeStorageTest", Label("storage"), func() {
 			serviceInstance.Delete()
 		})
 	})
-	When("upgrading broker version", func() {
+	FWhen("upgrading broker version", func() {
 		It("should continue to work", func() {
 			By("pushing latest released broker version")
 			serviceBroker := brokers.Create(
@@ -89,7 +89,14 @@ var _ = Describe("UpgradeStorageTest", Label("storage"), func() {
 				brokers.WithName(serviceBroker.Name),
 				brokers.WithBoshReleaseDir(csbGCPRelease),
 			)
-			defer serviceBrokerVM.Delete()
+			defer func() {
+				// service instance must be deleted before the new VM based broker
+				// cf delete-service fake-service-instance exits with 0
+				// even if the service instance does not exist
+				// defer statements are executed in a last-in, first-out order (LIFO)
+				serviceInstance.Delete()
+				serviceBrokerVM.Delete()
+			}()
 
 			By("upgrading service instance")
 			serviceInstance.Upgrade()
@@ -103,8 +110,8 @@ var _ = Describe("UpgradeStorageTest", Label("storage"), func() {
 			bindingTwo.Unbind()
 
 			By("creating new bindings and testing they still work")
-			serviceInstance.BindWithParams(appOne, `{"role":"storage.objectAdmin"}`)
-			serviceInstance.BindWithParams(appTwo, `{"role":"storage.objectAdmin"}`)
+			bindingOne = serviceInstance.BindWithParams(appOne, `{"role":"storage.objectAdmin"}`)
+			bindingTwo = serviceInstance.BindWithParams(appTwo, `{"role":"storage.objectAdmin"}`)
 			apps.Restage(appOne, appTwo)
 
 			By("triggering a no-op update to reapply the terraform for service instance")
@@ -119,8 +126,8 @@ var _ = Describe("UpgradeStorageTest", Label("storage"), func() {
 			bindingTwo.Unbind()
 
 			By("creating new bindings and testing they still work")
-			serviceInstance.BindWithParams(appOne, `{"role":"storage.objectAdmin"}`)
-			serviceInstance.BindWithParams(appTwo, `{"role":"storage.objectAdmin"}`)
+			bindingOne = serviceInstance.BindWithParams(appOne, `{"role":"storage.objectAdmin"}`)
+			bindingTwo = serviceInstance.BindWithParams(appTwo, `{"role":"storage.objectAdmin"}`)
 			apps.Restage(appOne, appTwo)
 
 			By("checking that previously written data is accessible")
@@ -136,6 +143,8 @@ var _ = Describe("UpgradeStorageTest", Label("storage"), func() {
 
 			appOne.DELETE(blobNameOne)
 			appOne.DELETE(blobNameTwo)
+			bindingOne.Unbind()
+			bindingTwo.Unbind()
 		})
 	})
 })

@@ -16,7 +16,6 @@ var (
 	developmentBuildDir string
 	releasedBuildDir    string
 	csbGCPRelease       string
-	brokerDBEncryption  string
 	metadata            environment.GCPMetadata
 )
 
@@ -24,6 +23,7 @@ func init() {
 	flag.StringVar(&fromVersion, "from-version", "", "version to upgrade from")
 	flag.StringVar(&releasedBuildDir, "releasedBuildDir", "", "location of released version of built broker and brokerpak")
 	flag.StringVar(&developmentBuildDir, "developmentBuildDir", "../../", "location of development version of built broker and brokerpak")
+	flag.StringVar(&csbGCPRelease, "csbGCPReleaseDir", "../../../csb-gcp-release", "location of development version of csb-gcp release")
 }
 
 func TestUpgrade(t *testing.T) {
@@ -34,8 +34,6 @@ func TestUpgrade(t *testing.T) {
 var _ = BeforeSuite(func() {
 	metadata = environment.ReadGCPMetadata()
 	csbGCPRelease = "../../../csb-gcp-release"
-	brokerDBEncryption = os.Getenv("DB_PASSWORD")
-	Expect(brokerDBEncryption).NotTo(BeEmpty())
 
 	if releasedBuildDir == "" { // Released dir not specified, so we should download a brokerpak
 		if fromVersion == "" { // Version not specified, so use latest
