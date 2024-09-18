@@ -19,6 +19,10 @@ var (
 	varsTemplateFile, varsFile, manifest, releaseRepoPath string
 )
 
+const (
+	gsbBrokerpakConfig = `{"global_labels":[{"key":"key1","value":"value1"},{"key":"key2","value":"value2"}]}`
+)
+
 type Config struct {
 	GoogleProject                         string `env:"GOOGLE_PROJECT"`
 	GoogleCredentials                     string `env:"GOOGLE_CREDENTIALS"`
@@ -84,6 +88,7 @@ func createConfig() (Config, error) {
 	if err := env.Parse(&config); err != nil {
 		return config, err
 	}
+	config.GSBBrokerpakConfig = gsbBrokerpakConfig
 	return config, nil
 }
 
@@ -98,7 +103,6 @@ func opsManagerEnvVars(filePath string) {
 
 func cfLogin(filePath, org, space string) {
 	cmd := exec.Command("smith", "-l", filePath, "cf-login")
-	//cmd.Stdin = strings.NewReader(org)
 	cmd.Stdout = os.Stdout
 	cmd.Stderr = os.Stderr
 	if err := cmd.Run(); err != nil {
@@ -155,15 +159,17 @@ func extractServiceKeyData(service, key, dbPassword string) string {
 	csbDbDataRaw := strings.TrimSpace(output.String())
 
 	var data struct {
-		Hostname string `json:"hostname"`
-		TLS      struct {
-			Cert struct {
-				CA string `json:"ca"`
-			} `json:"cert"`
-		} `json:"tls"`
-		Username string `json:"username"`
-		Password string `json:"password"`
-		Port     string `json:"port"`
+		Credentials struct {
+			Hostname string `json:"hostname"`
+			TLS      struct {
+				Cert struct {
+					CA string `json:"ca"`
+				} `json:"cert"`
+			} `json:"tls"`
+			Username string `json:"username"`
+			Password string `json:"password"`
+			Port     int    `json:"port"`
+		} `json:"credentials"`
 	}
 
 	if err := json.Unmarshal([]byte(csbDbDataRaw), &data); err != nil {
@@ -172,25 +178,25 @@ func extractServiceKeyData(service, key, dbPassword string) string {
 
 	csbDbData := fmt.Sprintf(
 		`{
-		"host": "%s",
-		"encryption": { "enabled": true, "passwords": [{"password": {"secret": "%s"}, "label": "default", "primary": true}] },
-		"ca": { "cert": "%s" },
-		"name": "service_instance_db",
-		"user": "%s",
-		"password": "%s",
-		"port": %s
-	}`,
-		data.Hostname,
+	"host": "%s",
+	"encryption": { "enabled": true, "passwords": [{"password": {"secret": "%s"}, "label": "first-encryption", "primary": true}] },
+	"ca": { "cert": "%s" },
+	"name": "service_instance_db",
+	"user": "%s",
+	"password": "%s",
+	"port": %d
+}`,
+		data.Credentials.Hostname,
 		dbPassword,
-		data.TLS.Cert.CA,
-		data.Username,
-		data.Password,
-		data.Port,
+		strings.ReplaceAll(data.Credentials.TLS.Cert.CA, "\n", "\\n"),
+		data.Credentials.Username,
+		data.Credentials.Password,
+		data.Credentials.Port,
 	)
 	return csbDbData
 }
 
-func cloudFoundryDeploymentID() string {
+func cloudFoundryDeploymentGUID() string {
 	cmd := exec.Command("om", "-k", "curl", "-s", "-p", "/api/v0/staged/products")
 	output, err := cmd.Output()
 	if err != nil {
@@ -215,14 +221,14 @@ type CFAPI struct {
 	CFAPIDomain string
 }
 
-func cfAPIPass(cfDeploymentID string) (string, error) {
+func cfAPIPass(cfDeploymentGUID string) (string, error) {
 	cmd := exec.Command(
 		"credhub",
 		"get",
 		"--key",
 		"password",
 		"-n",
-		fmt.Sprintf("/opsmgr/%s/uaa/admin_credentials", cfDeploymentID),
+		fmt.Sprintf("/opsmgr/%s/uaa/admin_credentials", cfDeploymentGUID),
 		"-j",
 	)
 	output, err := cmd.Output()
@@ -230,7 +236,7 @@ func cfAPIPass(cfDeploymentID string) (string, error) {
 		return "", fmt.Errorf("failed to get CF_API_PASS: %v", err)
 	}
 
-	return string(output), nil
+	return strings.TrimSpace(string(output)), nil
 }
 
 func cfAPIDomain() (string, error) {
@@ -254,7 +260,7 @@ func cfAPIDomain() (string, error) {
 }
 
 func cfAPIData() CFAPI {
-	pass, err := cfAPIPass(cloudFoundryDeploymentID())
+	pass, err := cfAPIPass(cloudFoundryDeploymentGUID())
 	if err != nil {
 		log.Fatalf("failed to get CF API Pass: %v", err)
 	}
