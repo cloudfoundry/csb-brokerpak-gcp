@@ -1,4 +1,4 @@
-module boshmanifestcreator
+module boshifier
 
 go 1.23.1
 

@@ -1,8 +1,8 @@
 package bosh
 
 import (
-	"boshmanifestcreator/business/capi"
-	"boshmanifestcreator/foundation/config"
+	"boshifier/business/capi"
+	"boshifier/foundation/config"
 	"bytes"
 	"fmt"
 	"os"
