@@ -49,22 +49,25 @@ var _ = BeforeSuite(func() {
 
 	absDevelopmentBuildDir, err := filepath.Abs(developmentBuildDir)
 	Expect(err).NotTo(HaveOccurred())
+
+	absCSBGCPReleaseDir, err := filepath.Abs(csbGCPRelease)
+	Expect(err).NotTo(HaveOccurred())
 	cmd := exec.Command(
 		"go",
 		"run",
 		"-C",
-		"../boshmanifestcreator/app/upgrader",
+		"../boshifier/app/manifestcreator",
 		".",
 		"-brokerpak-path",
 		absDevelopmentBuildDir,
 		"-iaas-release-path",
-		csbGCPRelease,
+		absCSBGCPReleaseDir,
 	)
 
 	cmd.Stdout = GinkgoWriter
 	cmd.Stderr = os.Stderr
 
-	Expect(cmd.Run()).To(Succeed(), "failed to run bosh manifest creator - upgrader")
+	Expect(cmd.Run()).To(Succeed(), "failed to run boshifier - manifest creator")
 })
 
 // preflight checks that a specified broker dir is viable so that the user gets fast feedback

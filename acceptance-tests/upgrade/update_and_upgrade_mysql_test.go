@@ -49,8 +49,19 @@ var _ = Describe("UpgradeMYSQLTest", Label("mysql"), func() {
 			By("getting the value using the second app")
 			Expect(appTwo.GET("/key-value/%s", key).String()).To(Equal(value))
 
-			By("pushing the development version of the broker")
-			serviceBroker.UpdateBroker(developmentBuildDir)
+			By("deploying the development version of the broker")
+			serviceBrokerVM := serviceBroker.UpdateToVM(
+				brokers.WithName(serviceBroker.Name),
+				brokers.WithBoshReleaseDir(csbGCPRelease),
+			)
+			defer func() {
+				// service instance must be deleted before the new VM based broker
+				// cf delete-service fake-service-instance exits with 0
+				// even if the service instance does not exist
+				// defer statements are executed in a last-in, first-out order (LIFO)
+				serviceInstance.Delete()
+				serviceBrokerVM.Delete()
+			}()
 
 			By("upgrading service instance")
 			serviceInstance.Upgrade()
@@ -63,8 +74,8 @@ var _ = Describe("UpgradeMYSQLTest", Label("mysql"), func() {
 			bindingTwo.Unbind()
 
 			By("creating new bindings and testing they still work")
-			serviceInstance.Bind(appOne)
-			serviceInstance.Bind(appTwo)
+			bindingOne = serviceInstance.Bind(appOne)
+			bindingTwo = serviceInstance.Bind(appTwo)
 			apps.Restage(appOne, appTwo)
 
 			By("updating the instance plan")
@@ -78,8 +89,8 @@ var _ = Describe("UpgradeMYSQLTest", Label("mysql"), func() {
 			bindingTwo.Unbind()
 
 			By("creating new bindings and testing they still work")
-			serviceInstance.Bind(appOne)
-			serviceInstance.Bind(appTwo)
+			bindingOne = serviceInstance.Bind(appOne)
+			bindingTwo = serviceInstance.Bind(appTwo)
 			apps.Restage(appOne, appTwo)
 
 			By("getting the value using the second app")
@@ -100,6 +111,8 @@ var _ = Describe("UpgradeMYSQLTest", Label("mysql"), func() {
 
 			Expect(sslInfo.VariableName).To(Equal("Ssl_cipher"))
 			Expect(sslInfo.Value).To(Equal("ECDHE-RSA-AES128-GCM-SHA256"))
+			bindingOne.Unbind()
+			bindingTwo.Unbind()
 		})
 	})
 })

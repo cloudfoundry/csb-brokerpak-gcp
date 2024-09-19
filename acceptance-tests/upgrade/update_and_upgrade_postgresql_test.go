@@ -54,8 +54,19 @@ var _ = Describe("UpgradePostgreSQLTest", Label("postgresql"), func() {
 			got := appTwo.GET("%s/%s", schema, keyOne).String()
 			Expect(got).To(Equal(valueOne))
 
-			By("pushing the development version of the broker")
-			serviceBroker.UpdateBroker(developmentBuildDir)
+			By("deploying the development version of the broker")
+			serviceBrokerVM := serviceBroker.UpdateToVM(
+				brokers.WithName(serviceBroker.Name),
+				brokers.WithBoshReleaseDir(csbGCPRelease),
+			)
+			defer func() {
+				// service instance must be deleted before the new VM based broker
+				// cf delete-service fake-service-instance exits with 0
+				// even if the service instance does not exist
+				// defer statements are executed in a last-in, first-out order (LIFO)
+				serviceInstance.Delete()
+				serviceBrokerVM.Delete()
+			}()
 
 			By("upgrading service instance")
 			serviceInstance.Upgrade()
@@ -69,8 +80,8 @@ var _ = Describe("UpgradePostgreSQLTest", Label("postgresql"), func() {
 			bindingTwo.Unbind()
 
 			By("creating new bindings and testing they still work")
-			serviceInstance.Bind(appOne)
-			serviceInstance.Bind(appTwo)
+			bindingOne = serviceInstance.Bind(appOne)
+			bindingTwo = serviceInstance.Bind(appTwo)
 			apps.Restage(appOne, appTwo)
 
 			By("updating the instance plan")
@@ -85,8 +96,8 @@ var _ = Describe("UpgradePostgreSQLTest", Label("postgresql"), func() {
 			bindingTwo.Unbind()
 
 			By("creating new bindings and testing they still work")
-			serviceInstance.Bind(appOne)
-			serviceInstance.Bind(appTwo)
+			bindingOne = serviceInstance.Bind(appOne)
+			bindingTwo = serviceInstance.Bind(appTwo)
 			apps.Restage(appOne, appTwo)
 
 			By("checking previously written data still accessible")
@@ -100,6 +111,8 @@ var _ = Describe("UpgradePostgreSQLTest", Label("postgresql"), func() {
 
 			got = appTwo.GET("%s/%s", schema, keyTwo).String()
 			Expect(got).To(Equal(valueTwo))
+			bindingOne.Unbind()
+			bindingTwo.Unbind()
 		})
 	})
 })
