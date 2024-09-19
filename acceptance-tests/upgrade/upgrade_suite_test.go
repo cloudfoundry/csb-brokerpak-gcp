@@ -5,6 +5,8 @@ import (
 	"csbbrokerpakgcp/acceptance-tests/helpers/environment"
 	"flag"
 	"os"
+	"os/exec"
+	"path/filepath"
 	"testing"
 
 	. "github.com/onsi/ginkgo/v2"
@@ -33,7 +35,6 @@ func TestUpgrade(t *testing.T) {
 
 var _ = BeforeSuite(func() {
 	metadata = environment.ReadGCPMetadata()
-	csbGCPRelease = "../../../csb-gcp-release"
 
 	if releasedBuildDir == "" { // Released dir not specified, so we should download a brokerpak
 		if fromVersion == "" { // Version not specified, so use latest
@@ -45,6 +46,25 @@ var _ = BeforeSuite(func() {
 
 	preflight(developmentBuildDir) // faster feedback as no download
 	preflight(releasedBuildDir)
+
+	absDevelopmentBuildDir, err := filepath.Abs(developmentBuildDir)
+	Expect(err).NotTo(HaveOccurred())
+	cmd := exec.Command(
+		"go",
+		"run",
+		"-C",
+		"../boshmanifestcreator/app/upgrader",
+		".",
+		"-brokerpak-path",
+		absDevelopmentBuildDir,
+		"-iaas-release-path",
+		csbGCPRelease,
+	)
+
+	cmd.Stdout = GinkgoWriter
+	cmd.Stderr = os.Stderr
+
+	Expect(cmd.Run()).To(Succeed(), "failed to run bosh manifest creator - upgrader")
 })
 
 // preflight checks that a specified broker dir is viable so that the user gets fast feedback

@@ -47,6 +47,7 @@ var _ = Describe("UpgradeStorageTest", Label("storage"), func() {
 			serviceInstance.Delete()
 		})
 	})
+
 	FWhen("upgrading broker version", func() {
 		It("should continue to work", func() {
 			By("pushing latest released broker version")
