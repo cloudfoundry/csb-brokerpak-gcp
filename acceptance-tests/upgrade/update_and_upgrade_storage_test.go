@@ -13,7 +13,7 @@ import (
 )
 
 var _ = Describe("UpgradeStorageTest", Label("storage"), func() {
-	FWhen("upgrading the broker to a vm based deployment", func() {
+	When("upgrading the broker to a vm based deployment", func() {
 		It("drains in flight instances and waits for them to finish deploying", func() {
 			By("pushing latest released broker version")
 			serviceBroker := brokers.Create(
