@@ -38,7 +38,7 @@ func (b *Broker) UpdateEncryptionSecrets(secrets ...EncryptionSecret) {
 
 func (b *Broker) UpdateToVM(opts ...Option) *Broker {
 
-	return CreateVm(
+	return createVm(
 		append(
 			opts,
 			// Name and encryption secret must not be changed when updating.

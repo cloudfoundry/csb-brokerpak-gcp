@@ -37,7 +37,7 @@ func defaultVmConfig(opts ...Option) (broker Broker) {
 	return broker
 }
 
-func CreateVm(opts ...Option) *Broker {
+func createVm(opts ...Option) *Broker {
 	broker := defaultVmConfig(opts...)
 	password := broker.secrets[0].Password
 

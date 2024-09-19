@@ -13,7 +13,7 @@ import (
 )
 
 var _ = Describe("UpgradeStorageTest", Label("storage"), func() {
-	When("upgrading the broker to a vm based deployment", func() {
+	FWhen("upgrading the broker to a vm based deployment", func() {
 		It("drains in flight instances and waits for them to finish deploying", func() {
 			By("pushing latest released broker version")
 			serviceBroker := brokers.Create(
@@ -31,7 +31,7 @@ var _ = Describe("UpgradeStorageTest", Label("storage"), func() {
 			defer serviceInstance.Delete()
 
 			By("Starting to deploy a vm based broker")
-			serviceBrokerVM := brokers.CreateVm(
+			serviceBrokerVM := serviceBroker.UpdateToVM(
 				brokers.WithName(serviceBroker.Name),
 				brokers.WithBoshReleaseDir("../../../csb-gcp-release"),
 			)
@@ -48,7 +48,7 @@ var _ = Describe("UpgradeStorageTest", Label("storage"), func() {
 		})
 	})
 
-	FWhen("upgrading broker version", func() {
+	When("upgrading broker version", func() {
 		It("should continue to work", func() {
 			By("pushing latest released broker version")
 			serviceBroker := brokers.Create(
