@@ -1,17 +1,17 @@
-env_name: {{.BoshEnvName}}
+env_name: {{.Bosh.BoshEnvName}}
 azs:
   - us-central1-c
 
 gcp:
-  credentials: '{{.GoogleCredentials}}'
-  project: '{{.GoogleProject}}'
+  credentials: '{{.Google.GoogleCredentials}}'
+  project: '{{.Google.GoogleProject}}'
 
 cf_api_url: {{.CFAPIDomain}}
 cf_admin_pass: "{{.CFAPIPass}}"
 brokerpak:
   builtin:
     path: ./
-  config: '{{.GSBBrokerpakConfig}}'
+  config: '{{.Brokerpak.GSBBrokerpakConfig}}'
   sources: |
     {}
   terraform:
@@ -24,15 +24,15 @@ compatibility:
 credhub:
   ca_cert_file: credhub_ca_cert.pem
   skip_ssl_validation: false
-  uaa_client_name: {{.CHUAAClientName}}
-  uaa_client_secret: {{.CHUAAClientSecret}}
-  uaa_url: {{.CHUAAURL}}
-  url: {{.CHCredHubURL}}
-db: {{.CsbDbData}}
+  uaa_client_name: {{.UAA.CHUAAClientName}}
+  uaa_client_secret: {{.UAA.CHUAAClientSecret}}
+  uaa_url: {{.UAA.CHUAAURL}}
+  url: {{.UAA.CHCredHubURL}}
+db: {{.CSBDBData}}
 
 provision:
   defaults: |
-    {{.GSBProvisionDefaults}}
+    {{.Brokerpak.GSBProvisionDefaults}}
 request:
   property:
     validation:
@@ -40,25 +40,25 @@ request:
 service:
   csb-google-postgres:
     plans: |+
-      {{.GSBServiceCsbGooglePostgresPlans}}
+      {{.Brokerpak.GSBServiceCsbGooglePostgresPlans}}
     provision:
       defaults: |+
-        {{.GSBProvisionDefaults}}
+        {{.Brokerpak.GSBProvisionDefaults}}
   csb-google-mysql:
     plans: |+
-      {{.GSBServiceCsbGoogleMysqlPlans}}
+      {{.Brokerpak.GSBServiceCsbGoogleMysqlPlans}}
     provision:
       defaults: |+
-        {{.GSBProvisionDefaults}}
+        {{.Brokerpak.GSBProvisionDefaults}}
   csb-google-storage-bucket:
     plans: |+
-      {{.GSBServiceCsbGoogleStorageBucketPlans}}
+      {{.Brokerpak.GSBServiceCsbGoogleStorageBucketPlans}}
     provision:
       defaults: |+
-        {{.GSBProvisionDefaults}}
+        {{.Brokerpak.GSBProvisionDefaults}}
   csb-google-redis:
     plans: |+
-      {{.GSBServiceCsbGoogleRedisPlans}}
+      {{.Brokerpak.GSBServiceCsbGoogleRedisPlans}}
     provision:
       defaults: |+
-        {{.GSBProvisionDefaults}}
+        {{.Brokerpak.GSBProvisionDefaults}}

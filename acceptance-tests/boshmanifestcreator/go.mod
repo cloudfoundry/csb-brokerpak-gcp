@@ -1,4 +1,4 @@
-module upgrader
+module boshmanifestcreator
 
 go 1.23.1
 
