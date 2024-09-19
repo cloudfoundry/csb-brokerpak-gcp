@@ -36,13 +36,6 @@ updates:
   labels:
     - "test-dependencies"
 - package-ecosystem: gomod
-  directory: "/acceptance-tests/apps/spannerapp"
-  schedule:
-    interval: "weekly"
-    day: "saturday"
-  labels:
-    - "test-dependencies"
-- package-ecosystem: gomod
   directory: "/acceptance-tests/apps/storageapp"
   schedule:
     interval: "weekly"
