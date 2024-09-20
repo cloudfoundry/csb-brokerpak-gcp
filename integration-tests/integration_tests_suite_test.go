@@ -43,7 +43,6 @@ var _ = BeforeSuite(func() {
 		"GOOGLE_PROJECT=" + brokerGCPProject,
 		"GSB_SERVICE_CSB_GOOGLE_POSTGRES_PLANS=" + marshal(postgresPlans),
 		"GSB_SERVICE_CSB_GOOGLE_MYSQL_PLANS=" + marshal(customMySQLPlans),
-		"GSB_SERVICE_CSB_GOOGLE_REDIS_PLANS=" + marshal(customRedisPlans),
 		"GSB_SERVICE_CSB_GOOGLE_STORAGE_BUCKET_PLANS=" + marshal(customCloudStoragePlans),
 		"CSB_LISTENER_HOST=localhost", // prevents permissions popup
 	})).To(Succeed())

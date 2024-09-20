@@ -11,7 +11,6 @@ const (
 	Storage          AppCode = "storageapp"
 	MySQL            AppCode = "mysqlapp"
 	PostgreSQL       AppCode = "postgresqlapp"
-	Redis            AppCode = "redisapp"
 	StackdriverTrace AppCode = "stackdrivertraceapp"
 	JDBCTestApp      AppCode = "jdbctestapp"
 	SpringStorageApp AppCode = "springstorageapp"

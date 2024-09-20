@@ -29,13 +29,6 @@ updates:
   labels:
     - "test-dependencies"
 - package-ecosystem: gomod
-  directory: "/acceptance-tests/apps/redisapp"
-  schedule:
-    interval: "weekly"
-    day: "saturday"
-  labels:
-    - "test-dependencies"
-- package-ecosystem: gomod
   directory: "/acceptance-tests/apps/spannerapp"
   schedule:
     interval: "weekly"
