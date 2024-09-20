@@ -30,7 +30,6 @@ Enable the following services in **[APIs and services > Library](https://console
 1. If you want to enable Cloud Storage as a service, enable the [Cloud Storage API](https://console.cloud.google.com/apis/api/storage_component/overview)
 1. If you want to enable Bigtable as a service, enable the [Bigtable Admin API](https://console.cloud.google.com/apis/library/bigtable.googleapis.com)
 1. If you want to enable Datastore as a service, enable the [Datastore API](https://console.cloud.google.com/apis/api/datastore.googleapis.com/overview)
-1. If you want to enable Redis as a service, enable the [Redis API](https://console.cloud.google.com/apis/library/redis.googleapis.com)
 
 #### [Create a root service account](#service-account)
 
