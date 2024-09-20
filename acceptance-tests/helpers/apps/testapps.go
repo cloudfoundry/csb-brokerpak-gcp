@@ -10,7 +10,6 @@ const (
 	Storage          AppCode = "storageapp"
 	MySQL            AppCode = "mysqlapp"
 	PostgreSQL       AppCode = "postgresqlapp"
-	StackdriverTrace AppCode = "stackdrivertraceapp"
 	JDBCTestApp      AppCode = "jdbctestapp"
 	SpringStorageApp AppCode = "springstorageapp"
 )
@@ -21,7 +20,7 @@ func (a AppCode) Dir() string {
 
 func WithApp(app AppCode) Option {
 	switch app {
-	case StackdriverTrace, JDBCTestApp:
+	case JDBCTestApp:
 		return WithDir(app.Dir())
 	case SpringStorageApp:
 		return WithMavenPreBuild(app.Dir())
