@@ -7,7 +7,6 @@ import (
 type AppCode string
 
 const (
-	Spanner          AppCode = "spannerapp"
 	Storage          AppCode = "storageapp"
 	MySQL            AppCode = "mysqlapp"
 	PostgreSQL       AppCode = "postgresqlapp"
