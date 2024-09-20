@@ -42,5 +42,4 @@ service_definitions:
 - google-mysql.yml
 - google-postgresql.yml
 - google-spanner.yml
-- google-bigquery.yml
 - google-stackdriver-trace.yml
