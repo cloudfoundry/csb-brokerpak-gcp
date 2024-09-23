@@ -7,14 +7,13 @@ import (
 )
 
 type Broker struct {
-	app            *apps.App
-	depl           *deployments.Deployment
-	Name           string
-	username       string
-	password       string
-	dir            string
-	boshReleaseDir string
-	secrets        []EncryptionSecret
-	envExtras      []apps.EnvVar
-	isVmBased      bool
+	app       *apps.App
+	depl      *deployments.Deployment
+	Name      string
+	username  string
+	password  string
+	dir       string
+	secrets   []EncryptionSecret
+	envExtras []apps.EnvVar
+	isVmBased bool
 }

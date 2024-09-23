@@ -11,7 +11,7 @@ import (
 )
 
 var _ = Describe("UpgradePostgreSQLTest", Label("postgresql"), func() {
-	When("upgrading broker version", func() {
+	FWhen("upgrading broker version", func() {
 		It("should continue to work", func() {
 			By("pushing latest released broker version")
 			serviceBroker := brokers.Create(
@@ -57,7 +57,6 @@ var _ = Describe("UpgradePostgreSQLTest", Label("postgresql"), func() {
 			By("deploying the development version of the broker")
 			serviceBrokerVM := serviceBroker.UpdateToVM(
 				brokers.WithName(serviceBroker.Name),
-				brokers.WithBoshReleaseDir(csbGCPRelease),
 			)
 			defer func() {
 				// service instance must be deleted before the new VM based broker

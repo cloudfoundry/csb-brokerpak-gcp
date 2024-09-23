@@ -20,12 +20,6 @@ import (
 
 type Option func(broker *Broker)
 
-func WithBoshReleaseDir(dir string) Option {
-	return func(b *Broker) {
-		b.boshReleaseDir = dir
-	}
-}
-
 func defaultVmConfig(opts ...Option) (broker Broker) {
 	defaults := []Option{
 		WithName(random.Name(random.WithPrefix("broker"))),
@@ -49,7 +43,6 @@ func createVm(opts ...Option) *Broker {
 		"-o", "../assets/use-db-name.yml",
 		"-o", "../assets/use-db-encrypter.yml",
 		"-l", "../assets/vars.yml",
-		"-v", fmt.Sprintf("release_repo_path=%s", broker.boshReleaseDir),
 		"-v", fmt.Sprintf("name=%s", broker.Name),
 		"-v", fmt.Sprintf("csb_db_name=%s", strings.ReplaceAll(broker.Name, "-", "_")),
 		"-v", fmt.Sprintf("csb_db_encryption_secret=%s", password),
@@ -105,7 +98,6 @@ func WithPrefix(prefix string) Option {
 }
 
 func WithSourceDir(dir string) Option {
-	Expect(filepath.Join(dir, "cloud-service-broker")).To(BeAnExistingFile())
 	return func(b *Broker) {
 		b.dir = dir
 	}

@@ -33,7 +33,6 @@ var _ = Describe("UpgradeStorageTest", Label("storage"), func() {
 			By("Starting to deploy a vm based broker")
 			serviceBrokerVM := serviceBroker.UpdateToVM(
 				brokers.WithName(serviceBroker.Name),
-				brokers.WithBoshReleaseDir("../../../csb-gcp-release"),
 			)
 			defer serviceBrokerVM.Delete()
 			By("checking that the vm broker stopped the app broker")
@@ -88,7 +87,6 @@ var _ = Describe("UpgradeStorageTest", Label("storage"), func() {
 			By("deploying the development version of the broker")
 			serviceBrokerVM := serviceBroker.UpdateToVM(
 				brokers.WithName(serviceBroker.Name),
-				brokers.WithBoshReleaseDir(csbGCPRelease),
 			)
 			defer func() {
 				// service instance must be deleted before the new VM based broker

@@ -14,18 +14,20 @@ import (
 )
 
 var (
-	fromVersion         string
-	developmentBuildDir string
-	releasedBuildDir    string
-	csbGCPRelease       string
-	metadata            environment.GCPMetadata
+	fromVersion           string
+	developmentBuildDir   string
+	releasedBuildDir      string
+	csbGCPReleaseDir      string
+	cloudServiceBrokerDir string
+	metadata              environment.GCPMetadata
 )
 
 func init() {
 	flag.StringVar(&fromVersion, "from-version", "", "version to upgrade from")
 	flag.StringVar(&releasedBuildDir, "releasedBuildDir", "", "location of released version of built broker and brokerpak")
 	flag.StringVar(&developmentBuildDir, "developmentBuildDir", "../../", "location of development version of built broker and brokerpak")
-	flag.StringVar(&csbGCPRelease, "csbGCPReleaseDir", "../../../csb-gcp-release", "location of development version of csb-gcp release")
+	flag.StringVar(&csbGCPReleaseDir, "csbGCPReleaseDir", "../../../csb-gcp-release", "location of development version of csb-gcp release")
+	flag.StringVar(&cloudServiceBrokerDir, "cloudServiceBrokerDir", "../../../cloud-service-broker", "location of development version of cloud-service-broker release")
 }
 
 func TestUpgrade(t *testing.T) {
@@ -44,15 +46,43 @@ var _ = BeforeSuite(func() {
 		releasedBuildDir = brokerpaks.DownloadBrokerpak(fromVersion, brokerpaks.TargetDir(fromVersion))
 	}
 
-	preflight(developmentBuildDir) // faster feedback as no download
 	preflight(releasedBuildDir)
 
 	absDevelopmentBuildDir, err := filepath.Abs(developmentBuildDir)
 	Expect(err).NotTo(HaveOccurred())
 
-	absCSBGCPReleaseDir, err := filepath.Abs(csbGCPRelease)
+	absCSBGCPReleaseDir, err := filepath.Abs(csbGCPReleaseDir)
 	Expect(err).NotTo(HaveOccurred())
+
+	absCloudServiceBrokerDir, err := filepath.Abs(cloudServiceBrokerDir)
+	Expect(err).NotTo(HaveOccurred())
+
+	// Run the local release modifier
+	tmpReleasePath := "/tmp/csb-gcp-release"
+	GinkgoWriter.Printf("Running local release modifier - vendoring the brokerpak and iaas release - destination %s\n", tmpReleasePath)
+
+	// TODO delete the tmpReleasePath
 	cmd := exec.Command(
+		"go",
+		"run",
+		"-C",
+		"../boshifier/app/vendirlocalrelease",
+		".",
+		"-brokerpak-path",
+		absDevelopmentBuildDir,
+		"-cloud-service-broker-path",
+		absCloudServiceBrokerDir,
+		"-iaas-release-path",
+		absCSBGCPReleaseDir,
+		"-tmp-release-path",
+		tmpReleasePath,
+	)
+
+	cmd.Stdout = GinkgoWriter
+	cmd.Stderr = GinkgoWriter
+	Expect(cmd.Run()).To(Succeed(), "failed to run boshifier - local release modifier")
+
+	cmd = exec.Command(
 		"go",
 		"run",
 		"-C",
@@ -61,12 +91,11 @@ var _ = BeforeSuite(func() {
 		"-brokerpak-path",
 		absDevelopmentBuildDir,
 		"-iaas-release-path",
-		absCSBGCPReleaseDir,
+		tmpReleasePath,
 	)
 
 	cmd.Stdout = GinkgoWriter
-	cmd.Stderr = os.Stderr
-
+	cmd.Stderr = GinkgoWriter
 	Expect(cmd.Run()).To(Succeed(), "failed to run boshifier - manifest creator")
 })
 

@@ -52,7 +52,6 @@ var _ = Describe("UpgradeMYSQLTest", Label("mysql"), func() {
 			By("deploying the development version of the broker")
 			serviceBrokerVM := serviceBroker.UpdateToVM(
 				brokers.WithName(serviceBroker.Name),
-				brokers.WithBoshReleaseDir(csbGCPRelease),
 			)
 			defer func() {
 				// service instance must be deleted before the new VM based broker
