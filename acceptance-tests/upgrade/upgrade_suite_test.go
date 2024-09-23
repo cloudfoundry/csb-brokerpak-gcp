@@ -61,7 +61,6 @@ var _ = BeforeSuite(func() {
 	tmpReleasePath := "/tmp/csb-gcp-release"
 	GinkgoWriter.Printf("Running local release modifier - vendoring the brokerpak and iaas release - destination %s\n", tmpReleasePath)
 
-	// TODO delete the tmpReleasePath
 	cmd := exec.Command(
 		"go",
 		"run",
