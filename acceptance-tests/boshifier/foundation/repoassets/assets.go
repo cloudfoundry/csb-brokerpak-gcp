@@ -8,14 +8,17 @@ import (
 )
 
 type Assets struct {
-	VarsTemplateFilePath string
-	VarsFilePath         string
-	ManifestPath         string
-	IaasReleasePath      string
+	VarsTemplateFilePath   string
+	VarsFilePath           string
+	ManifestPath           string
+	IaasReleasePath        string
+	BrokerpakPath          string
+	CloudServiceBrokerPath string
+	TmpIaaSReleasePath     string
 }
 
 func Init() (Assets, error) {
-	var brokerpakPath, iaasReleasePath string
+	var brokerpakPath, iaasReleasePath, tmpIaaSReleasePath, cloudServiceBrokerPath string
 
 	homeDir, err := os.UserHomeDir()
 	if err != nil {
@@ -24,13 +27,18 @@ func Init() (Assets, error) {
 
 	defaultBrokerpakPath := filepath.Join(homeDir, "workspace/csb/csb-brokerpak-gcp/")
 	defaultIaaSReleasePath := filepath.Join(homeDir, "workspace/csb/csb-brokerpak-gcp/../csb-gcp-release/")
+	defaultCloudServiceBrokerPath := filepath.Join(homeDir, "workspace/csb/cloud-service-broker/")
+	defaultTmpIaaSReleasePath := "/tmp/csb-gcp-release"
 
 	flag.StringVar(&brokerpakPath, "brokerpak-path", defaultBrokerpakPath, "Path to the csb-brokerpak project")
+	flag.StringVar(&cloudServiceBrokerPath, "cloud-service-broker-path", defaultCloudServiceBrokerPath, "Path to the cloud-service-broker project")
 	flag.StringVar(&iaasReleasePath, "iaas-release-path", defaultIaaSReleasePath, "Path to the csb-iaas-release project")
+	flag.StringVar(&tmpIaaSReleasePath, "tmp-release-path", defaultTmpIaaSReleasePath, "Path to the destination release project where we will copy our modified release")
+
 	flag.Parse()
 
-	if brokerpakPath == "" || iaasReleasePath == "" {
-		return Assets{}, fmt.Errorf("both brokerpak-path and iaas-release-path flags must be provided")
+	if brokerpakPath == "" || iaasReleasePath == "" || tmpIaaSReleasePath == "" || cloudServiceBrokerPath == "" {
+		return Assets{}, fmt.Errorf("both brokerpak-path, iaas-release-path, tmp-release-path, and cloud-service-broker-path flags must be provided")
 	}
 
 	varsTemplateFilePath, err := filepath.Abs(filepath.Join(brokerpakPath, "acceptance-tests/assets/vars-template.yml"))
@@ -53,10 +61,23 @@ func Init() (Assets, error) {
 		return Assets{}, fmt.Errorf("failed to get absolute path of iaas-release-path: %v", err)
 	}
 
+	cloudServiceBrokerPath, err = filepath.Abs(cloudServiceBrokerPath)
+	if err != nil {
+		return Assets{}, fmt.Errorf("failed to get absolute path of cloud-service-broker-path: %v", err)
+	}
+
+	tmpIaaSReleasePath, err = filepath.Abs(tmpIaaSReleasePath)
+	if err != nil {
+		return Assets{}, fmt.Errorf("failed to get absolute path of tmp-release-path: %v", err)
+	}
+
 	return Assets{
-		VarsTemplateFilePath: varsTemplateFilePath,
-		VarsFilePath:         varsFilePath,
-		ManifestPath:         manifestPath,
-		IaasReleasePath:      iaasReleasePath,
+		VarsTemplateFilePath:   varsTemplateFilePath,
+		VarsFilePath:           varsFilePath,
+		ManifestPath:           manifestPath,
+		IaasReleasePath:        iaasReleasePath,
+		BrokerpakPath:          brokerpakPath,
+		CloudServiceBrokerPath: cloudServiceBrokerPath,
+		TmpIaaSReleasePath:     tmpIaaSReleasePath,
 	}, nil
 }
