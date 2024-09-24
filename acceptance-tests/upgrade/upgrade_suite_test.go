@@ -4,6 +4,7 @@ import (
 	"csbbrokerpakgcp/acceptance-tests/helpers/brokerpaks"
 	"csbbrokerpakgcp/acceptance-tests/helpers/environment"
 	"flag"
+	"fmt"
 	"os"
 	"os/exec"
 	"path/filepath"
@@ -57,9 +58,13 @@ var _ = BeforeSuite(func() {
 	absCloudServiceBrokerDir, err := filepath.Abs(cloudServiceBrokerDir)
 	Expect(err).NotTo(HaveOccurred())
 
-	// Run the local release modifier
-	tmpReleasePath := "/tmp/csb-gcp-release"
-	GinkgoWriter.Printf("Running local release modifier - vendoring the brokerpak and iaas release - destination %s\n", tmpReleasePath)
+	// We modify the release to use the local brokerpak, cloud-service-broker and iaas release
+	// This is so that we can run the tests against the local brokerpak and cloud-service-broker
+	// rather than the released versions.  The command `vendir sync...` will modify the files, so we
+	// prefer to run this in a temporary directory.
+	tmpDir := os.TempDir()
+	tmpReleasePath := fmt.Sprintf("%s/csb-gcp-release", tmpDir)
+	GinkgoWriter.Printf("Running local release modifier - vendoring the brokerpak, cloud-service-broker and iaas release - destination %s\n", tmpReleasePath)
 
 	cmd := exec.Command(
 		"go",
@@ -79,8 +84,14 @@ var _ = BeforeSuite(func() {
 
 	cmd.Stdout = GinkgoWriter
 	cmd.Stderr = GinkgoWriter
-	Expect(cmd.Run()).To(Succeed(), "failed to run boshifier - local release modifier")
+	Expect(cmd.Run()).To(Succeed(), "failed to run boshifier - vendir local release")
 
+	// The -db-name and -db-secret flags will be replaced when upgrading
+	// from a broker app-based setup to a broker virtual machine-based setup.
+	// We use ops files to replace these values, based on the original broker app-based configuration.
+	// see `createVm` function acceptance-tests/helpers/brokers/create.go:34
+	// We set them here to create our temporary manifest file with a secret that will be replaced.
+	// The temporary manifest file is using when creating the broker VM.
 	cmd = exec.Command(
 		"go",
 		"run",
@@ -91,6 +102,8 @@ var _ = BeforeSuite(func() {
 		absDevelopmentBuildDir,
 		"-iaas-release-path",
 		tmpReleasePath,
+		"-db-secret",
+		"secret-will-be-replaced",
 	)
 
 	cmd.Stdout = GinkgoWriter

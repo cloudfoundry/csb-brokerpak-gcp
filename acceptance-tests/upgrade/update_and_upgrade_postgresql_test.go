@@ -11,7 +11,7 @@ import (
 )
 
 var _ = Describe("UpgradePostgreSQLTest", Label("postgresql"), func() {
-	FWhen("upgrading broker version", func() {
+	When("upgrading broker version", func() {
 		It("should continue to work", func() {
 			By("pushing latest released broker version")
 			serviceBroker := brokers.Create(
