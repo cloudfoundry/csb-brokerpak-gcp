@@ -28,7 +28,7 @@ credhub:
   uaa_client_secret: {{.UAA.CHUAAClientSecret}}
   uaa_url: {{.UAA.CHUAAURL}}
   url: {{.UAA.CHCredHubURL}}
-db: {{.CSBDBData}}
+db: {{.DBData}}
 
 provision:
   defaults: |

@@ -4,6 +4,7 @@ import (
 	"bytes"
 	"encoding/json"
 	"fmt"
+	"os"
 	"os/exec"
 	"strings"
 )
@@ -19,19 +20,31 @@ type ServiceKey struct {
 		Username string `json:"username"`
 		Password string `json:"password"`
 		Port     int    `json:"port"`
+		Name     string `json:"name"`
 	} `json:"credentials"`
 }
 
-func CreateCSBServiceKey(service, key string) (ServiceKey, error) {
-	if err := createServiceKey(service, key); err != nil {
+func CreateCSBServiceKey(service, key string, params map[string]string) (ServiceKey, error) {
+	if err := createServiceKey(service, key, params); err != nil {
 		return ServiceKey{}, err
 	}
-	return extractServiceKeyData("csb-sql", "csb-sql")
+	return extractServiceKeyData(service, key)
 }
 
-func createServiceKey(service, key string) error {
+func createServiceKey(service, key string, params map[string]string) error {
+	cmdArgs := []string{"create-service-key", service, key}
+	if len(params) > 0 {
+		paramsJSON, err := json.Marshal(params)
+		if err != nil {
+			return fmt.Errorf("failed to marshal service key params to JSON: %v", err)
+		}
+		cmdArgs = append(cmdArgs, "-c", string(paramsJSON))
+	}
+
 	// CAPI cf create-service-key returns a zero exit code if the service key already exists
-	cmd := exec.Command("cf", "create-service-key", service, key)
+	cmd := exec.Command("cf", cmdArgs...)
+	cmd.Stdout = os.Stdout
+	cmd.Stderr = os.Stderr
 	if err := cmd.Run(); err != nil {
 		return fmt.Errorf("failed to create service key: %v", err)
 	}

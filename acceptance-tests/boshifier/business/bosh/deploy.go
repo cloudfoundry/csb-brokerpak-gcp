@@ -6,11 +6,14 @@ import (
 	"os/exec"
 )
 
-func Deploy(deploymentName, manifestPath, varsFilePath, releaseRepoPath string) error {
+func Deploy(deploymentName, _, varsFilePath, releaseRepoPath string) error {
+	destinationPath := fmt.Sprintf("%s/tmp-manifest.yml", os.TempDir())
+
 	cmd := exec.Command(
 		"bosh",
+		"-n", "deploy",
 		"-d", deploymentName,
-		"deploy", manifestPath,
+		destinationPath,
 		"-l", varsFilePath,
 		"-v", fmt.Sprintf("name=%s", deploymentName),
 		"-v", fmt.Sprintf("release_repo_path=%s", releaseRepoPath),

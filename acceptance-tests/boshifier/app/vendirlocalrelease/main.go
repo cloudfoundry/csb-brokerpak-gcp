@@ -2,14 +2,14 @@ package main
 
 import (
 	"boshifier/business/vendir"
-	"boshifier/foundation/repoassets"
+	"boshifier/foundation/flags"
 	"log"
 	"os"
 	"os/exec"
 )
 
 func main() {
-	assets, err := repoassets.Init()
+	assets, err := flags.Init()
 	if err != nil {
 		log.Fatalf("failed to initialize assets: %v", err)
 	}

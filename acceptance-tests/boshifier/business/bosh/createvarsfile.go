@@ -4,28 +4,31 @@ import (
 	"boshifier/business/capi"
 	"boshifier/foundation/config"
 	"bytes"
+	"encoding/json"
 	"fmt"
 	"os"
-	"strings"
 	"text/template"
-
-	"github.com/google/uuid"
 )
 
-func CreateVarsFile(cfg config.Config, cfAPI capi.Data, sk capi.ServiceKey, varsTemplateFile, varsFile string) error {
+func CreateVarsFile(cfg config.Config, cfAPI capi.Data, dbBlock DBBlock, varsTemplateFile, varsFile string) error {
 	varsTemplate, err := os.ReadFile(varsTemplateFile)
 	if err != nil {
 		return fmt.Errorf("failed to read vars template file: %v", err)
 	}
 
+	dbData, err := json.Marshal(dbBlock)
+	if err != nil {
+		return fmt.Errorf("failed to marshal DB block: %v", err)
+	}
+
 	data := struct {
 		config.Config
-		CSBDBData   string
+		DBData      string
 		CFAPIPass   string
 		CFAPIDomain string
 	}{
 		Config:      cfg,
-		CSBDBData:   createCSBDBManifestBlock(sk),
+		DBData:      string(dbData),
 		CFAPIPass:   cfAPI.CFAPIPass,
 		CFAPIDomain: cfAPI.CFAPIDomain,
 	}
@@ -44,25 +47,4 @@ func CreateVarsFile(cfg config.Config, cfAPI capi.Data, sk capi.ServiceKey, vars
 		return fmt.Errorf("failed to create vars file: %v", err)
 	}
 	return nil
-}
-
-func createCSBDBManifestBlock(sk capi.ServiceKey) string {
-
-	return fmt.Sprintf(
-		`{
-	"host": "%s",
-	"encryption": { "enabled": true, "passwords": [{"password": {"secret": "%s"}, "label": "first-encryption", "primary": true}] },
-	"ca": { "cert": "%s" },
-	"name": "service_instance_db",
-	"user": "%s",
-	"password": "%s",
-	"port": %d
-}`,
-		sk.Credentials.Hostname,
-		uuid.NewString(),
-		strings.ReplaceAll(sk.Credentials.TLS.Cert.CA, "\n", "\\n"),
-		sk.Credentials.Username,
-		sk.Credentials.Password,
-		sk.Credentials.Port,
-	)
 }
