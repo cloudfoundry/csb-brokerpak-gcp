@@ -28,7 +28,7 @@ type mySQLOption struct {
 }
 
 var _ = Describe("MySQL", Label("mysql"), func() {
-	FIt("can be accessed by an app", Label("JDBC"), func() {
+	It("can be accessed by an app", Label("JDBC"), func() {
 		By("creating a service instance")
 		serviceInstance := services.CreateInstance("csb-google-mysql", "default")
 		defer serviceInstance.Delete()
