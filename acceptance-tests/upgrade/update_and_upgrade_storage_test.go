@@ -1,12 +1,13 @@
 package upgrade_test
 
 import (
+	"fmt"
+
 	"csbbrokerpakgcp/acceptance-tests/helpers/apps"
 	"csbbrokerpakgcp/acceptance-tests/helpers/brokers"
 	"csbbrokerpakgcp/acceptance-tests/helpers/cf"
 	"csbbrokerpakgcp/acceptance-tests/helpers/random"
 	"csbbrokerpakgcp/acceptance-tests/helpers/services"
-	"fmt"
 
 	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
@@ -31,19 +32,25 @@ var _ = Describe("UpgradeStorageTest", Label("storage"), func() {
 			defer serviceInstance.Delete()
 
 			By("Starting to deploy a vm based broker")
-			serviceBrokerVM := serviceBroker.UpdateToVM(
-				brokers.WithName(serviceBroker.Name),
-			)
-			defer serviceBrokerVM.Delete()
+			vmDeleter := UpdateBrokerToVM(serviceBroker.Name, serviceBroker.Secrets()[0].Password)
+			defer func() {
+				// service instance must be deleted before the new VM based broker
+				// cf delete-service fake-service-instance exits with 0
+				// even if the service instance does not exist
+				// defer statements are executed in a last-in, first-out order (LIFO)
+				serviceInstance.Delete()
+				vmDeleter()
+			}()
 			By("checking that the vm broker stopped the app broker")
 			out, _ := cf.Run("apps")
 			Expect(out).To(MatchRegexp(fmt.Sprintf("%s.*stopped", serviceBroker.Name)))
 
 			By("checking that the broker now uses a bosh dns name")
 			out, _ = cf.Run("service-brokers")
-			Expect(out).To(MatchRegexp(fmt.Sprintf("%s.csb.internal", serviceBrokerVM.Name)))
-			By("checking that the vm broker can continue to access the SI")
-			serviceInstance.Delete()
+			Expect(out).To(MatchRegexp(fmt.Sprintf("%s.csb.internal", serviceBroker.Name)))
+
+			By("checking that the vm broker can continue to access the SI by upgrading it")
+			serviceInstance.Upgrade()
 		})
 	})
 
@@ -85,16 +92,14 @@ var _ = Describe("UpgradeStorageTest", Label("storage"), func() {
 			Expect(got).To(Equal(blobDataOne))
 
 			By("deploying the development version of the broker")
-			serviceBrokerVM := serviceBroker.UpdateToVM(
-				brokers.WithName(serviceBroker.Name),
-			)
+			vmDeleter := UpdateBrokerToVM(serviceBroker.Name, serviceBroker.Secrets()[0].Password)
 			defer func() {
 				// service instance must be deleted before the new VM based broker
 				// cf delete-service fake-service-instance exits with 0
 				// even if the service instance does not exist
 				// defer statements are executed in a last-in, first-out order (LIFO)
 				serviceInstance.Delete()
-				serviceBrokerVM.Delete()
+				vmDeleter()
 			}()
 
 			By("upgrading service instance")

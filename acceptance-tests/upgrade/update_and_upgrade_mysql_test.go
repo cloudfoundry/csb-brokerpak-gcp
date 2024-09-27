@@ -50,16 +50,14 @@ var _ = Describe("UpgradeMYSQLTest", Label("mysql"), func() {
 			Expect(appTwo.GET("/key-value/%s", key).String()).To(Equal(value))
 
 			By("deploying the development version of the broker")
-			serviceBrokerVM := serviceBroker.UpdateToVM(
-				brokers.WithName(serviceBroker.Name),
-			)
+			vmDeleter := UpdateBrokerToVM(serviceBroker.Name, serviceBroker.Secrets()[0].Password)
 			defer func() {
 				// service instance must be deleted before the new VM based broker
 				// cf delete-service fake-service-instance exits with 0
 				// even if the service instance does not exist
 				// defer statements are executed in a last-in, first-out order (LIFO)
 				serviceInstance.Delete()
-				serviceBrokerVM.Delete()
+				vmDeleter()
 			}()
 
 			By("upgrading service instance")

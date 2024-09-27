@@ -1,14 +1,15 @@
 package upgrade_test
 
 import (
-	"csbbrokerpakgcp/acceptance-tests/helpers/brokerpaks"
-	"csbbrokerpakgcp/acceptance-tests/helpers/environment"
 	"flag"
 	"fmt"
 	"os"
 	"os/exec"
 	"path/filepath"
+	"strings"
 	"testing"
+
+	"csbbrokerpakgcp/acceptance-tests/helpers/brokerpaks"
 
 	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
@@ -20,7 +21,6 @@ var (
 	releasedBuildDir      string
 	csbGCPReleaseDir      string
 	cloudServiceBrokerDir string
-	metadata              environment.GCPMetadata
 )
 
 func init() {
@@ -37,7 +37,8 @@ func TestUpgrade(t *testing.T) {
 }
 
 var _ = BeforeSuite(func() {
-	metadata = environment.ReadGCPMetadata()
+	Expect(os.Getenv("GOOGLE_PROJECT")).NotTo(BeEmpty(), "must set GOOGLE_PROJECT")
+	Expect(os.Getenv("GOOGLE_CREDENTIALS")).NotTo(BeEmpty(), "must set GOOGLE_CREDENTIALS")
 
 	if releasedBuildDir == "" { // Released dir not specified, so we should download a brokerpak
 		if fromVersion == "" { // Version not specified, so use latest
@@ -48,7 +49,27 @@ var _ = BeforeSuite(func() {
 	}
 
 	preflight(releasedBuildDir)
+})
 
+// preflight checks that a specified broker dir is viable so that the user gets fast feedback
+func preflight(dir string) {
+	GinkgoHelper()
+
+	entries, err := os.ReadDir(dir)
+	Expect(err).NotTo(HaveOccurred())
+	names := make([]string, len(entries))
+	for i := range entries {
+		names[i] = entries[i].Name()
+	}
+
+	Expect(names).To(ContainElements(
+		Equal("cloud-service-broker"),
+		Equal(".envrc"),
+		MatchRegexp(`gcp-services-\S+\.brokerpak`),
+	))
+}
+
+func UpdateBrokerToVM(brokerName, brokerAppBasedSecret string) func() {
 	absDevelopmentBuildDir, err := filepath.Abs(developmentBuildDir)
 	Expect(err).NotTo(HaveOccurred())
 
@@ -86,12 +107,9 @@ var _ = BeforeSuite(func() {
 	cmd.Stderr = GinkgoWriter
 	Expect(cmd.Run()).To(Succeed(), "failed to run boshifier - vendir local release")
 
-	// The -db-name and -db-secret flags will be replaced when upgrading
-	// from a broker app-based setup to a broker virtual machine-based setup.
-	// We use ops files to replace these values, based on the original broker app-based configuration.
-	// see `createVm` function acceptance-tests/helpers/brokers/create.go:34
-	// We set them here to create our temporary manifest file with a secret that will be replaced.
+	// The -db-name and -db-secret flags must be set to the values that were used in the original broker app-based setup.
 	// The temporary manifest file is using when creating the broker VM.
+	// We create the temp manifest file in the /tmp/tmp-manifest.yml directory to avoid committing it to the repository.
 	cmd = exec.Command(
 		"go",
 		"run",
@@ -102,29 +120,46 @@ var _ = BeforeSuite(func() {
 		absDevelopmentBuildDir,
 		"-iaas-release-path",
 		tmpReleasePath,
+		"-db-name",
+		strings.ReplaceAll(brokerName, "-", "_"),
 		"-db-secret",
-		"secret-will-be-replaced",
+		brokerAppBasedSecret,
 	)
 
 	cmd.Stdout = GinkgoWriter
 	cmd.Stderr = GinkgoWriter
 	Expect(cmd.Run()).To(Succeed(), "failed to run boshifier - manifest creator")
-})
 
-// preflight checks that a specified broker dir is viable so that the user gets fast feedback
-func preflight(dir string) {
-	GinkgoHelper()
+	cmd = exec.Command(
+		"go",
+		"run",
+		"-C",
+		"../boshifier/app/deployer",
+		".",
+		"-iaas-release-path",
+		tmpReleasePath,
+		"-bosh-deployment-name",
+		brokerName,
+	)
 
-	entries, err := os.ReadDir(dir)
-	Expect(err).NotTo(HaveOccurred())
-	names := make([]string, len(entries))
-	for i := range entries {
-		names[i] = entries[i].Name()
+	cmd.Stdout = GinkgoWriter
+	cmd.Stderr = GinkgoWriter
+	Expect(cmd.Start()).To(Succeed(), "failed to start boshifier - deployer")
+	Expect(cmd.Wait()).To(Succeed(), "failed to run boshifier - deployer")
+
+	return func() {
+		cmd := exec.Command(
+			"go",
+			"run",
+			"-C",
+			"../boshifier/app/deleter",
+			".",
+			"-bosh-deployment-name",
+			brokerName,
+		)
+		cmd.Stdout = GinkgoWriter
+		cmd.Stderr = GinkgoWriter
+		Expect(cmd.Start()).To(Succeed(), "failed to start boshifier - deleter")
+		Expect(cmd.Wait()).To(Succeed(), "failed to run boshifier - deleter")
 	}
-
-	Expect(names).To(ContainElements(
-		Equal("cloud-service-broker"),
-		Equal(".envrc"),
-		MatchRegexp(`gcp-services-\S+\.brokerpak`),
-	))
 }
