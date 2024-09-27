@@ -26,7 +26,7 @@ func CreateDBManifestBlock(sk capi.ServiceKey, dbEncryptionSecret string) DBBloc
 				Password: Password{
 					Secret: dbEncryptionSecret,
 				},
-				Label:   "first-encryption",
+				Label:   "default",
 				Primary: true,
 			},
 		}
