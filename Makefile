@@ -90,8 +90,8 @@ DB_TLS := $(or $(DB_TLS), skip-verify)
 
 
 .PHONY: push-broker
-push-broker: cloud-service-broker build google_credentials google_project gcp_pas_network ## push the broker to targeted Cloud Foundry
-	MANIFEST=cf-manifest.yml APP_NAME=$(APP_NAME) DB_TLS=$(DB_TLS) GSB_PROVISION_DEFAULTS='$(GSB_PROVISION_DEFAULTS)' ./scripts/push-broker.sh
+push-broker: google_credentials google_project gcp_pas_network ## push the broker to targeted Cloud Foundry
+	./scripts/push-broker.sh
 
 .PHONY: google_credentials
 google_credentials:
