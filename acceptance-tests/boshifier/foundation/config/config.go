@@ -40,7 +40,6 @@ type Config struct {
 		GSBServiceCsbGooglePostgresPlans      string `env:"GSB_SERVICE_CSB_GOOGLE_POSTGRES_PLANS"`
 		GSBServiceCsbGoogleMysqlPlans         string `env:"GSB_SERVICE_CSB_GOOGLE_MYSQL_PLANS"`
 		GSBServiceCsbGoogleStorageBucketPlans string `env:"GSB_SERVICE_CSB_GOOGLE_STORAGE_BUCKET_PLANS"`
-		GSBServiceCsbGoogleRedisPlans         string `env:"GSB_SERVICE_CSB_GOOGLE_REDIS_PLANS"`
 		GSBBrokerpakConfig                    string `env:"GSB_BROKERPAK_CONFIG"`
 	}
 	UAA struct {

@@ -56,9 +56,3 @@ service:
     provision:
       defaults: |+
         {{.Brokerpak.GSBProvisionDefaults}}
-  csb-google-redis:
-    plans: |+
-      {{.Brokerpak.GSBServiceCsbGoogleRedisPlans}}
-    provision:
-      defaults: |+
-        {{.Brokerpak.GSBProvisionDefaults}}
