@@ -1,7 +1,0 @@
-- type: replace
-  path: /instance_groups/name=deploy-all/jobs/name=csb-app/properties/config/db/encryption/passwords
-  value:
-    - label: default
-      password:
-        secret: ((csb_db_encryption_secret))
-      primary: true

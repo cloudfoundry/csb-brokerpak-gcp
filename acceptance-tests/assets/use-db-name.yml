@@ -1,3 +1,0 @@
-- type: replace
-  path: /instance_groups/name=deploy-all/jobs/name=csb-app/properties/config/db/name
-  value: ((csb_db_name))
