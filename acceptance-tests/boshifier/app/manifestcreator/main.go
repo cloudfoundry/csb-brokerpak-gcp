@@ -61,6 +61,7 @@ func main() {
 		log.Fatalf("failed to create vars file: %v", err)
 	}
 
+	// TODO destination path could be included as a flag
 	destinationPath := fmt.Sprintf("%s/tmp-manifest.yml", os.TempDir())
 	err = bosh.CreateTempManifest(
 		fgs.ManifestPath,

@@ -14,20 +14,24 @@ func main() {
 		log.Fatalf("failed to initialize assets: %v", err)
 	}
 
+	// -------------------------------------------------------------------------
+
 	if err := removeTmpIaaSReleasePath(assets.TmpIaaSReleasePath); err != nil {
 		log.Fatalf("failed to remove existing tmp iaas release path: %v", err)
 	}
 
 	if err := copyIaaSReleasePath(assets.IaasReleasePath, assets.TmpIaaSReleasePath); err != nil {
-		log.Fatalf("failed to copy iaas-release-path to /tmp: %v", err)
+		log.Fatalf("failed to copy iaas-release-path to %s: %v", assets.TmpIaaSReleasePath, err)
 	}
 
-	cloudServiceBrokerPackageName, err := vendir.FindPackagePathByPartialURL("cloud-service-broker", assets.TmpIaaSReleasePath)
+	// -------------------------------------------------------------------------
+
+	csbPkgName, err := vendir.FindPackagePathByURL("cloud-service-broker", assets.TmpIaaSReleasePath)
 	if err != nil {
 		log.Fatalf("failed to find cloud-service-broker package path: %v", err)
 	}
 
-	err = vendir.Sync(assets.TmpIaaSReleasePath, assets.BrokerpakPath, cloudServiceBrokerPackageName, assets.CloudServiceBrokerPath)
+	err = vendir.Sync(assets.TmpIaaSReleasePath, assets.BrokerpakPath, csbPkgName, assets.CloudServiceBrokerPath)
 	if err != nil {
 		log.Fatalf("failed to sync vendir: %v", err)
 	}

@@ -28,6 +28,6 @@ func main() {
 	// -------------------------------------------------------------------------
 
 	if err = bosh.Deploy(fgs.BoshDeploymentName, fgs.ManifestPath, fgs.VarsFilePath, fgs.IaasReleasePath); err != nil {
-		log.Fatalf("failed to create temporary BOSH manifest: %v", err)
+		log.Fatalf("failed to deploy: %v", err)
 	}
 }
