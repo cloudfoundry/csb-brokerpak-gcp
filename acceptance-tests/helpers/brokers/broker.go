@@ -15,5 +15,12 @@ type Broker struct {
 	dir       string
 	secrets   []EncryptionSecret
 	envExtras []apps.EnvVar
-	isVmBased bool
+}
+
+// Secrets returns the encryption secrets for the broker
+// This function is a temporary workaround to allow the transition
+// from app-based to VM-based brokers
+// The Broker code will be removed after the first broker VM-based release.
+func (b *Broker) Secrets() []EncryptionSecret {
+	return b.secrets
 }
