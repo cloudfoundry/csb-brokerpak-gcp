@@ -1,14 +1,14 @@
 package acceptance_test
 
 import (
-	"csbbrokerpakgcp/acceptance-tests/helpers/environment"
-	"csbbrokerpakgcp/acceptance-tests/helpers/random"
 	"flag"
 	"fmt"
 	"os"
 	"os/exec"
 	"path/filepath"
 	"testing"
+
+	"csbbrokerpakgcp/acceptance-tests/helpers/random"
 
 	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
@@ -18,7 +18,6 @@ var (
 	developmentBuildDir   string
 	csbGCPReleaseDir      string
 	cloudServiceBrokerDir string
-	GCPMetadata           environment.GCPMetadata
 )
 
 func init() {
@@ -33,7 +32,6 @@ func TestAcceptanceTests(t *testing.T) {
 }
 
 var _ = BeforeSuite(func() {
-	GCPMetadata = environment.ReadGCPMetadata()
 
 	absDevelopmentBuildDir, err := filepath.Abs(developmentBuildDir)
 	Expect(err).NotTo(HaveOccurred())
@@ -101,8 +99,6 @@ var _ = BeforeSuite(func() {
 		"-C",
 		"./boshifier/app/deployer",
 		".",
-		"-brokerpak-path",
-		absDevelopmentBuildDir,
 		"-iaas-release-path",
 		tmpReleasePath,
 		"-bosh-deployment-name",
@@ -113,4 +109,20 @@ var _ = BeforeSuite(func() {
 	cmd.Stderr = GinkgoWriter
 	Expect(cmd.Start()).To(Succeed(), "failed to start boshifier - deployer")
 	Expect(cmd.Wait()).To(Succeed(), "failed to run boshifier - deployer")
+})
+
+var _ = AfterSuite(func() {
+	cmd := exec.Command(
+		"go",
+		"run",
+		"-C",
+		"./boshifier/app/deleter",
+		".",
+		"-bosh-deployment-name",
+		"cloud-service-broker-gcp",
+	)
+	cmd.Stdout = GinkgoWriter
+	cmd.Stderr = GinkgoWriter
+	Expect(cmd.Start()).To(Succeed(), "failed to start boshifier - deleter")
+	Expect(cmd.Wait()).To(Succeed(), "failed to run boshifier - deleter")
 })
