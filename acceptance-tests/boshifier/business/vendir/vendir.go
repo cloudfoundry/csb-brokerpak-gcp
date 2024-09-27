@@ -10,7 +10,7 @@ import (
 	"gopkg.in/yaml.v3"
 )
 
-func FindPackagePathByPartialURL(targetPackage, releasePath string) (string, error) {
+func FindPackagePathByURL(targetPackage, releasePath string) (string, error) {
 
 	vendirSpecAbsPath, err := filepath.Abs(filepath.Join(releasePath, Filename))
 	if err != nil {
