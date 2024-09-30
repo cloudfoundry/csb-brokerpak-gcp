@@ -31,7 +31,7 @@ credhub:
 db: {{.DBData}}
 
 provision:
-  defaults: |
+  defaults: |+
     {{.Brokerpak.GSBProvisionDefaults}}
 request:
   property:
