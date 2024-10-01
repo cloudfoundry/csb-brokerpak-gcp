@@ -18,7 +18,7 @@ DEVELOPMENT_BUILD_DIR="../"
 TMP_RELEASE_PATH="/tmp/csb-gcp-release"
 FIXED_ENCRYPT="02630426-1d06-47b0-b712-5c74dd4f8182"
 # Note: Use a fixed DB name if you want to avoid creating a new schema every time
-: "${DB_NAME:=$(uuidgen | tr -d '-' | cut -c1-20)}"
+: "${DB_NAME:=$(tr -d '-' < /proc/sys/kernel/random/uuid | cut -c1-20)}"
 
 # Convert relative paths to absolute paths
 DEVELOPMENT_BUILD_DIR=$(realpath "$DEVELOPMENT_BUILD_DIR")
