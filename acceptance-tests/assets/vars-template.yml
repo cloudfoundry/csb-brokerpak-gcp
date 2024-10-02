@@ -6,8 +6,8 @@ gcp:
   credentials: '{{.Google.GoogleCredentials}}'
   project: '{{.Google.GoogleProject}}'
 
-cf_api_url: {{.CFAPIDomain}}
-cf_admin_pass: "{{.CFAPIPass}}"
+cf_api_url: {{.CF.APIDomain}}
+cf_admin_pass: "{{.CF.APIPass}}"
 brokerpak:
   builtin:
     path: ./
