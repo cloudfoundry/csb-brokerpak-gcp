@@ -1,7 +1,7 @@
 #!/usr/bin/env bash
 
 
-set +x # Hide secrets
+set +x
 set -o errexit
 set -o pipefail
 set -e
@@ -11,10 +11,15 @@ cd "$(dirname "$0")"
 
 # -----------------------------------------------------------------------------------
 
-# Declare variables
-DEVELOPMENT_BUILD_DIR="../"
-: "${CSB_GCP_RELEASE_DIR:="../../csb-gcp-release"}"
-: "${CLOUD_SERVICE_BROKER_DIR:="../../cloud-service-broker"}"
+# Execute prepare_env.sh script to prepare the environment variables
+source prepare_env.sh
+
+# -----------------------------------------------------------------------------------
+
+# Declare variables needed for vendoring the release, creating the manifest and deploying the broker
+DEVELOPMENT_BUILD_DIR="../../"
+: "${CSB_GCP_RELEASE_DIR:="../../../csb-gcp-release"}"
+: "${CLOUD_SERVICE_BROKER_DIR:="../../../cloud-service-broker"}"
 TMP_RELEASE_PATH="/tmp/csb-gcp-release"
 FIXED_ENCRYPT="02630426-1d06-47b0-b712-5c74dd4f8182"
 # Note: Use a fixed DB name if you want to avoid creating a new schema every time
