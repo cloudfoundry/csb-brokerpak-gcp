@@ -1,16 +1,16 @@
 package bosh
 
 import (
-	"boshifier/business/capi"
-	"boshifier/foundation/config"
 	"bytes"
 	"encoding/json"
 	"fmt"
 	"os"
 	"text/template"
+
+	"boshifier/foundation/config"
 )
 
-func CreateVarsFile(cfg config.Config, cfAPI capi.Data, dbBlock DBBlock, varsTemplateFile, varsFile string) error {
+func CreateVarsFile(cfg config.Config, dbBlock DBBlock, varsTemplateFile, varsFile string) error {
 	varsTemplate, err := os.ReadFile(varsTemplateFile)
 	if err != nil {
 		return fmt.Errorf("failed to read vars template file: %v", err)
@@ -23,14 +23,10 @@ func CreateVarsFile(cfg config.Config, cfAPI capi.Data, dbBlock DBBlock, varsTem
 
 	data := struct {
 		config.Config
-		DBData      string
-		CFAPIPass   string
-		CFAPIDomain string
+		DBData string
 	}{
-		Config:      cfg,
-		DBData:      string(dbData),
-		CFAPIPass:   cfAPI.CFAPIPass,
-		CFAPIDomain: cfAPI.CFAPIDomain,
+		Config: cfg,
+		DBData: string(dbData),
 	}
 
 	tmpl, err := template.New("vars").Parse(string(varsTemplate))
