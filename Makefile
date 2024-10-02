@@ -91,7 +91,7 @@ DB_TLS := $(or $(DB_TLS), skip-verify)
 
 .PHONY: push-broker
 push-broker: google_credentials google_project gcp_pas_network ## push the broker to targeted Cloud Foundry
-	./scripts/push-broker.sh
+	./acceptance-tests/boshifier/push-broker.sh
 
 .PHONY: google_credentials
 google_credentials:
