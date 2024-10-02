@@ -1,11 +1,11 @@
 package main
 
 import (
+	"log"
+
 	"boshifier/business/bosh"
-	"boshifier/business/opsmanager"
 	"boshifier/foundation/config"
 	"boshifier/foundation/flags"
-	"log"
 )
 
 func main() {
@@ -14,15 +14,8 @@ func main() {
 		log.Fatalf("failed to initialize flags: %v", err)
 	}
 
-	cfg, err := config.Parse()
-	if err != nil {
-		log.Fatalf("failed to create cfg: %v", err)
-	}
-
-	// -------------------------------------------------------------------------
-
-	if err := opsmanager.ExportEnvVariables(cfg.Toolsmiths.EnvLockMetadata); err != nil {
-		log.Fatalf("failed to export environment metadata: %v", err)
+	if err := config.Check(); err != nil {
+		log.Fatalf("failed to check cfg: %v", err)
 	}
 
 	// -------------------------------------------------------------------------

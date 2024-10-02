@@ -1,15 +1,14 @@
 package main
 
 import (
-	"boshifier/business/bosh"
-	"boshifier/business/capi"
-	"boshifier/business/opsmanager"
-	foundationCapi "boshifier/foundation/capi"
-	"boshifier/foundation/config"
-	"boshifier/foundation/flags"
 	"fmt"
 	"log"
 	"os"
+
+	"boshifier/business/bosh"
+	"boshifier/business/capi"
+	"boshifier/foundation/config"
+	"boshifier/foundation/flags"
 )
 
 func main() {
@@ -25,22 +24,6 @@ func main() {
 
 	// -------------------------------------------------------------------------
 
-	if err := opsmanager.ExportEnvVariables(cfg.Toolsmiths.EnvLockMetadata); err != nil {
-		log.Fatalf("failed to export environment metadata: %v", err)
-	}
-
-	// -------------------------------------------------------------------------
-
-	ca, err := capi.New(cfg.Toolsmiths.EnvLockMetadata, foundationCapi.Organization, foundationCapi.Space)
-	if err != nil {
-		log.Fatalf("failed to create CAPI: %v", err)
-	}
-
-	capiData, err := ca.Data()
-	if err != nil {
-		log.Fatalf("failed to get CAPI data: %v", err)
-	}
-
 	serviceKeyName := fmt.Sprintf("csb-%s", fgs.DBName)
 	serviceKey, err := capi.CreateCSBServiceKey("csb-sql", serviceKeyName, map[string]string{"schema": fgs.DBName})
 	if err != nil {
@@ -52,7 +35,6 @@ func main() {
 
 	err = bosh.CreateVarsFile(
 		cfg,
-		capiData,
 		boshDBBlock,
 		fgs.VarsTemplateFilePath,
 		fgs.VarsFilePath,

@@ -1,11 +1,12 @@
 package main
 
 import (
-	"boshifier/business/vendir"
-	"boshifier/foundation/flags"
 	"log"
 	"os"
 	"os/exec"
+
+	"boshifier/business/vendir"
+	"boshifier/foundation/flags"
 )
 
 func main() {
