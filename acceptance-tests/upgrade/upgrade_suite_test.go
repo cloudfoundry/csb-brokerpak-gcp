@@ -136,6 +136,8 @@ func UpdateBrokerToVM(brokerName, brokerAppBasedSecret string) func() {
 		"-C",
 		"../boshifier/app/deployer",
 		".",
+		"-brokerpak-path",
+		absDevelopmentBuildDir,
 		"-iaas-release-path",
 		tmpReleasePath,
 		"-bosh-deployment-name",
