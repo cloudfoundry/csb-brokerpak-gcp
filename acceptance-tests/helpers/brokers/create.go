@@ -5,9 +5,7 @@ import (
 	"csbbrokerpakgcp/acceptance-tests/helpers/cf"
 	"csbbrokerpakgcp/acceptance-tests/helpers/random"
 	"csbbrokerpakgcp/acceptance-tests/helpers/testpath"
-	"fmt"
 	"path/filepath"
-	"strings"
 )
 
 type Option func(broker *Broker)
@@ -24,8 +22,7 @@ func Create(opts ...Option) *Broker {
 		)),
 	)
 
-	schemaName := strings.ReplaceAll(broker.Name, "-", "_")
-	cf.Run("bind-service", broker.Name, "csb-sql", "-c", fmt.Sprintf(`{"schema":"%s"}`, schemaName))
+	bindDatabase(broker.Name)
 
 	brokerApp.Start()
 
