@@ -280,14 +280,3 @@ bind:
     field_name: credentials
     type: string
     details: Credentials of the service account.
-examples:
-- name: gcp-bucket-multi-region
-  description: Create a Google Storage instance with multi-region configuration in USA
-  plan_id: 2875f0f0-a69f-4fe6-a5ec-5ed7f6e89a01
-  provision_params: { "storage_class": "MULTI_REGIONAL" }
-  bind_params: { "role": "storage.objectAdmin" }
-- name: gcp-bucket-dual-region
-  description: Dual Region Bucket
-  plan_id: 2875f0f0-a69f-4fe6-a5ec-5ed7f6e89a01
-  provision_params: { "storage_class": "NEARLINE", "placement_dual_region_data_locations": ["us-east1","us-east4"] }
-  bind_params: { "role": "storage.objectAdmin" }
