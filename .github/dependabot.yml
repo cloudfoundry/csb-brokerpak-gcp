@@ -25,7 +25,9 @@ updates:
     - dependency-type: "all"
   ignore:
     - dependency-name: "*"
-      update-types: ["version-update:semver-major"]    
+      update-types: ["version-update:semver-major"]
+  reject:
+    - "rc"      
 - package-ecosystem: gomod
   directory: "/acceptance-tests/apps/mysqlapp"
   schedule:
