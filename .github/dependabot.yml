@@ -26,8 +26,7 @@ updates:
   ignore:
     - dependency-name: "*"
       update-types: ["version-update:semver-major"]
-  reject:
-    - "rc"      
+    - dependency-name: "org.springframework.boot:spring-boot*"
 - package-ecosystem: gomod
   directory: "/acceptance-tests/apps/mysqlapp"
   schedule:
