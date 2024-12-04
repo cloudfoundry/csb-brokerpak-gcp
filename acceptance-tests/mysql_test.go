@@ -107,7 +107,7 @@ var _ = Describe("MySQL", Label("mysql"), func() {
 		Expect(tlsCipher.Value).To(BeEmpty(), "Expected Mysql connection for app %s not to be encrypted", appOne.Name)
 	})
 
-	It("can create service keys with a public IP address", func() {
+	It("can create service keys with a public IP address", Label("public"), func() {
 		By("creating a service instance with a public IP address")
 		publicIPParams := services.WithParameters(map[string]any{"public_ip": true})
 		serviceInstance := services.CreateInstance("csb-google-mysql", "default", publicIPParams)
