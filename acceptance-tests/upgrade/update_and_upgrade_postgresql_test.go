@@ -3,7 +3,12 @@ package upgrade_test
 import (
 	"csbbrokerpakgcp/acceptance-tests/helpers/apps"
 	"csbbrokerpakgcp/acceptance-tests/helpers/brokers"
+<<<<<<< HEAD
 	"csbbrokerpakgcp/acceptance-tests/helpers/plans"
+||||||| 6fe36f4
+	"csbbrokerpakgcp/acceptance-tests/helpers/cf"
+=======
+>>>>>>> main
 	"csbbrokerpakgcp/acceptance-tests/helpers/random"
 	"csbbrokerpakgcp/acceptance-tests/helpers/services"
 
@@ -58,9 +63,16 @@ var _ = Describe("UpgradePostgreSQLTest", Label("postgresql"), func() {
 			By("pushing the development version of the broker")
 			serviceBroker.UpdateBroker(developmentBuildDir)
 
+<<<<<<< HEAD
 			By("validating that the instance plan is still active")
 			Expect(plans.ExistsAndAvailable("small", "csb-google-postgres", serviceBroker.Name))
 
+||||||| 6fe36f4
+			By("checking that after updateing the broker there no deactivated plans")
+			cf.Run("upgrade-all-services", serviceBroker.Name, "-check-deactivated-plans")
+
+=======
+>>>>>>> main
 			By("upgrading service instance")
 			serviceInstance.Upgrade()
 
