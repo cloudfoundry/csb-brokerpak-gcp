@@ -1,3 +1,4 @@
+// Package plans provides plan helper functions
 package plans
 
 import (
@@ -9,7 +10,7 @@ import (
 )
 
 func ExistsAndAvailable(planName, offeringName, brokerName string) bool {
-	plansJson, err := cf.Run("curl", fmt.Sprintf("v3/service_plans?names=%s&service_broker_names=%s&service_offering_names=%s&available=true", planName, brokerName, offeringName))
+	plansJSON, err := cf.Run("curl", fmt.Sprintf("v3/service_plans?names=%s&service_broker_names=%s&service_offering_names=%s&available=true", planName, brokerName, offeringName))
 	Expect(err).To(BeEmpty())
 
 	type plan struct {
@@ -20,6 +21,6 @@ func ExistsAndAvailable(planName, offeringName, brokerName string) bool {
 		Plans []plan `json:"resources"`
 	}
 
-	Expect(json.Unmarshal([]byte(plansJson), &receiver)).NotTo(HaveOccurred())
+	Expect(json.Unmarshal([]byte(plansJSON), &receiver)).NotTo(HaveOccurred())
 	return len(receiver.Plans) > 0
 }
