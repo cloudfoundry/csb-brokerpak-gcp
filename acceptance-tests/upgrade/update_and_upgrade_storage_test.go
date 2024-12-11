@@ -3,12 +3,7 @@ package upgrade_test
 import (
 	"csbbrokerpakgcp/acceptance-tests/helpers/apps"
 	"csbbrokerpakgcp/acceptance-tests/helpers/brokers"
-<<<<<<< HEAD
 	"csbbrokerpakgcp/acceptance-tests/helpers/plans"
-||||||| 6fe36f4
-	"csbbrokerpakgcp/acceptance-tests/helpers/cf"
-=======
->>>>>>> main
 	"csbbrokerpakgcp/acceptance-tests/helpers/random"
 	"csbbrokerpakgcp/acceptance-tests/helpers/services"
 
