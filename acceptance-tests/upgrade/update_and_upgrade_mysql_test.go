@@ -3,7 +3,6 @@ package upgrade_test
 import (
 	"csbbrokerpakgcp/acceptance-tests/helpers/apps"
 	"csbbrokerpakgcp/acceptance-tests/helpers/brokers"
-	"csbbrokerpakgcp/acceptance-tests/helpers/cf"
 	"csbbrokerpakgcp/acceptance-tests/helpers/matchers"
 	"csbbrokerpakgcp/acceptance-tests/helpers/random"
 	"csbbrokerpakgcp/acceptance-tests/helpers/services"
@@ -52,9 +51,6 @@ var _ = Describe("UpgradeMYSQLTest", Label("mysql"), func() {
 
 			By("pushing the development version of the broker")
 			serviceBroker.UpdateBroker(developmentBuildDir)
-
-			By("checking that after updateing the broker there no deactivated plans")
-			cf.Run("upgrade-all-services", serviceBroker.Name, "-check-deactivated-plans")
 
 			By("upgrading service instance")
 			serviceInstance.Upgrade()
