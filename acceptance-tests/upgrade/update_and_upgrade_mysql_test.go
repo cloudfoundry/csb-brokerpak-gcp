@@ -4,6 +4,7 @@ import (
 	"csbbrokerpakgcp/acceptance-tests/helpers/apps"
 	"csbbrokerpakgcp/acceptance-tests/helpers/brokers"
 	"csbbrokerpakgcp/acceptance-tests/helpers/matchers"
+	"csbbrokerpakgcp/acceptance-tests/helpers/plans"
 	"csbbrokerpakgcp/acceptance-tests/helpers/random"
 	"csbbrokerpakgcp/acceptance-tests/helpers/services"
 
@@ -51,6 +52,9 @@ var _ = Describe("UpgradeMYSQLTest", Label("mysql"), func() {
 
 			By("pushing the development version of the broker")
 			serviceBroker.UpdateBroker(developmentBuildDir)
+
+			By("validating that the instance plan is still active")
+			Expect(plans.ExistsAndAvailable("default", "csb-google-mysql", serviceBroker.Name))
 
 			By("upgrading service instance")
 			serviceInstance.Upgrade()

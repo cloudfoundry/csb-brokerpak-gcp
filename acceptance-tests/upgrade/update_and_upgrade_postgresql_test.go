@@ -3,6 +3,7 @@ package upgrade_test
 import (
 	"csbbrokerpakgcp/acceptance-tests/helpers/apps"
 	"csbbrokerpakgcp/acceptance-tests/helpers/brokers"
+	"csbbrokerpakgcp/acceptance-tests/helpers/plans"
 	"csbbrokerpakgcp/acceptance-tests/helpers/random"
 	"csbbrokerpakgcp/acceptance-tests/helpers/services"
 
@@ -56,6 +57,9 @@ var _ = Describe("UpgradePostgreSQLTest", Label("postgresql"), func() {
 
 			By("pushing the development version of the broker")
 			serviceBroker.UpdateBroker(developmentBuildDir)
+
+			By("validating that the instance plan is still active")
+			Expect(plans.ExistsAndAvailable("small", "csb-google-postgres", serviceBroker.Name))
 
 			By("upgrading service instance")
 			serviceInstance.Upgrade()
