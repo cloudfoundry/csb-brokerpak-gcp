@@ -14,6 +14,19 @@ updates:
   schedule:
     interval: "weekly"
     day: "saturday"
+- package-ecosystem: "maven"
+  directory: "/acceptance-tests/apps/springstorageapp"
+  schedule:
+    interval: "weekly"
+    day: "saturday"
+  labels:
+    - "test-dependencies"
+  allow:
+    - dependency-type: "all"
+  ignore:
+    - dependency-name: "*"
+      update-types: ["version-update:semver-major"]
+    - dependency-name: "org.springframework.boot:spring-boot*"
 - package-ecosystem: gomod
   directory: "/acceptance-tests/apps/mysqlapp"
   schedule:
