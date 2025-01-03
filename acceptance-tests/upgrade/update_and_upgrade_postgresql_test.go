@@ -23,12 +23,20 @@ var _ = Describe("UpgradePostgreSQLTest", Label("postgresql"), func() {
 			defer serviceBroker.Delete()
 
 			By("creating a service")
+			serviceOffering := "csb-google-postgres"
+			servicePlan := "small"
+			serviceName := random.Name(random.WithPrefix(serviceOffering, servicePlan))
+			// CreateInstance can fail and can leave a service record (albeit a failed one) lying around.
+			// We can't delete service brokers that have serviceInstances, so we need to ensure the service instance
+			// is cleaned up regardless as to whether it wa successful. This is important when we use our own service broker
+			// (which can only have 5 instances at any time) to prevent subsequent test failures.
+			defer services.Delete(serviceName)
 			serviceInstance := services.CreateInstance(
-				"csb-google-postgres",
-				"small",
+				serviceOffering,
+				servicePlan,
 				services.WithBroker(serviceBroker),
+				services.WithName(serviceName),
 			)
-			defer serviceInstance.Delete()
 
 			By("pushing the unstarted app twice")
 			appOne := apps.Push(apps.WithApp(apps.PostgreSQL))
@@ -59,7 +67,7 @@ var _ = Describe("UpgradePostgreSQLTest", Label("postgresql"), func() {
 			serviceBroker.UpdateBroker(developmentBuildDir)
 
 			By("validating that the instance plan is still active")
-			Expect(plans.ExistsAndAvailable("small", "csb-google-postgres", serviceBroker.Name))
+			Expect(plans.ExistsAndAvailable(servicePlan, serviceOffering, serviceBroker.Name))
 
 			By("upgrading service instance")
 			serviceInstance.Upgrade()

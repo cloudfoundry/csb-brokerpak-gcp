@@ -21,13 +21,20 @@ var _ = Describe("Without CredHub", Label("withoutcredhub"), func() {
 		defer broker.Delete()
 
 		By("creating a service instance")
+		serviceOffering := "csb-google-storage-bucket"
+		servicePlan := "default"
+		serviceName := random.Name(random.WithPrefix(serviceOffering, servicePlan))
+		defer services.Delete(serviceName)
+		// CreateInstance can fail and can leave a service record (albeit a failed one) lying around.
+		// We can't delete service brokers that have serviceInstances, so we need to ensure the service instance
+		// is cleaned up regardless as to whether it wa successful. This is important when we use our own service broker
+		// (which can only have 5 instances at any time) to prevent subsequent test failures.
 		serviceInstance := services.CreateInstance(
-			"csb-google-storage-bucket",
-			"default",
+			serviceOffering,
+			servicePlan,
 			services.WithBroker(broker),
+			services.WithName(serviceName),
 		)
-
-		defer serviceInstance.Delete()
 
 		By("pushing the unstarted app")
 		app := apps.Push(apps.WithApp(apps.Storage))
