@@ -21,13 +21,17 @@ var _ = Describe("Without CredHub", Label("withoutcredhub"), func() {
 		defer broker.Delete()
 
 		By("creating a service instance")
+		// We have to create the defered delete *before* creating the service.
+		// If there is an error in a creating the service then services.CreateInstance won't return
+		// and we may have a failed creation in the database attached to the broker we just created,
+		// preventing deleting the broker. Calling `cf delete-service` still needs to be done.
+		serviceName := "csb-google-storage-bucket"
+		defer services.Delete(serviceName)
 		serviceInstance := services.CreateInstance(
-			"csb-google-storage-bucket",
+			serviceName,
 			"default",
 			services.WithBroker(broker),
 		)
-
-		defer serviceInstance.Delete()
 
 		By("pushing the unstarted app")
 		app := apps.Push(apps.WithApp(apps.Storage))
