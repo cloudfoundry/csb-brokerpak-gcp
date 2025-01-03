@@ -24,13 +24,8 @@ var _ = Describe("UpgradeMYSQLTest", Label("mysql"), func() {
 			defer serviceBroker.Delete()
 
 			By("creating a service instance")
-			// We have to create the defered delete *before* creating the service.
-			// If there is an error in a creating the service then services.CreateInstance won't return
-			// and we may have a failed creation in the database attached to the broker we just created,
-			// preventing deleting the broker. Calling `cf delete-service` still needs to be done.
-			serviceName := "csb-google-mysql"
-			services.Delete(serviceName)
-			serviceInstance := services.CreateInstance(serviceName, "default", services.WithBroker(serviceBroker))
+			serviceInstance := services.CreateInstance("csb-google-mysql", "default", services.WithBroker(serviceBroker))
+			defer serviceInstance.Delete()
 
 			By("pushing the unstarted app twice")
 			appOne := apps.Push(apps.WithApp(apps.MySQL))
@@ -59,7 +54,7 @@ var _ = Describe("UpgradeMYSQLTest", Label("mysql"), func() {
 			serviceBroker.UpdateBroker(developmentBuildDir)
 
 			By("validating that the instance plan is still active")
-			Expect(plans.ExistsAndAvailable("default", serviceName, serviceBroker.Name))
+			Expect(plans.ExistsAndAvailable("default", "csb-google-mysql", serviceBroker.Name))
 
 			By("upgrading service instance")
 			serviceInstance.Upgrade()
