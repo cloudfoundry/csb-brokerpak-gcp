@@ -23,12 +23,17 @@ var _ = Describe("UpgradeStorageTest", Label("storage"), func() {
 			defer serviceBroker.Delete()
 
 			By("creating a service")
+			// We have to create the defered delete *before* creating the service.
+			// If there is an error in a creating the service then services.CreateInstance won't return
+			// and we may have a failed creation in the database attached to the broker we just created,
+			// preventing deleting the broker. Calling `cf delete-service` still needs to be done.
+			serviceName := "csb-google-storage-bucket"
+			defer services.Delete(serviceName)
 			serviceInstance := services.CreateInstance(
 				"csb-google-storage-bucket",
 				"default",
 				services.WithBroker(serviceBroker),
 			)
-			defer serviceInstance.Delete()
 
 			By("pushing the unstarted app twice")
 			appOne := apps.Push(apps.WithApp(apps.Storage))
@@ -53,7 +58,7 @@ var _ = Describe("UpgradeStorageTest", Label("storage"), func() {
 			serviceBroker.UpdateBroker(developmentBuildDir)
 
 			By("validating that the instance plan is still active")
-			Expect(plans.ExistsAndAvailable("default", "csb-google-storage-bucket", serviceBroker.Name))
+			Expect(plans.ExistsAndAvailable("default", serviceName, serviceBroker.Name))
 
 			By("upgrading service instance")
 			serviceInstance.Upgrade()

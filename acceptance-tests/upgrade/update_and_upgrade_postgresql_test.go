@@ -22,13 +22,18 @@ var _ = Describe("UpgradePostgreSQLTest", Label("postgresql"), func() {
 			)
 			defer serviceBroker.Delete()
 
+			// We have to start the defered delete *before* creating the service.
+			// If there is an error in a creating the service then services.CreateInstance won't return
+			// and we may have a failed creation in the database attached to the broker we just created,
+			// preventing deleting the broker. Calling `cf delete-service` still needs to be done.
+			serviceName := "csb-google-postgres"
+			defer services.Delete(serviceName)
 			By("creating a service")
 			serviceInstance := services.CreateInstance(
-				"csb-google-postgres",
+				serviceName,
 				"small",
 				services.WithBroker(serviceBroker),
 			)
-			defer serviceInstance.Delete()
 
 			By("pushing the unstarted app twice")
 			appOne := apps.Push(apps.WithApp(apps.PostgreSQL))
@@ -59,7 +64,7 @@ var _ = Describe("UpgradePostgreSQLTest", Label("postgresql"), func() {
 			serviceBroker.UpdateBroker(developmentBuildDir)
 
 			By("validating that the instance plan is still active")
-			Expect(plans.ExistsAndAvailable("small", "csb-google-postgres", serviceBroker.Name))
+			Expect(plans.ExistsAndAvailable("small", serviceName, serviceBroker.Name))
 
 			By("upgrading service instance")
 			serviceInstance.Upgrade()
