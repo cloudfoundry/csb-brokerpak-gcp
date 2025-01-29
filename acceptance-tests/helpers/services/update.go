@@ -13,7 +13,7 @@ func (s *ServiceInstance) Update(opts ...Option) {
 	var cfg config
 	WithOptions(opts...)(&cfg)
 
-	args := []string{"update-service", s.Name}
+	args := []string{"update-service", s.Name, "--wait"}
 	if cfg.parameters != "" {
 		args = append(args, "-c", cfg.parameters)
 	}
@@ -22,30 +22,9 @@ func (s *ServiceInstance) Update(opts ...Option) {
 		args = append(args, "-p", cfg.plan)
 	}
 
-	switch cf.Version() {
-	case cf.VersionV8:
-		s.updateServiceWithWait(args)
-	default:
-		s.updateServiceWithPoll(args)
-	}
-}
-
-func (s *ServiceInstance) updateServiceWithWait(args []string) {
-	args = append(args, "--wait")
 	session := cf.Start(args...)
 	Eventually(session, time.Hour).Should(Exit(0), func() string {
 		out, _ := cf.Run("service", s.Name)
 		return out
 	})
-}
-
-func (s *ServiceInstance) updateServiceWithPoll(args []string) {
-	session := cf.Start(args...)
-	Eventually(session, 5*time.Minute).Should(Exit(0))
-
-	Eventually(func() string {
-		out, _ := cf.Run("service", s.Name)
-		Expect(out).NotTo(MatchRegexp(`status:\s+update failed`))
-		return out
-	}, time.Hour, 30*time.Second).Should(MatchRegexp(`status:\s+update succeeded`))
 }
