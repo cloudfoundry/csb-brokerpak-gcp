@@ -23,7 +23,6 @@ type config struct {
 	serviceBrokerName func() string
 	parameters        string
 	plan              string
-	async             bool
 }
 
 type Option func(*config)
@@ -32,6 +31,7 @@ func CreateInstance(offering, plan string, opts ...Option) *ServiceInstance {
 	cfg := defaultConfig(offering, plan, opts...)
 	args := []string{
 		"create-service",
+		"--wait",
 		offering,
 		plan,
 		cfg.name,
@@ -43,43 +43,13 @@ func CreateInstance(offering, plan string, opts ...Option) *ServiceInstance {
 		args = append(args, "-c", cfg.parameters)
 	}
 
-	if cfg.async {
-		session := cf.Start(args...)
-		Eventually(session, 5*time.Minute).Should(Exit(0))
-		return &ServiceInstance{Name: cfg.name}
-	}
-
-	switch cf.Version() {
-	case cf.VersionV8:
-		createInstanceWithWait(cfg.name, args)
-	default:
-		createInstanceWithPoll(cfg.name, args)
-	}
-
-	return &ServiceInstance{Name: cfg.name}
-}
-
-func createInstanceWithWait(name string, args []string) {
-	args = append(args, "--wait")
 	session := cf.Start(args...)
 	Eventually(session, time.Hour).Should(Exit(0), func() string {
-		out, _ := cf.Run("service", name)
+		out, _ := cf.Run("service", cfg.name)
 		return out
 	})
-}
 
-func createInstanceWithPoll(name string, args []string) {
-	session := cf.Start(args...)
-	Eventually(session, 5*time.Minute).Should(Exit(0))
-	WaitForInstanceCreation(name)
-}
-
-func WaitForInstanceCreation(name string) bool {
-	return Eventually(func() string {
-		out, _ := cf.Run("service", name)
-		Expect(out).NotTo(MatchRegexp(`status:\s+create failed`))
-		return out
-	}, time.Hour, 30*time.Second).Should(MatchRegexp(`status:\s+create succeeded`))
+	return &ServiceInstance{Name: cfg.name}
 }
 
 func WithDefaultBroker() Option {
@@ -91,12 +61,6 @@ func WithDefaultBroker() Option {
 func WithBroker(broker *brokers.Broker) Option {
 	return func(c *config) {
 		c.serviceBrokerName = func() string { return broker.Name }
-	}
-}
-
-func WithBrokerName(name string) Option {
-	return func(c *config) {
-		c.serviceBrokerName = func() string { return name }
 	}
 }
 
@@ -113,12 +77,6 @@ func WithParameters(parameters any) Option {
 	}
 }
 
-func WithPlan(plan string) Option {
-	return func(c *config) {
-		c.plan = plan
-	}
-}
-
 func WithName(name string) Option {
 	return func(c *config) {
 		c.name = name
@@ -130,12 +88,6 @@ func WithOptions(opts ...Option) Option {
 		for _, o := range opts {
 			o(c)
 		}
-	}
-}
-
-func WithAsync() Option {
-	return func(c *config) {
-		c.async = true
 	}
 }
 

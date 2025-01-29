@@ -1,36 +1,22 @@
 package servicekeys
 
 import (
-	"encoding/json"
-	"fmt"
-	"reflect"
-	"regexp"
-
 	"csbbrokerpakgcp/acceptance-tests/helpers/cf"
+	"encoding/json"
+	"reflect"
+	"strings"
 
 	. "github.com/onsi/gomega"
 )
 
 func (s *ServiceKey) Get(receiver any) {
 	Expect(reflect.ValueOf(receiver).Kind()).To(Equal(reflect.Ptr), "receiver must be a pointer")
-	keyGUID, errStr := cf.Run("service-key", s.serviceInstanceName, s.name, "--guid")
-	Expect(errStr).To(BeEmpty())
-	nonGUID := regexp.MustCompile(`[^a-zA-Z0-9-]`)
-	keyGUID = nonGUID.ReplaceAllString(keyGUID, "")
-	keyURL := fmt.Sprintf("/v3/service_credential_bindings/%s/details", keyGUID)
-	keyJSON, errStr := cf.Run("curl", keyURL)
-	if errStr != "" {
-		deprecatedKeyURL := fmt.Sprintf("/v2/service_keys/%s", keyGUID)
-		keyJSON, errStr = cf.Run("curl", deprecatedKeyURL)
-		Expect(errStr).To(BeEmpty(), "unable to fetch the service key", s)
-		keyEntity := struct {
-			Entity map[string]any `json:"entity"`
-		}{}
-		Expect(json.Unmarshal([]byte(keyJSON), &keyEntity)).NotTo(HaveOccurred())
-		keyJSONBytes, err := json.Marshal(keyEntity.Entity)
-		Expect(err).NotTo(HaveOccurred())
-		keyJSON = string(keyJSONBytes)
-	}
+	out, _ := cf.Run("service-key", s.serviceInstanceName, s.name)
 
-	Expect(json.Unmarshal([]byte(keyJSON), receiver)).NotTo(HaveOccurred())
+	// The output consists of some text followed by JSON. We are only interested in the JSON
+	start := strings.Index(out, "{")
+	Expect(start).To(BeNumerically(">", 0), "could not find start of JSON")
+	data := []byte(out[start:])
+
+	Expect(json.Unmarshal(data, receiver)).To(Succeed())
 }
