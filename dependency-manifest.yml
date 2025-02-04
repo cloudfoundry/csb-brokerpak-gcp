@@ -14,9 +14,9 @@
 
 dependencies:
     - name: terraform-provider-csbmysql
-      version: 1.2.52
-      source: https://github.com/cloudfoundry/terraform-provider-csbmysql/archive/v1.2.52.zip
-      source_sha256: 26a3523fb447e346ae147d2027af9370a06d1bc12cefcc8369d95d2b11c1c161
+      version: 1.2.53
+      source: https://github.com/cloudfoundry/terraform-provider-csbmysql/archive/v1.2.53.zip
+      source_sha256: 68a31fc309c5813fb6f0ec04b3d070900dc5aac285c0773d6ca91d5ca430cc94
     - name: terraform-provider-csbpg
       version: 1.2.47
       source: https://github.com/cloudfoundry/terraform-provider-csbpg/archive/v1.2.47.zip
