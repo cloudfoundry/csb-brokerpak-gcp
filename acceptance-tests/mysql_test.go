@@ -50,11 +50,11 @@ var _ = Describe("MySQL", Label("mysql"), func() {
 		By("setting a key-value using the first app")
 		value := random.Hexadecimal()
 		var userIn appResponseUser
-		appOne.POST("", "?name=%s", value).ParseInto(&userIn)
+		appOne.POSTf("", "?name=%s", value).ParseInto(&userIn)
 
 		By("getting the value using the second app")
 		var userOut appResponseUser
-		appTwo.GET("%d", userIn.ID).ParseInto(&userOut)
+		appTwo.GETf("%d", userIn.ID).ParseInto(&userOut)
 		Expect(userOut.Name).To(Equal(value), "The first app stored [%s] as the value, the second app retrieved [%s]", value, userOut.Name)
 
 		By("verifying the first DB connection utilises TLS")
@@ -71,12 +71,12 @@ var _ = Describe("MySQL", Label("mysql"), func() {
 
 		By("verifying interactions with TLS enabled")
 		key, value := "key", "value"
-		golangApp.PUT(value, "/key-value/%s", key)
-		got := golangApp.GET("/key-value/%s", key).String()
+		golangApp.PUTf(value, "/key-value/%s", key)
+		got := golangApp.GETf("/key-value/%s", key).String()
 		Expect(got).To(Equal(value))
 
 		By("verifying that non-TLS connections should fail")
-		response := golangApp.GETResponse("/key-value/%s?tls=false", key)
+		response := golangApp.GETResponsef("/key-value/%s?tls=false", key)
 		defer response.Body.Close()
 		Expect(response).To(HaveHTTPStatus(http.StatusInternalServerError), "force TLS is enabled by default")
 		b, err := io.ReadAll(response.Body)
@@ -101,7 +101,7 @@ var _ = Describe("MySQL", Label("mysql"), func() {
 
 		By("ensuring encryption wasn't used")
 		var tlsCipher mySQLOption
-		appOne.GET("mysql-ssl").ParseInto(&tlsCipher)
+		appOne.GETf("mysql-ssl").ParseInto(&tlsCipher)
 
 		Expect(strings.ToLower(tlsCipher.Name)).To(Equal("ssl_cipher"))
 		Expect(tlsCipher.Value).To(BeEmpty(), "Expected Mysql connection for app %s not to be encrypted", appOne.Name)
