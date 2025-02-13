@@ -10,7 +10,11 @@ import (
 	. "github.com/onsi/gomega"
 )
 
-func (a *App) GET(format string, s ...any) Payload {
+func (a *App) GET(path string) Payload {
+	return a.GETf("%s", path)
+}
+
+func (a *App) GETf(format string, s ...any) Payload {
 	url := a.urlf(format, s...)
 	GinkgoWriter.Printf("HTTP GET: %s\n", url)
 	response, err := http.Get(url)
@@ -25,8 +29,12 @@ func (a *App) GET(format string, s ...any) Payload {
 	return Payload(data)
 }
 
-// GETResponse does an HTTP get, returning the *http.Response
-func (a *App) GETResponse(format string, s ...any) *http.Response {
+func (a *App) GETResponse(path string) *http.Response {
+	return a.GETResponsef("%s", path)
+}
+
+// GETResponsef does an HTTP get, returning the *http.Response
+func (a *App) GETResponsef(format string, s ...any) *http.Response {
 	GinkgoHelper()
 
 	url := a.urlf(format, s...)
@@ -36,7 +44,11 @@ func (a *App) GETResponse(format string, s ...any) *http.Response {
 	return response
 }
 
-func (a *App) PUT(data, format string, s ...any) {
+func (a *App) PUT(data, path string) {
+	a.PUTf(data, "%s", path)
+}
+
+func (a *App) PUTf(data, format string, s ...any) {
 	url := a.urlf(format, s...)
 	GinkgoWriter.Printf("HTTP PUT: %s\n", url)
 	GinkgoWriter.Printf("Sending data: %s\n", data)
@@ -48,7 +60,11 @@ func (a *App) PUT(data, format string, s ...any) {
 	Expect(response).To(HaveHTTPStatus(http.StatusCreated, http.StatusOK))
 }
 
-func (a *App) POST(data, format string, s ...any) Payload {
+func (a *App) POST(data, path string) Payload {
+	return a.POSTf(data, "%s", path)
+}
+
+func (a *App) POSTf(data, format string, s ...any) Payload {
 	url := a.urlf(format, s...)
 	GinkgoWriter.Printf("HTTP POST: %s\n", url)
 	GinkgoWriter.Printf("Sending data: %s\n", data)
@@ -76,7 +92,11 @@ func (a *App) DELETETestTable() {
 	Expect(response).To(HaveHTTPStatus(http.StatusGone, http.StatusNoContent))
 }
 
-func (a *App) DELETE(format string, s ...any) {
+func (a *App) DELETE(path string) {
+	a.DELETEf("%s", path)
+}
+
+func (a *App) DELETEf(format string, s ...any) {
 	url := a.urlf(format, s...)
 	GinkgoWriter.Printf("HTTP DELETE: %s\n", url)
 	request, err := http.NewRequest(http.MethodDelete, url, nil)

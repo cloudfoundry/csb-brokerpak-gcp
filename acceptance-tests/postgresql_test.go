@@ -88,24 +88,24 @@ var _ = Describe("PostgreSQL", func() {
 
 			By("creating an entry using the first app")
 			value := random.Hexadecimal()
-			appOne.POST("", "?name=%s", value).ParseInto(&userIn)
+			appOne.POSTf("", "?name=%s", value).ParseInto(&userIn)
 
 			By("binding and starting the second app")
 			serviceInstance.Bind(appTwo)
 			apps.Start(appTwo)
 
 			By("getting the entry using the second app")
-			appTwo.GET("%d", userIn.ID).ParseInto(&userOut)
+			appTwo.GETf("%d", userIn.ID).ParseInto(&userOut)
 			Expect(userOut.Name).To(Equal(value), "The first app stored [%s] as the value, the second app retrieved [%s]", value, userOut.Name)
 
 			By("verifying the DB connection utilises TLS")
-			appOne.GET("postgres-ssl").ParseInto(&sslInfo)
+			appOne.GETf("postgres-ssl").ParseInto(&sslInfo)
 			Expect(sslInfo.SSL).To(BeTrue())
 			Expect(sslInfo.Cipher).NotTo(BeEmpty())
 			Expect(sslInfo.Bits).To(BeNumerically(">=", 256))
 
 			By("deleting the entry using the first app")
-			appOne.DELETE("%d", userIn.ID)
+			appOne.DELETEf("%d", userIn.ID)
 
 			By("triggering ownership management")
 			binding.Unbind()
@@ -113,15 +113,15 @@ var _ = Describe("PostgreSQL", func() {
 			By("setting another value using the second app")
 			var userInTwo AppResponseUser
 			value2 := random.Hexadecimal()
-			appTwo.POST("", "?name=%s", value2).ParseInto(&userInTwo)
+			appTwo.POSTf("", "?name=%s", value2).ParseInto(&userInTwo)
 
 			By("getting the entry using the second app")
 			var userOutTwo AppResponseUser
-			appTwo.GET("%d", userInTwo.ID).ParseInto(&userOutTwo)
+			appTwo.GETf("%d", userInTwo.ID).ParseInto(&userOutTwo)
 			Expect(userOut.Name).To(Equal(value), "The second app stored [%s] as the value, the second app retrieved [%s]", value, userOut.Name)
 
 			By("deleting the entry using the second app")
-			appTwo.DELETE("%d", userInTwo.ID)
+			appTwo.DELETEf("%d", userInTwo.ID)
 		})
 
 		It("works with the default postgres version", Label("postgresql"), func() {
@@ -150,7 +150,7 @@ var _ = Describe("PostgreSQL", func() {
 			By("setting a key-value using the first app")
 			key := random.Hexadecimal()
 			value := random.Hexadecimal()
-			appOne.PUT(value, "%s/%s", schema, key)
+			appOne.PUTf(value, "%s/%s", schema, key)
 
 			By("binding the second app to the service instance")
 			serviceInstance.Bind(appTwo)
@@ -159,23 +159,23 @@ var _ = Describe("PostgreSQL", func() {
 			apps.Start(appTwo)
 
 			By("getting the value using the second app")
-			got := appTwo.GET("%s/%s", schema, key).String()
+			got := appTwo.GETf("%s/%s", schema, key).String()
 			Expect(got).To(Equal(value))
 
 			By("triggering ownership of schema to pass to provision user")
 			binding.Unbind()
 
 			By("getting the value again using the second app")
-			got2 := appTwo.GET("%s/%s", schema, key).String()
+			got2 := appTwo.GETf("%s/%s", schema, key).String()
 			Expect(got2).To(Equal(value))
 
 			By("setting another value using the second app")
 			key2 := random.Hexadecimal()
 			value2 := random.Hexadecimal()
-			appTwo.PUT(value2, "%s/%s", schema, key2)
+			appTwo.PUTf(value2, "%s/%s", schema, key2)
 
 			By("getting the other value using the second app")
-			got3 := appTwo.GET("%s/%s", schema, key2).String()
+			got3 := appTwo.GETf("%s/%s", schema, key2).String()
 			Expect(got3).To(Equal(value2))
 
 			By("dropping the schema using the second app")

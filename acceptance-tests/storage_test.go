@@ -73,12 +73,12 @@ var _ = Describe("Storage", Label("storage"), func() {
 		By("uploading a blob using the first app")
 		blobName := random.Hexadecimal()
 		blobData := random.Hexadecimal()
-		appOne.POST(blobData, "/storage/write?bucketName=%s&objectName=%s", bucketName, blobName)
+		appOne.POSTf(blobData, "/storage/write?bucketName=%s&objectName=%s", bucketName, blobName)
 
 		By("downloading the blob using the second app")
-		got := appTwo.GET("/storage/read?bucketName=%s&objectName=%s", bucketName, blobName).String()
+		got := appTwo.GETf("/storage/read?bucketName=%s&objectName=%s", bucketName, blobName).String()
 		Expect(got).To(Equal(blobData))
 
-		appOne.DELETE("/storage/delete?bucketName=%s&objectName=%s", bucketName, blobName)
+		appOne.DELETEf("/storage/delete?bucketName=%s&objectName=%s", bucketName, blobName)
 	})
 })
