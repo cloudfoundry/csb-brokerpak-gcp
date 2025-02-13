@@ -57,10 +57,10 @@ var _ = Describe("UpgradeMYSQLTest", Label("mysql"), func() {
 			By("setting a key-value using the first app")
 			key := random.Hexadecimal()
 			value := random.Hexadecimal()
-			appOne.PUT(value, "/key-value/%s", key)
+			appOne.PUTf(value, "/key-value/%s", key)
 
 			By("getting the value using the second app")
-			Expect(appTwo.GET("/key-value/%s", key).String()).To(Equal(value))
+			Expect(appTwo.GETf("/key-value/%s", key).String()).To(Equal(value))
 
 			By("pushing the development version of the broker")
 			serviceBroker.UpdateBroker(developmentBuildDir)
@@ -72,7 +72,7 @@ var _ = Describe("UpgradeMYSQLTest", Label("mysql"), func() {
 			serviceInstance.Upgrade()
 
 			By("getting the value using the second app")
-			Expect(appTwo.GET("/key-value/%s", key).String()).To(Equal(value))
+			Expect(appTwo.GETf("/key-value/%s", key).String()).To(Equal(value))
 
 			By("deleting bindings created before the upgrade")
 			bindingOne.Unbind()
@@ -87,7 +87,7 @@ var _ = Describe("UpgradeMYSQLTest", Label("mysql"), func() {
 			serviceInstance.Update(services.WithParameters(`{}`))
 
 			By("getting the value using the second app")
-			Expect(appTwo.GET("/key-value/%s", key).String()).To(Equal(value))
+			Expect(appTwo.GETf("/key-value/%s", key).String()).To(Equal(value))
 
 			By("deleting bindings created before the update")
 			bindingOne.Unbind()
@@ -99,20 +99,20 @@ var _ = Describe("UpgradeMYSQLTest", Label("mysql"), func() {
 			apps.Restage(appOne, appTwo)
 
 			By("getting the value using the second app")
-			Expect(appTwo.GET("/key-value/%s", key).String()).To(Equal(value))
+			Expect(appTwo.GETf("/key-value/%s", key).String()).To(Equal(value))
 
 			By("checking data can still be written and read")
 			keyTwo := random.Hexadecimal()
 			valueTwo := random.Hexadecimal()
-			appOne.PUT(valueTwo, "/key-value/%s", keyTwo)
-			Expect(appTwo.GET("/key-value/%s", keyTwo).String()).To(Equal(valueTwo))
+			appOne.PUTf(valueTwo, "/key-value/%s", keyTwo)
+			Expect(appTwo.GETf("/key-value/%s", keyTwo).String()).To(Equal(valueTwo))
 
 			By("verifying the DB connection utilises TLS")
 			var sslInfo struct {
 				VariableName string `json:"variable_name"`
 				Value        string `json:"value"`
 			}
-			appOne.GET("/admin/ssl").ParseInto(&sslInfo)
+			appOne.GETf("/admin/ssl").ParseInto(&sslInfo)
 
 			Expect(sslInfo.VariableName).To(Equal("Ssl_cipher"))
 			Expect(sslInfo.Value).To(Equal("ECDHE-RSA-AES128-GCM-SHA256"))
