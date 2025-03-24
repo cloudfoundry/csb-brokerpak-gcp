@@ -37,7 +37,7 @@ GET_CSB="env CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -ldflags $(LDFLAGS) 
 ###### Targets ################################################################
 
 .PHONY: build
-build: $(IAAS)-services-*.brokerpak ## build brokerpak
+build: cloud-service-broker $(IAAS)-services-*.brokerpak ## build brokerpak
 
 $(IAAS)-services-*.brokerpak: *.yml terraform/*/*/*.tf | $(PAK_BUILD_CACHE_PATH)
 	$(RUN_CSB) pak build
@@ -66,11 +66,11 @@ test: lint run-integration-tests
 
 .PHONY: run-integration-tests
 run-integration-tests: ## run integration tests for this brokerpak
-	cd ./integration-tests && go run github.com/onsi/ginkgo/v2/ginkgo -r .
+	cd ./integration-tests && go tool ginkgo -r .
 
 .PHONY: run-terraform-tests
 run-terraform-tests: ## run terraform tests for this brokerpak
-	cd ./terraform-tests && go run github.com/onsi/ginkgo/v2/ginkgo -r .
+	cd ./terraform-tests && go tool ginkgo -r .
 
 .PHONY: info
 info: build ## use the CSB to parse the buildpak and print out contents and versions
@@ -147,7 +147,7 @@ checkgoformat: ## checks that the Go code is formatted correctly
 	fi
 
 checkgoimports: ## checks that Go imports are formatted correctly
-	@@if [ -n "$$(go run golang.org/x/tools/cmd/goimports -l -d .)" ]; then \
+	@@if [ -n "$$(go tool goimports -l -d .)" ]; then \
 		echo "goimports check failed: run 'make format'";                      \
 		exit 1;                                                                \
 	fi
@@ -156,11 +156,11 @@ vet: ## Runs go vet
 	go vet ./...
 
 staticcheck: ## Runs staticcheck
-	go run honnef.co/go/tools/cmd/staticcheck ./...
+	go tool staticcheck ./...
 
 .PHONY: format
 format: ## format the source
 	gofmt -s -e -l -w .
-	go run golang.org/x/tools/cmd/goimports -l -w .
+	go tool goimports -l -w .
 	terraform fmt --recursive
 
