@@ -43,6 +43,8 @@ var _ = Describe("mysql", Label("mysql-terraform"), Ordered, func() {
 		"location_preference_zone":               "",
 		"location_preference_secondary_zone":     "",
 		"allow_insecure_connections":             false,
+		"maintenance_day":                        nil,
+		"maintenance_hour":                       nil,
 	}
 
 	BeforeAll(func() {
@@ -98,7 +100,8 @@ var _ = Describe("mysql", Label("mysql-terraform"), Ordered, func() {
 									"secondary_zone": BeEmpty(),
 								}),
 							),
-							"availability_type": Equal("ZONAL"),
+							"availability_type":  Equal("ZONAL"),
+							"maintenance_window": BeEmpty(),
 						}),
 					),
 					"project": Equal(googleProject),
@@ -120,6 +123,50 @@ var _ = Describe("mysql", Label("mysql-terraform"), Ordered, func() {
 
 			Expect(AfterOutput(plan, "allow_insecure_connections")).NotTo(BeNil())
 			Expect(AfterOutput(plan, "allow_insecure_connections")).To(BeFalse())
+		})
+	})
+
+	Context("maintenance_window", func() {
+		Specify("enabling maintenance_day", func() {
+			plan = ShowPlan(terraformProvisionDir, buildVars(defaultVars, map[string]any{"maintenance_day": 1}))
+
+			Expect(AfterValuesForType(plan, googleSQLDBInstance)).To(
+				MatchKeys(IgnoreExtras, Keys{
+					"settings": ContainElement(MatchKeys(IgnoreExtras, Keys{
+						"maintenance_window": ContainElement(MatchKeys(IgnoreExtras, Keys{
+							"day":  BeNumerically("==", 1),
+							"hour": BeNil(),
+						})),
+					})),
+				}),
+			)
+		})
+
+		Specify("enabling maintenance_hour", func() {
+			plan = ShowPlan(terraformProvisionDir, buildVars(defaultVars, map[string]any{"maintenance_hour": 20}))
+
+			Expect(AfterValuesForType(plan, googleSQLDBInstance)).To(
+				MatchKeys(IgnoreExtras, Keys{
+					"settings": ContainElement(MatchKeys(IgnoreExtras, Keys{
+						"maintenance_window": BeEmpty(),
+					})),
+				}),
+			)
+		})
+
+		Specify("enabling maintenance_day and maintenance_hour", func() {
+			plan = ShowPlan(terraformProvisionDir, buildVars(defaultVars, map[string]any{"maintenance_day": 1, "maintenance_hour": 20}))
+
+			Expect(AfterValuesForType(plan, googleSQLDBInstance)).To(
+				MatchKeys(IgnoreExtras, Keys{
+					"settings": ContainElement(MatchKeys(IgnoreExtras, Keys{
+						"maintenance_window": ContainElement(MatchKeys(IgnoreExtras, Keys{
+							"day":  BeNumerically("==", 1),
+							"hour": BeNumerically("==", 20),
+						})),
+					})),
+				}),
+			)
 		})
 	})
 
