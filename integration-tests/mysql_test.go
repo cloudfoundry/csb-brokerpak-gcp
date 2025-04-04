@@ -117,6 +117,8 @@ var _ = Describe("MySQL", Label("MySQL"), func() {
 				"highly_available":                       true,
 				"location_preference_zone":               "a",
 				"location_preference_secondary_zone":     "c",
+				"maintenance_day":                        2,
+				"maintenance_hour":                       7,
 			})
 
 			Expect(err).NotTo(HaveOccurred())
@@ -141,6 +143,8 @@ var _ = Describe("MySQL", Label("MySQL"), func() {
 					HaveKeyWithValue("highly_available", BeTrue()),
 					HaveKeyWithValue("location_preference_zone", Equal("a")),
 					HaveKeyWithValue("location_preference_secondary_zone", Equal("c")),
+					HaveKeyWithValue("maintenance_day", BeNumerically("==", 2)),
+					HaveKeyWithValue("maintenance_hour", BeNumerically("==", 7)),
 				),
 			)
 		})
@@ -222,6 +226,16 @@ var _ = Describe("MySQL", Label("MySQL"), func() {
 				map[string]any{"location_preference_secondary_zone": "abc"},
 				"location_preference_secondary_zone: Does not match pattern '^[a-z]?$'",
 			),
+			Entry(
+				"invalid maintenance day",
+				map[string]any{"maintenance_day": 8},
+				"maintenance_day: Must be less than or equal to 7",
+			),
+			Entry(
+				"invalid maintenance hour",
+				map[string]any{"maintenance_hour": 24},
+				"maintenance_hour: Must be less than or equal to 23",
+			),
 		)
 	})
 
@@ -257,6 +271,8 @@ var _ = Describe("MySQL", Label("MySQL"), func() {
 			Entry("update highly_available", map[string]any{"highly_available": true}),
 			Entry("update location_preference_zone", map[string]any{"location_preference_zone": "a"}),
 			Entry("update location_preference_secondary_zone", map[string]any{"location_preference_secondary_zone": "c"}),
+			Entry("update maintenance_day", map[string]any{"maintenance_day": 3}),
+			Entry("update maintenance_hour", map[string]any{"maintenance_hour": 8}),
 		)
 
 		DescribeTable("should prevent updating properties flagged as `prohibit_update` because it can result in the recreation of the service instance and lost data",
