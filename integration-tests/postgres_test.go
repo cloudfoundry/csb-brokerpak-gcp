@@ -36,6 +36,8 @@ var postgresAllOverridesPlan = map[string]any{
 	"authorized_network":    "plan_authorized_network",
 	"authorized_network_id": "plan_authorized_network_id",
 	"require_ssl":           false,
+	"maintenance_day":       1,
+	"maintenance_hour":      20,
 }
 
 var postgresPlans = []map[string]any{
@@ -165,6 +167,8 @@ var _ = Describe("postgres", Label("postgres"), func() {
 					HaveKeyWithValue("public_ip", false),
 					HaveKeyWithValue("authorized_networks_cidrs", make([]any, 0)),
 					HaveKeyWithValue("require_ssl", true),
+					HaveKeyWithValue("maintenance_day", BeNil()),
+					HaveKeyWithValue("maintenance_hour", BeNil()),
 				),
 			)
 		})
@@ -183,6 +187,8 @@ var _ = Describe("postgres", Label("postgres"), func() {
 				"public_ip":                 true,
 				"authorized_networks_cidrs": []string{"params_authorized_network_cidr1", "params_authorized_network_cidr2"},
 				"require_ssl":               false,
+				"maintenance_day":           1,
+				"maintenance_hour":          20,
 			}
 			_, err := broker.Provision("csb-google-postgres", postgresNoOverridesPlan["name"].(string), parameters)
 
@@ -206,6 +212,8 @@ var _ = Describe("postgres", Label("postgres"), func() {
 					HaveKeyWithValue("highly_available", BeFalse()),
 					HaveKeyWithValue("location_preference_zone", BeEmpty()),
 					HaveKeyWithValue("location_preference_secondary_zone", BeEmpty()),
+					HaveKeyWithValue("maintenance_day", BeNumerically("==", 1)),
+					HaveKeyWithValue("maintenance_hour", BeNumerically("==", 20)),
 				),
 			)
 		})
@@ -227,6 +235,8 @@ var _ = Describe("postgres", Label("postgres"), func() {
 					HaveKeyWithValue("authorized_network", postgresAllOverridesPlan["authorized_network"]),
 					HaveKeyWithValue("authorized_network_id", postgresAllOverridesPlan["authorized_network_id"]),
 					HaveKeyWithValue("require_ssl", postgresAllOverridesPlan["require_ssl"]),
+					HaveKeyWithValue("maintenance_day", BeNumerically("==", 1)),
+					HaveKeyWithValue("maintenance_hour", BeNumerically("==", 20)),
 				),
 			)
 		})
