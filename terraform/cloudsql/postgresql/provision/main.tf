@@ -49,6 +49,14 @@ resource "google_sql_database_instance" "instance" {
         retained_backups = var.backups_retain_number
       }
     }
+
+    dynamic "maintenance_window" {
+      for_each = var.maintenance_day != null ? [null] : []
+      content {
+        day  = var.maintenance_day
+        hour = var.maintenance_hour
+      }
+    }
   }
 
   deletion_protection = false
