@@ -26,3 +26,5 @@ variable "credentials" {
 }
 variable "project" { type = string }
 variable "require_ssl" { type = bool }
+variable "maintenance_day" { type = number }
+variable "maintenance_hour" { type = number }
