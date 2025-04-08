@@ -173,6 +173,22 @@ provision:
     details: Allow insecure connections between the application and this service instance
     default: false
     prohibit_update: true
+  - field_name: maintenance_day
+    type: number
+    details: Maintenance day [1-7] starting Monday
+    nullable: true
+    default: null
+    constraints:
+      minimum: 1
+      maximum: 7
+  - field_name: maintenance_hour
+    type: number
+    details: Maintenance hour [0-23]
+    nullable: true
+    default: null
+    constraints:
+      minimum: 0
+      maximum: 23
   computed_inputs:
   - name: labels
     default: ${json.marshal(request.default_labels)}

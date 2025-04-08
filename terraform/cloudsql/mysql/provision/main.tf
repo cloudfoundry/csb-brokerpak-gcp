@@ -44,6 +44,14 @@ resource "google_sql_database_instance" "instance" {
       binary_log_enabled             = local.transaction_log_backups_enabled
       transaction_log_retention_days = var.backups_transaction_log_retention_days
     }
+
+    dynamic "maintenance_window" {
+    for_each = var.maintenance_day != null ? [null] : []
+      content {
+        day  = var.maintenance_day
+        hour = var.maintenance_hour
+      }
+    }
   }
 
   lifecycle {

@@ -29,3 +29,5 @@ variable "highly_available" { type = bool }
 variable "location_preference_zone" { type = string }
 variable "location_preference_secondary_zone" { type = string }
 variable "allow_insecure_connections" { type = bool }
+variable "maintenance_day" { type = number }
+variable "maintenance_hour" { type = number }
