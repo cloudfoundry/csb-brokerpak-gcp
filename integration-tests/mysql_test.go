@@ -327,8 +327,8 @@ var _ = Describe("MySQL", Label("MySQL"), func() {
 		)
 	})
 
-	Context("bind a service ", func() {
-		It("return the bind values from terraform output", func() {
+	DescribeTable("bind a service",
+		func(bindParams map[string]any) {
 			const (
 				fakeSSLRoot    = "CREATED_SSL_ROOT_CERT"
 				fakeClientCert = "CREATED_SSL_CLIENT_CERT"
@@ -352,7 +352,7 @@ var _ = Describe("MySQL", Label("MySQL"), func() {
 			})
 			Expect(err).NotTo(HaveOccurred())
 
-			bindResult, err := broker.Bind(mySQLServiceName, mySQLCustomPlanName, instanceID, nil)
+			bindResult, err := broker.Bind(mySQLServiceName, mySQLCustomPlanName, instanceID, bindParams)
 			Expect(err).NotTo(HaveOccurred())
 
 			Expect(bindResult).To(Equal(map[string]any{
@@ -369,8 +369,16 @@ var _ = Describe("MySQL", Label("MySQL"), func() {
 				"port":                       float64(3306),
 				"allow_insecure_connections": false,
 			}))
-		})
-	})
+		},
+		Entry(
+			"bind with default parameters",
+			nil,
+		),
+		Entry(
+			"bind with read-only = true",
+			map[string]any{"read_only": true},
+		),
+	)
 })
 
 func provisionInstanceForBinding(

@@ -231,7 +231,11 @@ provision:
     details: Allow insecure connections between the application and this service instance
 bind:
   plan_inputs: []
-  user_inputs: []
+  user_inputs:
+  - field_name: read_only
+    type: boolean
+    default: false
+    details: Read only
   computed_inputs:
   - name: mysql_db_name
     type: string
