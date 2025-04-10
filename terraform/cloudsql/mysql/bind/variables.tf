@@ -14,3 +14,4 @@ variable "sslkey" {
   type      = string
 }
 variable "allow_insecure_connections" { type = bool }
+variable "read_only" { type = bool }

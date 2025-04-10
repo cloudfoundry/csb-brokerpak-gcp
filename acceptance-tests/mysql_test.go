@@ -34,15 +34,15 @@ var _ = Describe("MySQL", Label("mysql"), func() {
 
 		By("pushing the unstarted app twice")
 		appOne := apps.Push(apps.WithApp(apps.JDBCTestApp), apps.WithTestAppManifest(apps.MySQLTLSTestAppManifest))
-		appTwo := apps.Push(apps.WithApp(apps.JDBCTestApp), apps.WithTestAppManifest(apps.MySQLTLSTestAppManifest))
-		defer apps.Delete(appOne, appTwo)
+		readOnlyApp := apps.Push(apps.WithApp(apps.JDBCTestApp), apps.WithTestAppManifest(apps.MySQLTLSTestAppManifest))
+		defer apps.Delete(appOne, readOnlyApp)
 
 		By("binding the apps to the storage service instance")
 		binding := serviceInstance.Bind(appOne)
-		serviceInstance.Bind(appTwo)
+		serviceInstance.BindWithParams(readOnlyApp, `{"read_only" : true}`)
 
 		By("starting the apps")
-		apps.Start(appOne, appTwo)
+		apps.Start(appOne, readOnlyApp)
 
 		By("checking that the app environment has a credhub reference for credentials")
 		Expect(binding.Credential()).To(matchers.HaveCredHubRef)
@@ -52,10 +52,18 @@ var _ = Describe("MySQL", Label("mysql"), func() {
 		var userIn appResponseUser
 		appOne.POSTf("", "?name=%s", value).ParseInto(&userIn)
 
-		By("getting the value using the second app")
+		By("getting the value using the readonly app")
 		var userOut appResponseUser
-		appTwo.GETf("%d", userIn.ID).ParseInto(&userOut)
+		readOnlyApp.GETf("%d", userIn.ID).ParseInto(&userOut)
 		Expect(userOut.Name).To(Equal(value), "The first app stored [%s] as the value, the second app retrieved [%s]", value, userOut.Name)
+
+		By("verifing that the readonly app can't write")
+		failedResponse := readOnlyApp.POSTResponse("", "?name=foo")
+		defer failedResponse.Body.Close()
+		b, err := io.ReadAll(failedResponse.Body)
+		Expect(err).ToNot(HaveOccurred(), "error reading response body in readonly failure")
+		Expect(failedResponse).To(HaveHTTPStatus(http.StatusInternalServerError))
+		Expect(string(b)).To(ContainSubstring("Internal Server Error")) // Surprising, but this is what the app returns if it gets an error writing.
 
 		By("verifying the first DB connection utilises TLS")
 		var tlsCipher mySQLOption
@@ -79,7 +87,7 @@ var _ = Describe("MySQL", Label("mysql"), func() {
 		response := golangApp.GETResponsef("/key-value/%s?tls=false", key)
 		defer response.Body.Close()
 		Expect(response).To(HaveHTTPStatus(http.StatusInternalServerError), "force TLS is enabled by default")
-		b, err := io.ReadAll(response.Body)
+		b, err = io.ReadAll(response.Body)
 		Expect(err).ToNot(HaveOccurred(), "error reading response body in TLS failure")
 		Expect(string(b)).To(ContainSubstring("error connecting to database: failed to verify the connection"), "force TLS is enabled by default")
 		Expect(string(b)).To(ContainSubstring("Error 1045 (28000): Access denied for user"), "mysql client cannot connect to the postgres server due to invalid TLS")

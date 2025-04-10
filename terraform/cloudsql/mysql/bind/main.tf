@@ -16,4 +16,5 @@ resource "csbmysql_binding_user" "new_user" {
   username                   = random_string.username.result
   password                   = random_password.password.result
   allow_insecure_connections = var.allow_insecure_connections
+  read_only                  = var.read_only
 }
