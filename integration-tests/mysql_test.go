@@ -349,6 +349,7 @@ var _ = Describe("MySQL", Label("MySQL"), func() {
 				{Name: "uri", Type: "string", Value: "bind.test.uri"},
 				{Name: "jdbcUrl", Type: "string", Value: "bind.test.jdbcUrl"},
 				{Name: "port", Type: "number", Value: 3306},
+				{Name: "read_only", Type: "boolean", Value: bindParams["read_only"]},
 			})
 			Expect(err).NotTo(HaveOccurred())
 
@@ -368,6 +369,7 @@ var _ = Describe("MySQL", Label("MySQL"), func() {
 				"private_ip":                 fakePrivateIP,
 				"port":                       float64(3306),
 				"allow_insecure_connections": false,
+				"read_only":                  bindParams["read_only"],
 			}))
 		},
 		Entry(
