@@ -4,3 +4,4 @@ cloud-service-broker
 .csb.db
 integration-tests.test
 acceptance-tests/acceptance-tests.test
+.DS_Store

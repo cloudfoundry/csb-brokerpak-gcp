@@ -81,6 +81,24 @@ func (a *App) POSTf(data, format string, s ...any) Payload {
 	return Payload(responseBody)
 }
 
+// POSTResponsef does an HTTP post, returning the *http.Response
+func (a *App) POSTResponsef(data, format string, s ...any) *http.Response {
+	GinkgoHelper()
+
+	url := a.urlf(format, s...)
+	GinkgoWriter.Printf("HTTP POST: %s\n", url)
+	request, err := http.NewRequest(http.MethodPost, url, strings.NewReader(data))
+	Expect(err).NotTo(HaveOccurred())
+	request.Header.Set("Content-Type", "application/json")
+	response, err := http.DefaultClient.Do(request)
+	Expect(err).NotTo(HaveOccurred())
+	return response
+}
+
+func (a *App) POSTResponse(data, path string) *http.Response {
+	return a.POSTResponsef(data, "%s", path)
+}
+
 func (a *App) DELETETestTable() {
 	url := a.urlf("/")
 	GinkgoWriter.Printf("HTTP DELETE: %s\n", url)

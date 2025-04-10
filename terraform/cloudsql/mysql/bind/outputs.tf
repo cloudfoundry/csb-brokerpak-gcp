@@ -31,3 +31,4 @@ output "sslkey" {
   sensitive = true
   value     = var.sslkey
 }
+output "read_only" { value = var.read_only }
