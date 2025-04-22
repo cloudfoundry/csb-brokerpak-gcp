@@ -22,13 +22,13 @@ dependencies:
       source: https://github.com/cloudfoundry/terraform-provider-csbpg/archive/v1.2.54.zip
       source_sha256: 8776768bf27651b8ec5a1c5dcf6e0bf381783c960617f6d1c5b30230e512c213
     - name: terraform-provider-google
-      version: 6.30.0
-      source: https://github.com/terraform-providers/terraform-provider-google/archive/v6.30.0.zip
-      source_sha256: 0202a5b3176c216dc446d6f11f3192e65410f0d53894427fe18f6e80b85d0cce
+      version: 6.31.0
+      source: https://github.com/terraform-providers/terraform-provider-google/archive/v6.31.0.zip
+      source_sha256: 40550f502927f549d3af6e3fa46a7311eb83fe6c339ba7f6163d33022f8a1147
     - name: terraform-provider-random
-      version: 3.7.1
-      source: https://github.com/terraform-providers/terraform-provider-random/archive/v3.7.1.zip
-      source_sha256: dfe00170dd883aab09c133afc4a1547f68e21d4020e2921d20d28e174a573fdd
+      version: 3.7.2
+      source: https://github.com/terraform-providers/terraform-provider-random/archive/v3.7.2.zip
+      source_sha256: b365d10350d75cdb9801d0f338f5adce1df3a7c455b90c07121e05b7e67e83a8
     - name: tofu
       version: 1.9.0
       source: https://github.com/opentofu/opentofu/archive/v1.9.0.zip
