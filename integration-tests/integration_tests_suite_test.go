@@ -21,7 +21,7 @@ var (
 )
 
 const (
-	cloudServiceBrokerDocumentationURL = "https://docs.vmware.com/en/Cloud-Service-Broker-for-VMware-Tanzu/index.html"
+	cloudServiceBrokerDocumentationURL = "https://techdocs.broadcom.com/tnz-gcp-broker-cf"
 	providerDisplayName                = "VMware"
 	brokerGCPProject                   = "broker-gcp-project"
 	brokerGCPCreds                     = "broker-gcp-creds"
