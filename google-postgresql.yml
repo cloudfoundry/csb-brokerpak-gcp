@@ -18,7 +18,7 @@ id: 40501b82-cb90-11ec-b1c2-e3a703778055
 description: PostgreSQL is a fully managed service for the Google Cloud Platform.
 display_name: Google Cloud PostgreSQL
 image_url: file://service-images/csb.png
-documentation_url: https://docs.vmware.com/en/Cloud-Service-Broker-for-VMware-Tanzu/index.html
+documentation_url: https://techdocs.broadcom.com/tnz-gcp-broker-cf
 provider_display_name: VMware
 support_url: https://cloud.google.com/support/
 tags: [gcp, postgresql, postgres]

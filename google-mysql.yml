@@ -18,7 +18,7 @@ id: fe6a86d5-ce06-4c58-96f8-43aef1ac8a31
 description: MySQL is a fully managed service for the Google Cloud Platform.
 display_name: Google Cloud MySQL
 image_url: file://service-images/csb.png
-documentation_url: https://docs.vmware.com/en/Cloud-Service-Broker-for-VMware-Tanzu/index.html
+documentation_url: https://techdocs.broadcom.com/tnz-gcp-broker-cf
 provider_display_name: VMware
 support_url: https://cloud.google.com/support/
 tags: [gcp, mysql]
