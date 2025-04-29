@@ -22,9 +22,9 @@ dependencies:
       source: https://github.com/cloudfoundry/terraform-provider-csbpg/archive/v1.2.54.zip
       source_sha256: 8776768bf27651b8ec5a1c5dcf6e0bf381783c960617f6d1c5b30230e512c213
     - name: terraform-provider-google
-      version: 6.32.0
-      source: https://github.com/terraform-providers/terraform-provider-google/archive/v6.32.0.zip
-      source_sha256: c061170433f3e0797f5e156cd5692acd9dd51c4e5f751d014a3ac17dd6204dc8
+      version: 6.33.0
+      source: https://github.com/terraform-providers/terraform-provider-google/archive/v6.33.0.zip
+      source_sha256: d402414f387d4c1e320c2f2c35730bddd4fb9489d0a2c9797e3d3cd0917fb077
     - name: terraform-provider-random
       version: 3.7.2
       source: https://github.com/terraform-providers/terraform-provider-random/archive/v3.7.2.zip
