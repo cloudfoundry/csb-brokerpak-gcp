@@ -19,14 +19,14 @@ terraform_binaries:
   source: https://github.com/opentofu/opentofu/archive/v1.9.1.zip
   default: true
 - name: terraform-provider-google
-  version: 6.36.0
-  source: https://github.com/terraform-providers/terraform-provider-google/archive/v6.36.0.zip
+  version: 6.36.1
+  source: https://github.com/terraform-providers/terraform-provider-google/archive/v6.36.1.zip
 - name: terraform-provider-random
   version: 3.7.2
   source: https://github.com/terraform-providers/terraform-provider-random/archive/v3.7.2.zip
 - name: terraform-provider-csbpg
-  version: 1.2.55
-  source: https://github.com/cloudfoundry/terraform-provider-csbpg/archive/v1.2.55.zip
+  version: 1.2.56
+  source: https://github.com/cloudfoundry/terraform-provider-csbpg/archive/v1.2.56.zip
   provider: cloudfoundry.org/cloud-service-broker/csbpg
   url_template: https://github.com/cloudfoundry/${name}/releases/download/v${version}/${name}_${version}_${os}_${arch}.zip
 - name: terraform-provider-csbmysql
