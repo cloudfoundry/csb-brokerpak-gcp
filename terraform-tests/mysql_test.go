@@ -1,6 +1,7 @@
 package terraformtests
 
 import (
+	"os"
 	"path"
 
 	tfjson "github.com/hashicorp/terraform-json"
@@ -17,35 +18,47 @@ var _ = Describe("mysql", Label("mysql-terraform"), Ordered, func() {
 	var (
 		plan                  tfjson.Plan
 		terraformProvisionDir string
+		defaultVars           map[string]any
+		authorizedNetworkID   string
+		privateNetworkID      string
 	)
 
-	defaultVars := map[string]any{
-		"tier":                                   "db-n1-standard-2",
-		"storage_gb":                             10,
-		"credentials":                            googleCredentials,
-		"project":                                googleProject,
-		"instance_name":                          "test-instance-name-456",
-		"db_name":                                "test-db-name-987",
-		"region":                                 "us-central1",
-		"authorized_network_id":                  "",
-		"authorized_networks_cidrs":              []string{},
-		"public_ip":                              false,
-		"mysql_version":                          "8.0",
-		"labels":                                 map[string]string{"label1": "value1"},
-		"disk_autoresize":                        true,
-		"disk_autoresize_limit":                  0,
-		"deletion_protection":                    false,
-		"backups_start_time":                     "07:00",
-		"backups_location":                       nil,
-		"backups_retain_number":                  7,
-		"backups_transaction_log_retention_days": 0,
-		"highly_available":                       false,
-		"location_preference_zone":               "",
-		"location_preference_secondary_zone":     "",
-		"allow_insecure_connections":             false,
-		"maintenance_day":                        nil,
-		"maintenance_hour":                       nil,
-	}
+	BeforeEach(func() {
+		authorizedNetworkID = os.Getenv("GCP_AUTHORIZED_NETWORK_ID")
+
+		privateNetworkID = "https://www.googleapis.com/compute/v1/projects/cloud-service-broker/global/networks/default"
+		if authorizedNetworkID != "" {
+			privateNetworkID = authorizedNetworkID
+		}
+
+		defaultVars = map[string]any{
+			"tier":                                   "db-n1-standard-2",
+			"storage_gb":                             10,
+			"credentials":                            googleCredentials,
+			"project":                                googleProject,
+			"instance_name":                          "test-instance-name-456",
+			"db_name":                                "test-db-name-987",
+			"region":                                 "us-central1",
+			"authorized_network_id":                  authorizedNetworkID,
+			"authorized_networks_cidrs":              []string{},
+			"public_ip":                              false,
+			"mysql_version":                          "8.0",
+			"labels":                                 map[string]string{"label1": "value1"},
+			"disk_autoresize":                        true,
+			"disk_autoresize_limit":                  0,
+			"deletion_protection":                    false,
+			"backups_start_time":                     "07:00",
+			"backups_location":                       nil,
+			"backups_retain_number":                  7,
+			"backups_transaction_log_retention_days": 0,
+			"highly_available":                       false,
+			"location_preference_zone":               "",
+			"location_preference_secondary_zone":     "",
+			"allow_insecure_connections":             false,
+			"maintenance_day":                        nil,
+			"maintenance_hour":                       nil,
+		}
+	})
 
 	BeforeAll(func() {
 		terraformProvisionDir = path.Join(workingDir, "cloudsql/mysql/provision")
@@ -75,7 +88,7 @@ var _ = Describe("mysql", Label("mysql-terraform"), Ordered, func() {
 							"ip_configuration": ContainElement(
 								MatchKeys(IgnoreExtras, Keys{
 									"ipv4_enabled":        BeFalse(),
-									"private_network":     Equal("https://www.googleapis.com/compute/v1/projects/cloud-service-broker/global/networks/default"),
+									"private_network":     Equal(privateNetworkID),
 									"authorized_networks": BeEmpty(),
 								}),
 							),
