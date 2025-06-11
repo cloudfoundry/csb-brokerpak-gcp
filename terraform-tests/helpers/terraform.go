@@ -20,11 +20,15 @@ import (
 const commandName = "tofu"
 
 func Init(dir string) {
+	GinkgoHelper()
+
 	command := exec.Command(commandName, "-chdir="+dir, "init")
 	CommandStart(command)
 }
 
 func ShowPlan(dir string, vars map[string]any) tfjson.Plan {
+	GinkgoHelper()
+
 	tfvarsPath := path.Join(dir, "terraform.tfvars.json")
 	writeTFVarsFile(vars, tfvarsPath)
 	defer os.Remove(tfvarsPath)
@@ -42,16 +46,22 @@ func ShowPlan(dir string, vars map[string]any) tfjson.Plan {
 }
 
 func createPlan(dir, planFile string) {
+	GinkgoHelper()
+
 	CommandStart(exec.Command(commandName, "-chdir="+dir, "plan", "-refresh=false", fmt.Sprintf("-out=%s", planFile)))
 }
 
 func decodePlan(dir, planFile string) []byte {
+	GinkgoHelper()
+
 	jsonPlan, err := CommandOutput(exec.Command(commandName, "-chdir="+dir, "show", "-json", planFile))
 	Expect(err).ToNot(HaveOccurred())
 	return jsonPlan
 }
 
 func CommandStart(command *exec.Cmd) *gexec.Session {
+	GinkgoHelper()
+
 	session, err := gexec.Start(command, GinkgoWriter, GinkgoWriter)
 	Expect(err).NotTo(HaveOccurred())
 	Eventually(session, 35*time.Minute).Should(gexec.Exit(0))
@@ -59,6 +69,8 @@ func CommandStart(command *exec.Cmd) *gexec.Session {
 }
 
 func writeTFVarsFile(vars map[string]any, tfvarsPath string) {
+	GinkgoHelper()
+
 	variables, err := json.MarshalIndent(vars, "", "  ")
 	Expect(err).ToNot(HaveOccurred())
 	err = os.WriteFile(tfvarsPath, variables, 0755)
@@ -66,6 +78,8 @@ func writeTFVarsFile(vars map[string]any, tfvarsPath string) {
 }
 
 func CommandOutput(command *exec.Cmd) ([]byte, error) {
+	GinkgoHelper()
+
 	jsonOutput, err := command.Output()
 	Expect(err).NotTo(HaveOccurred())
 	return jsonOutput, err
