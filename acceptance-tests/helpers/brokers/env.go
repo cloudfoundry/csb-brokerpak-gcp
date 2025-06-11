@@ -15,7 +15,7 @@ func (b *Broker) env() []apps.EnvVar {
 	for name, required := range map[string]bool{
 		"GOOGLE_CREDENTIALS":                     true,
 		"GOOGLE_PROJECT":                         true,
-		"GCP_PAS_NETWORK":                        true,
+		"GCP_PAS_NETWORK":                        false,
 		"GSB_BROKERPAK_BUILTIN_PATH":             false,
 		"GSB_PROVISION_DEFAULTS":                 false,
 		"CH_CRED_HUB_URL":                        false,
