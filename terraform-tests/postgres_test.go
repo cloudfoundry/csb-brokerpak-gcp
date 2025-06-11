@@ -1,6 +1,7 @@
 package terraformtests
 
 import (
+	"os"
 	"path"
 
 	tfjson "github.com/hashicorp/terraform-json"
@@ -17,35 +18,50 @@ var _ = Describe("postgres", Label("postgres-terraform"), Ordered, func() {
 	var (
 		plan                  tfjson.Plan
 		terraformProvisionDir string
+		defaultVars           map[string]any
+		authorizedNetwork     string
+		authorizedNetworkID   string
+		privateNetworkID      string
 	)
 
-	defaultVars := map[string]any{
-		"tier":                                  "db-n1-standard-2",
-		"storage_gb":                            10,
-		"disk_autoresize":                       true,
-		"disk_autoresize_limit":                 100,
-		"credentials":                           googleCredentials,
-		"project":                               googleProject,
-		"instance_name":                         "test-instance-name-456",
-		"db_name":                               "test-db-name-987",
-		"region":                                "us-central1",
-		"authorized_network":                    "default",
-		"authorized_network_id":                 "",
-		"authorized_networks_cidrs":             []string{},
-		"public_ip":                             false,
-		"database_version":                      "POSTGRES_13",
-		"labels":                                map[string]string{"label1": "value1"},
-		"require_ssl":                           true,
-		"backups_start_time":                    "07:00",
-		"backups_location":                      "us",
-		"backups_retain_number":                 7,
-		"backups_point_in_time_log_retain_days": 7,
-		"highly_available":                      false,
-		"location_preference_zone":              "",
-		"location_preference_secondary_zone":    "",
-		"maintenance_day":                       nil,
-		"maintenance_hour":                      nil,
-	}
+	BeforeEach(func() {
+		authorizedNetwork = "default"
+		authorizedNetworkID = os.Getenv("GCP_AUTHORIZED_NETWORK_ID")
+		privateNetworkID = "https://www.googleapis.com/compute/v1/projects/cloud-service-broker/global/networks/default"
+
+		if authorizedNetworkID != "" {
+			privateNetworkID = authorizedNetworkID
+			authorizedNetwork = ""
+		}
+
+		defaultVars = map[string]any{
+			"tier":                                  "db-n1-standard-2",
+			"storage_gb":                            10,
+			"disk_autoresize":                       true,
+			"disk_autoresize_limit":                 100,
+			"credentials":                           googleCredentials,
+			"project":                               googleProject,
+			"instance_name":                         "test-instance-name-456",
+			"db_name":                               "test-db-name-987",
+			"region":                                "us-central1",
+			"authorized_network":                    authorizedNetwork,
+			"authorized_network_id":                 authorizedNetworkID,
+			"authorized_networks_cidrs":             []string{},
+			"public_ip":                             false,
+			"database_version":                      "POSTGRES_13",
+			"labels":                                map[string]string{"label1": "value1"},
+			"require_ssl":                           true,
+			"backups_start_time":                    "07:00",
+			"backups_location":                      "us",
+			"backups_retain_number":                 7,
+			"backups_point_in_time_log_retain_days": 7,
+			"highly_available":                      false,
+			"location_preference_zone":              "",
+			"location_preference_secondary_zone":    "",
+			"maintenance_day":                       nil,
+			"maintenance_hour":                      nil,
+		}
+	})
 
 	BeforeAll(func() {
 		terraformProvisionDir = path.Join(workingDir, "cloudsql/postgresql/provision")
@@ -79,7 +95,7 @@ var _ = Describe("postgres", Label("postgres-terraform"), Ordered, func() {
 							"ip_configuration": ContainElement(
 								MatchKeys(IgnoreExtras, Keys{
 									"ipv4_enabled":        BeFalse(),
-									"private_network":     Equal("https://www.googleapis.com/compute/v1/projects/cloud-service-broker/global/networks/default"),
+									"private_network":     Equal(privateNetworkID),
 									"authorized_networks": BeEmpty(),
 								}),
 							),
