@@ -74,7 +74,7 @@ var _ = Describe("storage", Label("storage-terraform"), Ordered, func() {
 					"retention_policy": ConsistOf(
 						MatchAllKeys(Keys{
 							"is_locked":        BeFalse(),
-							"retention_period": BeNumerically("==", 3600),
+							"retention_period": Equal("3600"),
 						}),
 					),
 				}),
@@ -128,7 +128,7 @@ var _ = Describe("storage", Label("storage-terraform"), Ordered, func() {
 						"retention_policy": ConsistOf(
 							MatchAllKeys(Keys{
 								"is_locked":        BeFalse(),
-								"retention_period": BeNumerically("==", 3600),
+								"retention_period": Equal("3600"),
 							}),
 						),
 					}),

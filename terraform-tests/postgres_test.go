@@ -76,12 +76,17 @@ var _ = Describe("postgres", Label("postgres-terraform"), Ordered, func() {
 		It("maps parameters to corresponding values", func() {
 			Expect(AfterValuesForType(plan, googleSQLDBInstance)).To(
 				MatchAllKeys(Keys{
-					"name":                Equal("test-instance-name-456"),
-					"database_version":    Equal("POSTGRES_13"),
-					"region":              Equal("us-central1"),
-					"deletion_protection": BeFalse(),
-					"root_password":       BeNil(),
-					"clone":               BeEmpty(),
+					"name":                          Equal("test-instance-name-456"),
+					"database_version":              Equal("POSTGRES_13"),
+					"region":                        Equal("us-central1"),
+					"deletion_protection":           BeFalse(),
+					"root_password":                 BeNil(),
+					"root_password_wo":              BeNil(),
+					"root_password_wo_version":      BeNil(),
+					"backupdr_backup":               BeNil(),
+					"final_backup_description":      BeNil(),
+					"point_in_time_restore_context": BeEmpty(),
+					"clone":                         BeEmpty(),
 					"timeouts": MatchAllKeys(Keys{
 						"create": Equal("60m"),
 						"delete": BeNil(),
