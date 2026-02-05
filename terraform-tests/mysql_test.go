@@ -73,14 +73,19 @@ var _ = Describe("mysql", Label("mysql-terraform"), Ordered, func() {
 		It("maps parameters to corresponding values", func() {
 			Expect(AfterValuesForType(plan, googleSQLDBInstance)).To(
 				MatchAllKeys(Keys{
-					"name":                   Equal("test-instance-name-456"),
-					"database_version":       Equal("8.0"),
-					"region":                 Equal("us-central1"),
-					"deletion_protection":    BeFalse(),
-					"root_password":          BeNil(),
-					"clone":                  BeEmpty(),
-					"timeouts":               BeNil(),
-					"restore_backup_context": BeEmpty(),
+					"name":                          Equal("test-instance-name-456"),
+					"database_version":              Equal("8.0"),
+					"region":                        Equal("us-central1"),
+					"deletion_protection":           BeFalse(),
+					"root_password":                 BeNil(),
+					"root_password_wo":              BeNil(),
+					"root_password_wo_version":      BeNil(),
+					"backupdr_backup":               BeNil(),
+					"final_backup_description":      BeNil(),
+					"point_in_time_restore_context": BeEmpty(),
+					"clone":                         BeEmpty(),
+					"timeouts":                      BeNil(),
+					"restore_backup_context":        BeEmpty(),
 					"settings": ContainElement(
 						MatchKeys(IgnoreExtras, Keys{
 							"tier":        Equal("db-n1-standard-2"),
