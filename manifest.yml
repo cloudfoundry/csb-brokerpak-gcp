@@ -19,8 +19,8 @@ terraform_binaries:
   source: https://github.com/opentofu/opentofu/archive/v1.10.9.zip
   default: true
 - name: terraform-provider-google
-  version: 7.28.0
-  source: https://github.com/terraform-providers/terraform-provider-google/archive/v7.28.0.zip
+  version: 7.29.0
+  source: https://github.com/terraform-providers/terraform-provider-google/archive/v7.29.0.zip
 - name: terraform-provider-random
   version: 3.8.1
   source: https://github.com/terraform-providers/terraform-provider-random/archive/v3.8.1.zip
