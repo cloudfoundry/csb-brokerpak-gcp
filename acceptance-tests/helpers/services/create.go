@@ -3,12 +3,15 @@ package services
 
 import (
 	"encoding/json"
+	"fmt"
+	"strings"
 	"time"
 
 	"csbbrokerpakgcp/acceptance-tests/helpers/brokers"
 	"csbbrokerpakgcp/acceptance-tests/helpers/cf"
 	"csbbrokerpakgcp/acceptance-tests/helpers/random"
 
+	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
 	. "github.com/onsi/gomega/gexec"
 )
@@ -29,6 +32,7 @@ type Option func(*config)
 
 func CreateInstance(offering, plan string, opts ...Option) *ServiceInstance {
 	cfg := defaultConfig(offering, plan, opts...)
+	brokerName := cfg.serviceBrokerName()
 	args := []string{
 		"create-service",
 		"--wait",
@@ -36,7 +40,7 @@ func CreateInstance(offering, plan string, opts ...Option) *ServiceInstance {
 		plan,
 		cfg.name,
 		"-b",
-		cfg.serviceBrokerName(),
+		brokerName,
 	}
 
 	if cfg.parameters != "" {
@@ -45,11 +49,40 @@ func CreateInstance(offering, plan string, opts ...Option) *ServiceInstance {
 
 	session := cf.Start(args...)
 	Eventually(session, time.Hour).Should(Exit(0), func() string {
-		out, _ := cf.Run("service", cfg.name)
-		return out
+		return gatherFailureDiagnostics(cfg.name, brokerName)
 	})
 
 	return &ServiceInstance{Name: cfg.name}
+}
+
+// gatherFailureDiagnostics collects diagnostic information when service creation fails
+func gatherFailureDiagnostics(serviceName, brokerName string) string {
+	var diagnostics strings.Builder
+
+	diagnostics.WriteString("\n========== SERVICE INSTANCE STATUS ==========\n")
+	serviceOut, _ := cf.Run("service", serviceName)
+	diagnostics.WriteString(serviceOut)
+
+	// Get broker app logs which contain the full Terraform error output
+	diagnostics.WriteString("\n========== BROKER APP LOGS (recent) ==========\n")
+	GinkgoWriter.Printf("Fetching broker logs for: %s\n", brokerName)
+
+	logsSession := cf.Start("logs", brokerName, "--recent")
+	Eventually(logsSession, 2*time.Minute).Should(Exit())
+	if logsSession.ExitCode() == 0 {
+		logsOutput := string(logsSession.Out.Contents())
+		lines := strings.Split(logsOutput, "\n")
+		if len(lines) > 200 {
+			diagnostics.WriteString(fmt.Sprintf("... (showing last 200 of %d lines)\n", len(lines)))
+			lines = lines[len(lines)-200:]
+		}
+		diagnostics.WriteString(strings.Join(lines, "\n"))
+	} else {
+		diagnostics.WriteString(fmt.Sprintf("Failed to fetch broker logs: %s\n", string(logsSession.Err.Contents())))
+	}
+
+	diagnostics.WriteString("\n========== END DIAGNOSTICS ==========\n")
+	return diagnostics.String()
 }
 
 func WithDefaultBroker() Option {
