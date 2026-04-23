@@ -1,8 +1,11 @@
 package upgrade_test
 
 import (
+	"fmt"
+
 	"csbbrokerpakgcp/acceptance-tests/helpers/apps"
 	"csbbrokerpakgcp/acceptance-tests/helpers/brokers"
+	"csbbrokerpakgcp/acceptance-tests/helpers/gcloud"
 	"csbbrokerpakgcp/acceptance-tests/helpers/matchers"
 	"csbbrokerpakgcp/acceptance-tests/helpers/plans"
 	"csbbrokerpakgcp/acceptance-tests/helpers/random"
@@ -38,6 +41,10 @@ var _ = Describe("UpgradeMYSQLTest", Label("mysql"), func() {
 				services.WithBroker(serviceBroker),
 				services.WithName(serviceName),
 			)
+
+			By("patching the database flag to allow native password proxy users")
+			instanceName := fmt.Sprintf("csb-mysql-%s", serviceInstance.GUID())
+			gcloud.GCP("sql", "instances", "patch", instanceName, "--database-flags", "mysql_native_password_proxy_users=on")
 
 			By("pushing the unstarted app twice")
 			appOne := apps.Push(apps.WithApp(apps.MySQL))
