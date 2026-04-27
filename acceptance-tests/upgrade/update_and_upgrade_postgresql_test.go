@@ -3,9 +3,13 @@ package upgrade_test
 import (
 	"csbbrokerpakgcp/acceptance-tests/helpers/apps"
 	"csbbrokerpakgcp/acceptance-tests/helpers/brokers"
+	"csbbrokerpakgcp/acceptance-tests/helpers/cf"
+	"csbbrokerpakgcp/acceptance-tests/helpers/gcloud"
 	"csbbrokerpakgcp/acceptance-tests/helpers/plans"
 	"csbbrokerpakgcp/acceptance-tests/helpers/random"
 	"csbbrokerpakgcp/acceptance-tests/helpers/services"
+	"fmt"
+	"strings"
 
 	. "github.com/onsi/ginkgo/v2"
 	. "github.com/onsi/gomega"
@@ -44,6 +48,11 @@ var _ = Describe("UpgradePostgreSQLTest", Label("postgresql"), func() {
 			defer apps.Delete(appOne, appTwo)
 
 			By("binding to the apps")
+			instanceName := fmt.Sprintf("csb-postgres-%s", serviceInstance.GUID())
+			ip := strings.TrimSpace(string(gcloud.GCP("sql", "instances", "describe", instanceName, "--format=value(ipAddresses[0].ipAddress)")))
+			By("verifying network reachability to the database at " + ip)
+			cf.Run("ssh", serviceBroker.Name, "-c", fmt.Sprintf("nc -zvw 10 %s 5432", ip))
+
 			bindingOne := serviceInstance.Bind(appOne)
 			bindingTwo := serviceInstance.Bind(appTwo)
 

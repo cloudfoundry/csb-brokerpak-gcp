@@ -2,9 +2,11 @@ package upgrade_test
 
 import (
 	"fmt"
+	"strings"
 
 	"csbbrokerpakgcp/acceptance-tests/helpers/apps"
 	"csbbrokerpakgcp/acceptance-tests/helpers/brokers"
+	"csbbrokerpakgcp/acceptance-tests/helpers/cf"
 	"csbbrokerpakgcp/acceptance-tests/helpers/gcloud"
 	"csbbrokerpakgcp/acceptance-tests/helpers/matchers"
 	"csbbrokerpakgcp/acceptance-tests/helpers/plans"
@@ -52,6 +54,10 @@ var _ = Describe("UpgradeMYSQLTest", Label("mysql"), func() {
 			defer apps.Delete(appOne, appTwo)
 
 			By("binding the apps to the storage service instance")
+			ip := strings.TrimSpace(string(gcloud.GCP("sql", "instances", "describe", instanceName, "--format=value(ipAddresses[0].ipAddress)")))
+			By("verifying network reachability to the database at " + ip)
+			cf.Run("ssh", serviceBroker.Name, "-c", fmt.Sprintf("nc -zvw 10 %s 3306", ip))
+
 			bindingOne := serviceInstance.Bind(appOne)
 			bindingTwo := serviceInstance.Bind(appTwo)
 
