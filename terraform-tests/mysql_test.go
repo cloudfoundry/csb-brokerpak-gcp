@@ -76,6 +76,7 @@ var _ = Describe("mysql", Label("mysql-terraform"), Ordered, func() {
 					"name":                          Equal("test-instance-name-456"),
 					"database_version":              Equal("8.0"),
 					"region":                        Equal("us-central1"),
+					"deletion_policy":               Equal("DELETE"),
 					"deletion_protection":           BeFalse(),
 					"root_password":                 BeNil(),
 					"root_password_wo":              BeNil(),
