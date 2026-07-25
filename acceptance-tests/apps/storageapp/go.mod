@@ -6,7 +6,7 @@ require (
 	cloud.google.com/go/storage v1.63.1
 	github.com/cloudfoundry-community/go-cfenv v1.18.0
 	github.com/mitchellh/mapstructure v1.5.0
-	google.golang.org/api v0.289.0
+	google.golang.org/api v0.290.0
 )
 
 require (
