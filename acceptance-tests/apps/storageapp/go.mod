@@ -4,7 +4,7 @@ go 1.26.4
 
 require (
 	cloud.google.com/go/storage v1.64.0
-	github.com/cloudfoundry-community/go-cfenv v1.18.0
+	github.com/cloudfoundry-community/go-cfenv v1.23.0
 	github.com/mitchellh/mapstructure v1.5.0
 	google.golang.org/api v0.291.0
 )
@@ -28,6 +28,7 @@ require (
 	github.com/go-jose/go-jose/v4 v4.1.4 // indirect
 	github.com/go-logr/logr v1.4.3 // indirect
 	github.com/go-logr/stdr v1.2.2 // indirect
+	github.com/go-viper/mapstructure/v2 v2.5.0 // indirect
 	github.com/google/s2a-go v0.1.9 // indirect
 	github.com/google/uuid v1.6.0 // indirect
 	github.com/googleapis/enterprise-certificate-proxy v0.3.19 // indirect
