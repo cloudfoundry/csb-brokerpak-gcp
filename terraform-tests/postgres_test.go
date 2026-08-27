@@ -80,6 +80,7 @@ var _ = Describe("postgres", Label("postgres-terraform"), Ordered, func() {
 					"database_version":              Equal("POSTGRES_13"),
 					"region":                        Equal("us-central1"),
 					"deletion_protection":           BeFalse(),
+					"deletion_policy":               Equal("DELETE"),
 					"root_password":                 BeNil(),
 					"root_password_wo":              BeNil(),
 					"root_password_wo_version":      BeNil(),
