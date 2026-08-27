@@ -30,8 +30,8 @@ github.com/GoogleCloudPlatform/opentelemetry-operations-go/internal/resourcemapp
 github.com/GoogleCloudPlatform/opentelemetry-operations-go/internal/resourcemapping v0.57.0/go.mod h1:YqwkQPrWSC7+byyc1VlKbWLBF5JsW5IoL6xUkemYSXk=
 github.com/cespare/xxhash/v2 v2.3.0 h1:UL815xU9SqsFlibzuggzjXhog7bL6oX9BbNZnL2UFvs=
 github.com/cespare/xxhash/v2 v2.3.0/go.mod h1:VGX0DQ3Q6kWi7AoAeZDth3/j3BFtOZR5XLFGgcrjCOs=
-github.com/cloudfoundry-community/go-cfenv v1.23.0 h1:sEOfOInaxUQ2crSVFbyZ2x3Fbn4WORGIUugwZ+/TR2E=
-github.com/cloudfoundry-community/go-cfenv v1.23.0/go.mod h1:qS5dMnMIkESJd/GOOi6JUFyfmdCEHjIAAws3/oGPNPc=
+github.com/cloudfoundry-community/go-cfenv v1.24.2 h1:vRRiA74GXhBuq92HUzW9/EDOG67qiNpjqaMA4iQemh4=
+github.com/cloudfoundry-community/go-cfenv v1.24.2/go.mod h1:qS5dMnMIkESJd/GOOi6JUFyfmdCEHjIAAws3/oGPNPc=
 github.com/cncf/xds/go v0.0.0-20260202195803-dba9d589def2 h1:aBangftG7EVZoUb69Os8IaYg++6uMOdKK83QtkkvJik=
 github.com/cncf/xds/go v0.0.0-20260202195803-dba9d589def2/go.mod h1:qwXFYgsP6T7XnJtbKlf1HP8AjxZZyzxMmc+Lq5GjlU4=
 github.com/davecgh/go-spew v1.1.2-0.20180830191138-d8f796af33cc h1:U9qPSI2PIWSS1VwoXQT9A3Wy9MM3WgvqSxFWenqJduM=
