@@ -12,7 +12,7 @@ description: |
 display_name: CSB GCP Vertex AI
 image_url: file://service-images/csb.png
 documentation_url: https://cloud.google.com/vertex-ai/docs
-provider_display_name: GSA TTS
+provider_display_name: Google
 support_url: https://cloud.google.com/vertex-ai/
 tags: [gcp, vertex-ai, ai, llm, generative-ai, identity]
 plan_updateable: true

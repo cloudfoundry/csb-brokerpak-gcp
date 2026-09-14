@@ -14,7 +14,7 @@ resource "google_project_service" "storage" {
 
 # Dedicated service account for Vertex AI workloads
 resource "google_service_account" "vertex_ai" {
-  account_id   = substr("csb-vai-${var.instance_name}", 0, 30)
+  account_id   = trimsuffix(substr("csb-vai-${var.instance_name}", 0, 30), "-")
   display_name = "CSB Vertex AI — ${var.instance_name}"
   project      = local.resolved_project
   description  = "Sandbox service account. Expires ${local.ttl_expires_at}."

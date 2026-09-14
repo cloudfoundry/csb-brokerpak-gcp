@@ -12,7 +12,7 @@ description: |
 display_name: CSB Google Gemini API
 image_url: file://service-images/csb.png
 documentation_url: https://ai.google.dev/gemini-api/docs
-provider_display_name: GSA TTS
+provider_display_name: Google
 support_url: https://ai.google.dev/gemini-api/docs
 tags: [gcp, gemini, ai, llm, generative-ai, key]
 plan_updateable: true
