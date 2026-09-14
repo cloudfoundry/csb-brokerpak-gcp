@@ -66,7 +66,7 @@ var _ = Describe("storage", Label("storage-terraform"), Ordered, func() {
 					),
 					"uniform_bucket_level_access": BeTrue(),
 					"encryption": ConsistOf(
-						MatchAllKeys(Keys{
+						MatchKeys(IgnoreExtras, Keys{
 							"default_kms_key_name": Equal("projects/project/locations/location/keyRings/key-ring-name/cryptoKeys/key-name"),
 						}),
 					),

@@ -1,8 +1,10 @@
 package acceptance_test
 
 import (
+	"csbbrokerpakgcp/acceptance-tests/helpers/gcloud"
 	"csbbrokerpakgcp/acceptance-tests/helpers/matchers"
 	"csbbrokerpakgcp/acceptance-tests/helpers/random"
+	"fmt"
 	"io"
 	"net"
 	"net/http"
@@ -31,6 +33,10 @@ var _ = Describe("MySQL", Label("mysql"), func() {
 		By("creating a service instance")
 		serviceInstance := services.CreateInstance("csb-google-mysql", "default")
 		defer serviceInstance.Delete()
+
+		By("patching the database flag to allow native password proxy users")
+		instanceName := fmt.Sprintf("csb-mysql-%s", serviceInstance.GUID())
+		gcloud.GCP("sql", "instances", "patch", instanceName, "--database-flags", "mysql_native_password_proxy_users=on")
 
 		By("pushing the unstarted app twice")
 		appOne := apps.Push(apps.WithApp(apps.JDBCTestApp), apps.WithTestAppManifest(apps.MySQLTLSTestAppManifest))
@@ -99,6 +105,10 @@ var _ = Describe("MySQL", Label("mysql"), func() {
 			services.WithParameters(`{"allow_insecure_connections": true}`))
 		defer serviceInstance.Delete()
 
+		By("patching the database flag to allow native password proxy users")
+		instanceName := fmt.Sprintf("csb-mysql-%s", serviceInstance.GUID())
+		gcloud.GCP("sql", "instances", "patch", instanceName, "--database-flags", "mysql_native_password_proxy_users=on")
+
 		By("pushing the unstarted app")
 		appOne := apps.Push(apps.WithApp(apps.JDBCTestApp), apps.WithTestAppManifest(apps.MySQLNoAutoTLSTestAppManifest))
 
@@ -120,6 +130,10 @@ var _ = Describe("MySQL", Label("mysql"), func() {
 		publicIPParams := services.WithParameters(map[string]any{"public_ip": true})
 		serviceInstance := services.CreateInstance("csb-google-mysql", "default", publicIPParams)
 		defer serviceInstance.Delete()
+
+		By("patching the database flag to allow native password proxy users")
+		instanceName := fmt.Sprintf("csb-mysql-%s", serviceInstance.GUID())
+		gcloud.GCP("sql", "instances", "patch", instanceName, "--database-flags", "mysql_native_password_proxy_users=on")
 
 		By("creating and examining a service key")
 		serviceKey := serviceInstance.CreateServiceKey()

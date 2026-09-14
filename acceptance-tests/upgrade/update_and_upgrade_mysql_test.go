@@ -1,8 +1,13 @@
 package upgrade_test
 
 import (
+	"fmt"
+	"strings"
+
 	"csbbrokerpakgcp/acceptance-tests/helpers/apps"
 	"csbbrokerpakgcp/acceptance-tests/helpers/brokers"
+	"csbbrokerpakgcp/acceptance-tests/helpers/cf"
+	"csbbrokerpakgcp/acceptance-tests/helpers/gcloud"
 	"csbbrokerpakgcp/acceptance-tests/helpers/matchers"
 	"csbbrokerpakgcp/acceptance-tests/helpers/plans"
 	"csbbrokerpakgcp/acceptance-tests/helpers/random"
@@ -39,12 +44,20 @@ var _ = Describe("UpgradeMYSQLTest", Label("mysql"), func() {
 				services.WithName(serviceName),
 			)
 
+			By("patching the database flag to allow native password proxy users")
+			instanceName := fmt.Sprintf("csb-mysql-%s", serviceInstance.GUID())
+			gcloud.GCP("sql", "instances", "patch", instanceName, "--database-flags", "mysql_native_password_proxy_users=on")
+
 			By("pushing the unstarted app twice")
 			appOne := apps.Push(apps.WithApp(apps.MySQL))
 			appTwo := apps.Push(apps.WithApp(apps.MySQL))
 			defer apps.Delete(appOne, appTwo)
 
 			By("binding the apps to the storage service instance")
+			ip := strings.TrimSpace(string(gcloud.GCP("sql", "instances", "describe", instanceName, "--format=value(ipAddresses[0].ipAddress)")))
+			By("verifying network reachability to the database at " + ip)
+			cf.Run("ssh", serviceBroker.Name, "-c", fmt.Sprintf("nc -zvw 10 %s 3306", ip))
+
 			bindingOne := serviceInstance.Bind(appOne)
 			bindingTwo := serviceInstance.Bind(appTwo)
 
