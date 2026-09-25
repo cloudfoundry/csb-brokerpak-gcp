@@ -37,7 +37,10 @@ terraform_binaries:
 env_config_mapping:
   GOOGLE_CREDENTIALS: gcp.credentials
   GOOGLE_PROJECT: gcp.project
+  GCP_BUDGET_ALERT_EMAIL: gcp.budget_alert_email
 service_definitions:
+- google-gemini.yml
 - google-storage.yml
 - google-mysql.yml
 - google-postgresql.yml
+- google-vertex-ai.yml
