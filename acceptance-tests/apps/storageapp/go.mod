@@ -4,7 +4,7 @@ go 1.26.4
 
 require (
 	cloud.google.com/go/storage v1.67.1
-	github.com/cloudfoundry-community/go-cfenv v1.24.2
+	github.com/cloudfoundry-community/go-cfenv v1.24.3
 	github.com/mitchellh/mapstructure v1.5.0
 	google.golang.org/api v0.298.0
 )
