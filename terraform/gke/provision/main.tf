@@ -51,17 +51,18 @@ resource "google_service_account_iam_member" "broker_can_use_nodes" {
 }
 
 resource "google_container_cluster" "cluster" {
-  name                  = var.cluster_name
-  project               = var.project
-  location              = var.zone
-  network               = local.network
-  subnetwork            = local.subnetwork
-  deletion_protection   = false
-  initial_node_count    = 3
-  enable_shielded_nodes = true
-  networking_mode       = "VPC_NATIVE"
-  datapath_provider     = "ADVANCED_DATAPATH"
-  resource_labels       = local.common_labels
+  name                   = var.cluster_name
+  project                = var.project
+  location               = var.zone
+  network                = local.network
+  subnetwork             = local.subnetwork
+  deletion_protection    = false
+  initial_node_count     = 3
+  enable_shielded_nodes  = true
+  enable_cost_allocation = true
+  networking_mode        = "VPC_NATIVE"
+  datapath_provider      = "ADVANCED_DATAPATH"
+  resource_labels        = local.common_labels
 
   ip_allocation_policy {}
 

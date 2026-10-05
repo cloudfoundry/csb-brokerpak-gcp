@@ -23,6 +23,10 @@ The plan enables the managed GCE Persistent Disk CSI driver by default. This
 provides dynamically provisioned block storage without creating a disk until a
 PersistentVolumeClaim requests one.
 
+GKE cost allocation is also enabled by default so namespace and workload usage
+can be included in exported billing data when the project has detailed billing
+export configured.
+
 Set `enable_filestore_csi` to `true` at provisioning time to enable the managed
 Filestore CSI driver and its NFS storage classes. Enabling the driver does not
 create a Filestore instance, but a claim using a Filestore storage class can
@@ -59,6 +63,7 @@ kubectl get persistentvolume
 
 - Cloud Foundry reports `create succeeded`.
 - GKE reports the cluster as `RUNNING` with `currentNodeCount: 3`.
+- GKE reports cost allocation as enabled.
 - `kubectl` authenticates using ambient Google Cloud credentials.
 - Exactly three nodes report the `Ready` condition as `True`.
 - The binding's `normalized_binding_json` reports provider `gcp`, connection
