@@ -44,3 +44,4 @@ service_definitions:
 - google-mysql.yml
 - google-postgresql.yml
 - google-vertex-ai.yml
+- google-gke.yml
