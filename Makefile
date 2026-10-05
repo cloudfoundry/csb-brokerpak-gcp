@@ -29,7 +29,7 @@ BROKER_GO_OPTS=PORT=8080 \
  				GSB_SERVICE_CSB_GOOGLE_STORAGE_BUCKET_PLANS='$(GSB_SERVICE_CSB_GOOGLE_STORAGE_BUCKET_PLANS)' \
  				GSB_COMPATIBILITY_ENABLE_BETA_SERVICES=$(GSB_COMPATIBILITY_ENABLE_BETA_SERVICES)
 
-PAK_PATH=$(PWD) #where the brokerpak zip resides
+PAK_PATH=$(PWD)
 RUN_CSB=$(BROKER_GO_OPTS) go run github.com/cloudfoundry/cloud-service-broker/v2
 LDFLAGS="-X github.com/cloudfoundry/cloud-service-broker/v2/utils.Version=$(CSB_VERSION)"
 GET_CSB="env CGO_ENABLED=0 GOOS=linux GOARCH=amd64 go build -ldflags $(LDFLAGS) github.com/cloudfoundry/cloud-service-broker/v2"

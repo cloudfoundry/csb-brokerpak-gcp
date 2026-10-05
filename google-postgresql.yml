@@ -19,7 +19,7 @@ description: PostgreSQL is a fully managed service for the Google Cloud Platform
 display_name: Google Cloud PostgreSQL
 image_url: file://service-images/csb.png
 documentation_url: https://techdocs.broadcom.com/tnz-gcp-broker-cf
-provider_display_name: VMware
+provider_display_name: GSA TTS
 support_url: https://cloud.google.com/support/
 tags: [gcp, postgresql, postgres]
 plan_updateable: true

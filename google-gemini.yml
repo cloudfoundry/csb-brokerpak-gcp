@@ -1,0 +1,220 @@
+---
+version: 1
+name: csb-google-gemini
+id: c4d5e6f7-a8b9-0123-cdef-123456789013
+description: |
+  CSB Google Gemini API — current access family: google_gemini_key.
+  Provisions a Gemini API key in the configured Google Cloud project and
+  restricts it to the Generative Language API. Bind returns the API key
+  directly in VCAP_SERVICES credentials. This key-backed flow is intentionally
+  separate from the google_vertex_identity family, which uses Vertex IAM-backed
+  access instead of a direct API key.
+display_name: CSB Google Gemini API
+image_url: file://service-images/csb.png
+documentation_url: https://ai.google.dev/gemini-api/docs
+provider_display_name: Google
+support_url: https://ai.google.dev/gemini-api/docs
+tags: [gcp, gemini, ai, llm, generative-ai, key]
+plan_updateable: true
+plans:
+- name: sandbox-8h
+  id: d5e6f7a8-b9c0-1234-def0-234567890114
+  description: |
+    Sandbox plan — 8-hour TTL with Gemini API key access.
+    The key is restricted to the Generative Language API. Leave `models` empty
+    to allow all Gemini API models currently enabled for the project.
+    Access family: google_gemini_key.
+  display_name: Sandbox 8-hour
+  properties:
+    ttl_hours: 8
+    models: '[]'
+- name: standard
+  id: e6f7a8b9-c0d1-2345-ef01-345678901215
+  description: |
+    Standard plan — configurable TTL with the same Gemini API key behavior as
+    sandbox-8h.
+    The key is restricted to the Generative Language API. Leave `models` empty
+    to allow all Gemini API models currently enabled for the project.
+    Access family: google_gemini_key.
+  display_name: Standard
+  properties:
+    models: '[]'
+provision:
+  plan_inputs:
+  - field_name: ttl_hours
+    type: number
+    details: Hours until this instance is auto-deprovisioned (max 8 for sandbox-8h plan).
+    default: 8
+  - field_name: models
+    type: string
+    details: |
+      JSON array of Gemini API model IDs expected to be used with this key.
+      This is contract metadata for clients and policy review only; the key is
+      restricted at the API level, not per model. Use an empty array to mean
+      all Gemini API models currently available to the project.
+      Example: '[]'
+    default: '[]'
+  - field_name: budget_amount
+    type: number
+    details: Monthly USD budget threshold metadata for this instance. Alerting is operator-email based when configured broker-side.
+    default: 100
+  user_inputs:
+  - field_name: instance_name
+    type: string
+    details: Name prefix for created Google API key resources.
+    default: csb-${request.instance_id}
+    prohibit_update: true
+  - field_name: project
+    type: string
+    details: GCP project ID. Defaults to the project set in gcp.project env var.
+    default: ""
+  computed_inputs:
+  - name: labels
+    default: ${json.marshal(request.default_labels)}
+    overwrite: true
+    type: object
+  - name: cf_context_json
+    default: ${json.marshal(request.context)}
+    overwrite: true
+    type: string
+  - name: cf_originating_identity_json
+    default: ${json.marshal(request.x_broker_api_originating_identity)}
+    overwrite: true
+    type: string
+  - name: credentials
+    default: ${config("gcp.credentials")}
+    overwrite: true
+    type: string
+  - name: project
+    default: ${config("gcp.project")}
+    overwrite: true
+    type: string
+  - name: budget_alert_email
+    default: ${config("gcp.budget_alert_email")}
+    overwrite: true
+    type: string
+  template_refs:
+    data: terraform/gemini-key/provision/data.tf
+    main: terraform/gemini-key/provision/main.tf
+    outputs: terraform/gemini-key/provision/outputs.tf
+    provider: terraform/gemini-key/provision/provider.tf
+    versions: terraform/gemini-key/provision/versions.tf
+    variables: terraform/gemini-key/provision/variables.tf
+  outputs:
+  - field_name: instance_name
+    type: string
+    details: Requested instance name used as the naming prefix for the Gemini API key resource.
+  - field_name: cf_provenance_json
+    type: string
+    details: JSON object of the Cloud Foundry org, space, and user provenance applied to resource metadata.
+  - field_name: resource_labels_json
+    type: string
+    details: JSON object of the effective instance metadata labels.
+  - field_name: project_id
+    type: string
+    details: GCP project ID.
+  - field_name: api_endpoint
+    type: string
+    details: Gemini API HTTPS endpoint.
+  - field_name: api_key
+    type: string
+    details: Gemini API key restricted to the Generative Language API.
+  - field_name: available_models
+    type: string
+    details: JSON array of model metadata supplied for this key. Empty means all Gemini API models available to the project.
+  - field_name: api_key_resource_name
+    type: string
+    details: Fully-qualified API Keys API resource name.
+  - field_name: budget_amount
+    type: number
+    details: Monthly USD budget threshold metadata for this instance.
+  - field_name: budget_enforcement_mode
+    type: string
+    details: Whether an optional operator budget alert email is configured broker-side.
+  - field_name: ttl_expires_at
+    type: string
+    details: RFC3339 timestamp when this instance expires.
+bind:
+  plan_inputs: []
+  user_inputs: []
+  computed_inputs:
+  - name: instance_name
+    default: ${instance.details["instance_name"]}
+    overwrite: true
+    type: string
+  - name: resource_labels_json
+    default: ${instance.details["resource_labels_json"]}
+    overwrite: true
+    type: string
+  - name: cf_context_json
+    default: ${json.marshal(request.context)}
+    overwrite: true
+    type: string
+  - name: cf_originating_identity_json
+    default: ${json.marshal(request.x_broker_api_originating_identity)}
+    overwrite: true
+    type: string
+  - name: cf_app_guid
+    default: ${request.app_guid}
+    overwrite: true
+    type: string
+  - name: project_id
+    default: ${instance.details["project_id"]}
+    overwrite: true
+    type: string
+  - name: api_endpoint
+    default: ${instance.details["api_endpoint"]}
+    overwrite: true
+    type: string
+  - name: api_key
+    default: ${instance.details["api_key"]}
+    overwrite: true
+    type: string
+  - name: available_models
+    default: ${instance.details["available_models"]}
+    overwrite: true
+    type: string
+  - name: budget_enforcement_mode
+    default: ${instance.details["budget_enforcement_mode"]}
+    overwrite: true
+    type: string
+  - name: ttl_expires_at
+    default: ${instance.details["ttl_expires_at"]}
+    overwrite: true
+    type: string
+  template_refs:
+    main: terraform/gemini-key/bind/main.tf
+    outputs: terraform/gemini-key/bind/outputs.tf
+    versions: terraform/gemini-key/bind/versions.tf
+    variables: terraform/gemini-key/bind/variables.tf
+  outputs:
+  - field_name: api_key
+    type: string
+    details: Gemini API key restricted to the Generative Language API.
+  - field_name: instance_name
+    type: string
+    details: Requested instance name used as the naming prefix for the API key resource.
+  - field_name: binding_provenance_json
+    type: string
+    details: JSON object of the Cloud Foundry org, space, user, and bound app provenance for this binding.
+  - field_name: resource_labels_json
+    type: string
+    details: JSON object of the effective instance metadata labels.
+  - field_name: project_id
+    type: string
+    details: GCP project ID.
+  - field_name: api_endpoint
+    type: string
+    details: Gemini API HTTPS endpoint.
+  - field_name: models
+    type: string
+    details: JSON array of model metadata supplied for this key. Empty means all Gemini API models available to the project.
+  - field_name: budget_enforcement_mode
+    type: string
+    details: Whether an optional operator budget alert email is configured broker-side.
+  - field_name: ttl_expires_at
+    type: string
+    details: RFC3339 timestamp when this instance expires.
+  - field_name: normalized_binding_json
+    type: string
+    details: Normalized v1 runtime binding payload for cross-provider consumers.
