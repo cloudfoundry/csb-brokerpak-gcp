@@ -20,6 +20,10 @@ The service broker is deployed to CloudFoundry as a `cf push`ed application.
 - [General configuration](./configuration.md)
 - [GCP](./installation.md)
 
+## Kubernetes
+
+- [GKE sandbox validation and storage](./gke-sandbox-validation.md)
+
 ## Cloud Service Broker General
 
 - Consuming Services are documented in Tanzu CSB for GCP official docs.
@@ -34,4 +38,3 @@ The service broker is deployed to CloudFoundry as a `cf push`ed application.
 - [Brokerpak Dissection](https://github.com/cloudfoundry/cloud-service-broker/tree/main/docs/brokerpak-dissection.md)
 
 For service-specific installation and configuration details, use the linked GCP docs above.
-

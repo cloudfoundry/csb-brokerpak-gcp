@@ -58,6 +58,16 @@ provision:
     details: Existing subnetwork name in the configured project. Empty uses the network default for the selected zone.
     default: ""
     prohibit_update: true
+  - field_name: enable_persistent_disk_csi
+    type: boolean
+    details: Enable the managed GCE Persistent Disk CSI driver for dynamic block storage provisioning.
+    default: true
+    prohibit_update: true
+  - field_name: enable_filestore_csi
+    type: boolean
+    details: Enable the managed Filestore CSI driver and its NFS storage classes. Filestore resources are created only when requested by a PersistentVolumeClaim.
+    default: false
+    prohibit_update: true
   computed_inputs:
   - name: labels
     default: ${json.marshal(request.default_labels)}
@@ -100,6 +110,12 @@ provision:
   - field_name: normalized_instance_json
     type: string
     details: Normalized v1 instance metadata for cross-provider consumers.
+  - field_name: persistent_disk_csi_enabled
+    type: boolean
+    details: Whether the managed GCE Persistent Disk CSI driver is enabled.
+  - field_name: filestore_csi_enabled
+    type: boolean
+    details: Whether the managed Filestore CSI driver is enabled.
 bind:
   plan_inputs: []
   user_inputs: []

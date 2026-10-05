@@ -34,6 +34,8 @@ variable "subnetwork" {
   }
 }
 
+variable "enable_persistent_disk_csi" { type = bool }
+variable "enable_filestore_csi" { type = bool }
 variable "project" { type = string }
 variable "ttl_hours" { type = number }
 variable "labels" { type = map(any) }
