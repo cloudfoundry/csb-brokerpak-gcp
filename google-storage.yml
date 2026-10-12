@@ -19,7 +19,7 @@ description: Google Cloud Storage that grants service accounts IAM permissions d
 display_name: Google Cloud Storage
 image_url: file://service-images/csb.png
 documentation_url: https://techdocs.broadcom.com/tnz-gcp-broker-cf
-provider_display_name: VMware
+provider_display_name: GSA TTS
 support_url: https://cloud.google.com/support/
 tags: [gcp, storage, google-storage]
 plan_updateable: true

@@ -1,0 +1,165 @@
+---
+version: 1
+name: csb-google-gke
+id: 3f9e52c8-5b62-4e68-9c6b-4d34ecaf2197
+description: A short-lived, three-node Google Kubernetes Engine Standard cluster for sandbox workloads.
+display_name: Google Kubernetes Engine Standard
+image_url: file://service-images/csb.png
+documentation_url: https://cloud.google.com/kubernetes-engine/docs
+provider_display_name: Google
+support_url: https://cloud.google.com/kubernetes-engine/docs/support
+tags: [gcp, gke, kubernetes, sandbox]
+plan_updateable: false
+plans:
+- name: sandbox-3-node
+  id: 965e87ce-796d-4f9f-ae2a-73536661cd82
+  description: Zonal GKE Standard cluster with three private e2-standard-2 nodes and an 8-hour TTL.
+  display_name: Sandbox 3-node
+  properties:
+    ttl_hours: 8
+provision:
+  plan_inputs:
+  - field_name: ttl_hours
+    type: number
+    details: Hours until this instance is eligible for automatic deprovisioning by the TTL controller.
+    default: 8
+  user_inputs:
+  - field_name: cluster_name
+    type: string
+    details: Name of the GKE cluster.
+    default: csb-${request.instance_id}
+    prohibit_update: true
+    constraints:
+      examples:
+      - csb-12345678-1234-1234-1234-123456789012
+      pattern: ^[a-z][a-z0-9-]{0,38}[a-z0-9]$
+  - field_name: zone
+    type: string
+    details: GCP zone for the cluster and its node pool.
+    default: us-central1-a
+    prohibit_update: true
+    constraints:
+      examples:
+      - us-central1-a
+      - us-east4-b
+      pattern: ^[a-z][a-z0-9-]+-[a-z]$
+  - field_name: network
+    type: string
+    details: Existing VPC network name in the configured project.
+    default: default
+    prohibit_update: true
+    constraints:
+      examples:
+      - default
+      - sandbox-network
+      pattern: ^[a-z][a-z0-9-]{0,61}[a-z0-9]$
+  - field_name: subnetwork
+    type: string
+    details: Existing subnetwork name in the configured project. Empty uses the network default for the selected zone.
+    default: ""
+    prohibit_update: true
+  - field_name: enable_persistent_disk_csi
+    type: boolean
+    details: Enable the managed GCE Persistent Disk CSI driver for dynamic block storage provisioning.
+    default: true
+    prohibit_update: true
+  - field_name: enable_filestore_csi
+    type: boolean
+    details: Enable the managed Filestore CSI driver and its NFS storage classes. Filestore resources are created only when requested by a PersistentVolumeClaim.
+    default: false
+    prohibit_update: true
+  computed_inputs:
+  - name: labels
+    default: ${json.marshal(request.default_labels)}
+    overwrite: true
+    type: object
+  - name: credentials
+    default: ${config("gcp.credentials")}
+    overwrite: true
+    type: string
+  - name: project
+    default: ${config("gcp.project")}
+    overwrite: true
+    type: string
+  template_refs:
+    data: terraform/gke/provision/data.tf
+    main: terraform/gke/provision/main.tf
+    outputs: terraform/gke/provision/outputs.tf
+    provider: terraform/gke/provision/provider.tf
+    versions: terraform/gke/provision/versions.tf
+    variables: terraform/gke/provision/variables.tf
+  outputs:
+  - field_name: cluster_name
+    type: string
+    details: GKE cluster name.
+  - field_name: project_id
+    type: string
+    details: GCP project ID.
+  - field_name: zone
+    type: string
+    details: GCP zone containing the cluster.
+  - field_name: network
+    type: string
+    details: VPC network used by the cluster.
+  - field_name: subnetwork
+    type: string
+    details: VPC subnetwork selected for the cluster.
+  - field_name: ttl_expires_at
+    type: string
+    details: RFC3339 timestamp when this instance becomes eligible for automatic deprovisioning.
+  - field_name: normalized_instance_json
+    type: string
+    details: Normalized v1 instance metadata for cross-provider consumers.
+  - field_name: persistent_disk_csi_enabled
+    type: boolean
+    details: Whether the managed GCE Persistent Disk CSI driver is enabled.
+  - field_name: filestore_csi_enabled
+    type: boolean
+    details: Whether the managed Filestore CSI driver is enabled.
+bind:
+  plan_inputs: []
+  user_inputs: []
+  computed_inputs:
+  - name: cluster_name
+    default: ${instance.details["cluster_name"]}
+    overwrite: true
+    type: string
+  - name: project_id
+    default: ${instance.details["project_id"]}
+    overwrite: true
+    type: string
+  - name: zone
+    default: ${instance.details["zone"]}
+    overwrite: true
+    type: string
+  - name: ttl_expires_at
+    default: ${instance.details["ttl_expires_at"]}
+    overwrite: true
+    type: string
+  template_refs:
+    main: terraform/gke/bind/main.tf
+    outputs: terraform/gke/bind/outputs.tf
+    versions: terraform/gke/bind/versions.tf
+    variables: terraform/gke/bind/variables.tf
+  outputs:
+  - field_name: cluster_name
+    type: string
+    details: GKE cluster name.
+  - field_name: project_id
+    type: string
+    details: GCP project ID.
+  - field_name: zone
+    type: string
+    details: GCP zone containing the cluster.
+  - field_name: ttl_expires_at
+    type: string
+    details: RFC3339 timestamp when this instance becomes eligible for automatic deprovisioning.
+  - field_name: exec_command
+    type: string
+    details: Executable used with ambient Google Cloud authentication to retrieve cluster access configuration.
+  - field_name: exec_args_json
+    type: string
+    details: JSON array of arguments for the executable.
+  - field_name: normalized_binding_json
+    type: string
+    details: Normalized v1 metadata-only binding with an ambient-authentication exec recipe.
