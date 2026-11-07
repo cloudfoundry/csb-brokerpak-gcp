@@ -4,7 +4,7 @@ go 1.26.4
 
 require (
 	cloud.google.com/go/storage v1.70.0
-	github.com/cloudfoundry-community/go-cfenv v1.24.4
+	github.com/cloudfoundry-community/go-cfenv v1.25.0
 	github.com/mitchellh/mapstructure v1.5.0
 	google.golang.org/api v0.309.0
 )
@@ -45,7 +45,7 @@ require (
 	go.opentelemetry.io/otel/sdk/metric v1.45.0 // indirect
 	go.opentelemetry.io/otel/trace v1.45.0 // indirect
 	golang.org/x/crypto v0.58.0 // indirect
-	golang.org/x/net v0.61.0 // indirect
+	golang.org/x/net v0.62.0 // indirect
 	golang.org/x/oauth2 v0.37.0 // indirect
 	golang.org/x/sync v0.24.0 // indirect
 	golang.org/x/sys v0.49.0 // indirect
